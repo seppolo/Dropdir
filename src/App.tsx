@@ -17,13 +17,15 @@ function App() {
         </div>
       }
     >
+      {/* Initialize Tempo routes */}
+      {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/public" element={<PublicPage />} />
         <Route path="/:username" element={<PublicUserPage />} />
-        {import.meta.env.VITE_TEMPO === "true" && (
-          <Route path="/tempobook/*" element={useRoutes(routes)} />
-        )}
+        {/* Add explicit Tempo route to prevent catch-all conflicts */}
+        {import.meta.env.VITE_TEMPO === "true" && <Route path="/tempobook/*" />}
       </Routes>
     </Suspense>
   );

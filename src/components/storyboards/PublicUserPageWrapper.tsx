@@ -86,15 +86,10 @@ export default function PublicUserPageWrapper() {
 // A simple component to mock the router context
 function MockRouterProvider({ children, username }) {
   // Create a mock implementation of useParams
-  const originalUseParams = React.useContext;
-  React.useContext = (context) => {
-    // If this is the params context, return our mock value
-    if (context.displayName === "useParams") {
-      return { username };
-    }
-    // Otherwise use the original implementation
-    return originalUseParams(context);
-  };
+  // Store the original useContext but don't override it directly
+  // as that causes TypeScript errors
+  const originalUseContext = React.useContext;
+  // Instead, we'll use a different approach for mocking
 
   // Override useParams for this component tree
   const originalUseParams2 = window.ReactRouterDOM?.useParams;

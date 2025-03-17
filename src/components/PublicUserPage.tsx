@@ -32,6 +32,7 @@ const PublicUserPage = () => {
     const fetchUserProjects = async () => {
       setIsLoading(true);
       try {
+        console.log("Fetching projects for username:", username);
         // Fetch all projects for this user (without checking is_public)
         const { data, error } = await supabase
           .from("user_airdrops")
@@ -39,11 +40,15 @@ const PublicUserPage = () => {
           .eq("username", username)
           .order("last_activity", { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error("Supabase error:", error);
+          // Continue with empty data instead of throwing
+        }
         console.log("Public projects for user:", data);
         setProjects(data || []);
       } catch (error) {
         console.error("Error fetching user projects:", error);
+        // Don't let errors crash the component
       } finally {
         setIsLoading(false);
       }
@@ -51,6 +56,9 @@ const PublicUserPage = () => {
 
     if (username) {
       fetchUserProjects();
+    } else {
+      console.error("No username parameter found in URL");
+      setIsLoading(false);
     }
   }, [username]);
 

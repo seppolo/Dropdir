@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "./ui/table";
 import ProjectRow from "./dashboard/ProjectRow";
-import { Search } from "lucide-react";
+import { Search, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
@@ -116,7 +116,7 @@ const PublicUserPage = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsSearchVisible(!isSearchVisible)}
-                    className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 transition-all shadow-[0_0_10px_rgba(29,78,216,0.3)]"
+                    className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20 transition-all shadow-[0_0_10px_rgba(29,78,216,0.3)]"
                   >
                     <Search className="h-4 w-4 text-[#3B82F6]" />
                   </Button>
@@ -133,12 +133,12 @@ const PublicUserPage = () => {
               </div>
             </div>
             <Button
-              variant="outline"
-              size="sm"
-              onClick={() => (window.location.href = "/login")}
-              className="rounded-full bg-[#1D4ED8]/20 text-[#3B82F6] hover:bg-[#1D4ED8]/30 border-[#1D4ED8]/50 shadow-[0_0_10px_rgba(29,78,216,0.3)]"
+              variant="ghost"
+              size="icon"
+              onClick={() => (window.location.href = "/")}
+              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20 transition-all shadow-[0_0_10px_rgba(29,78,216,0.3)]"
             >
-              Login
+              <LogIn className="h-4 w-4 text-[#3B82F6]" />
             </Button>
           </div>
 

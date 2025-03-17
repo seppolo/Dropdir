@@ -194,7 +194,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           {isLoggedIn && (
             <Button
               onClick={() => setShowAddModal(true)}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 flex items-center justify-center"
+              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20 flex items-center justify-center"
             >
               <div className="flex items-center justify-center">
                 <span className="text-white font-bold text-lg">+</span>
@@ -209,7 +209,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsDeleteMode(!isDeleteMode)}
-                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20"
+                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20"
                 >
                   <Pencil className="h-4 w-4 text-white" />
                 </Button>
@@ -220,7 +220,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchVisible(!isSearchVisible)}
-                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20"
+                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20"
               >
                 <Search className="h-4 w-4 text-white" />
               </Button>

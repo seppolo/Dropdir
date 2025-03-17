@@ -1,0 +1,349 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Sketch Style Base */
+.sketch-font {
+  font-family:
+    "Inter",
+    "Segoe UI",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-weight: 500;
+}
+
+.sketch-border {
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  position: relative;
+  background: #fff;
+}
+
+.sketch-border::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: -2px;
+  bottom: -2px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f0f0f0,
+    #f0f0f0 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  z-index: -1;
+}
+
+.sketch-button {
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 #000;
+  transition: all 0.1s ease;
+  background: #fff;
+}
+
+.sketch-button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 #000;
+}
+
+.sketch-button:active {
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+.sketch-input {
+  border: 2px solid #000;
+  background: #fff;
+  box-shadow: 2px 2px 0 #000;
+}
+
+.sketch-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.sketch-table th,
+.sketch-table td {
+  border: 2px dashed #000;
+  color: white;
+}
+
+.sketch-table th {
+  background: #1a1a1a;
+}
+
+.sketch-table td {
+  background: #1a1a1a;
+}
+
+.dark .sketch-table th {
+  background: var(--card);
+}
+
+.dark .sketch-table td {
+  background: var(--card);
+}
+
+.dark .sketch-table th,
+.dark .sketch-table td {
+  border-color: #666;
+  background: #1a1a1a;
+}
+
+/* Keep action icons color white except status */
+.action-icon {
+  color: white;
+}
+
+/* Sticky columns in full mode on mobile */
+@media (max-width: 767px) {
+  .sketch-table th:nth-child(1),
+  .sketch-table th:nth-child(2),
+  .sketch-table td:nth-child(1),
+  .sketch-table td:nth-child(2) {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #1a1a1a;
+  }
+
+  .dark .sketch-table th:nth-child(1),
+  .dark .sketch-table th:nth-child(2),
+  .dark .sketch-table td:nth-child(1),
+  .dark .sketch-table td:nth-child(2) {
+    background: var(--card);
+  }
+
+  .sketch-table th:nth-child(2),
+  .sketch-table td:nth-child(2) {
+    left: 300px;
+  }
+}
+
+.sketch-card {
+  border: 2px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  background: #fff;
+}
+
+.dark .sketch-border,
+.dark .sketch-button,
+.dark .sketch-input,
+.dark .sketch-table th,
+.dark .sketch-table td,
+.dark .sketch-card {
+  border-color: #666;
+  box-shadow-color: #666;
+  background: #1a1a1a;
+}
+
+@keyframes slide-down-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up-fade {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down-exit {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down-fade {
+  animation: slide-down-fade 0.2s ease-out;
+}
+
+.animate-slide-up-fade {
+  animation: slide-up-fade 0.2s ease-out;
+}
+
+/* Custom Scrollbar */
+@layer utilities {
+  /* Firefox */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #666 transparent;
+  }
+
+  /* Chrome, Edge, and Safari */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+    border: 1px dashed #666;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border: 1px dashed #666;
+    border-radius: 2px;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-color: #666;
+  }
+}
+
+/* Theme Transitions */
+.theme-transition {
+  transition:
+    background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading transition for auth */
+.loading-transition {
+  opacity: 0.5;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+
+.loading-transition::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Theme Gradient Animation */
+@keyframes themeTransition {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.dark body {
+  background: linear-gradient(
+    135deg,
+    hsl(222.2 84% 4.9%) 0%,
+    hsl(222.2 84% 4.9%) 100%
+  );
+  background-size: 400% 400%;
+  animation: themeTransition 3s ease infinite;
+}
+
+body {
+  background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(0 0% 100%) 100%);
+  background-size: 400% 400%;
+  animation: themeTransition 3s ease infinite;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 96%;
+    --card: 0 0% 98%;
+    --background: 0 0% 96%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 220 14% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 220 14% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border theme-transition;
+  }
+  body {
+    @apply bg-background text-foreground theme-transition;
+  }
+}

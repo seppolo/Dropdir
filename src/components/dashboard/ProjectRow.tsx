@@ -1,0 +1,454 @@
+import React from "react";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { NetworkIcon } from "@web3icons/react";
+import { ExternalLink, FileText, Pencil, Trash2 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+interface ProjectRowProps {
+  projectName: string;
+  projectLogo: string;
+  projectLink: string;
+  twitterLink: string;
+  isActive: boolean;
+  lastActivity: string;
+  notes?: string;
+  onStatusChange?: (status: boolean) => void;
+  onNotesClick?: () => void;
+  onDelete?: () => void;
+  showDeleteButton?: boolean;
+  showEditButton?: boolean;
+  isFullMode?: boolean;
+  type?: string;
+  cost?: number;
+  joinDate?: string;
+  chain?: string;
+  stage?: string;
+  tags?: string[];
+  isPublicMode?: boolean;
+}
+
+// Chain color mapping
+const chainColors = {
+  ethereum: "text-blue-400",
+  solana: "text-purple-400",
+  polygon: "text-indigo-400",
+  bsc: "text-yellow-400",
+  arbitrum: "text-blue-500",
+  optimism: "text-red-400",
+  avalanche: "text-red-500",
+  sui: "text-blue-300",
+  aptos: "text-blue-600",
+  base: "text-blue-400",
+  zksync: "text-purple-500",
+  starknet: "text-pink-400",
+  default:
+    "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500",
+};
+
+// Chain icon fallbacks - ensure we always have a fallback icon
+const chainIcons = {
+  ethereum: "⟠",
+  solana: "◎",
+  polygon: "⬡",
+  bsc: "⛓",
+  arbitrum: "⚡",
+  optimism: "⚡",
+  avalanche: "❄",
+  sui: "⚪",
+  aptos: "⚪",
+  base: "⚪",
+  zksync: "⚡",
+  starknet: "⚡",
+  default: "⚪",
+};
+
+const ProjectRow = ({
+  projectName,
+  projectLogo,
+  projectLink,
+  twitterLink,
+  isActive,
+  lastActivity,
+  notes,
+  onStatusChange = () => {},
+  onNotesClick = () => {},
+  onDelete = () => {},
+  showDeleteButton = false,
+  showEditButton = false,
+  isFullMode = true,
+  type = "Mini App",
+  cost = 0,
+  joinDate = new Date().toISOString(),
+  chain = "Ethereum",
+  stage = "Testnet",
+  tags = [],
+  isPublicMode = false,
+}: ProjectRowProps) => {
+  // Get chain color based on chain name
+  const getChainColor = (chainName: string) => {
+    if (!chainName) return chainColors.default;
+    const normalizedChain = chainName.toLowerCase();
+    return chainColors[normalizedChain] || chainColors.default;
+  };
+
+  // Ensure chain is never empty for icon display
+  const safeChain = chain || "default";
+
+  return (
+    <TableRow className="hover:bg-gray-800/30 transition-colors">
+      <TableCell className="font-medium p-2 text-left">
+        <div className="flex items-center gap-3 pl-2">
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border-2 border-gray-600 hover:border-blue-500 transition-colors cursor-pointer shadow-md">
+                  <img
+                    src={projectLogo}
+                    alt={projectName}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${projectName}`;
+                    }}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{projectName}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <div className="flex flex-col">
+            <span className="text-white truncate max-w-[200px] font-medium">
+              {projectName}
+            </span>
+            <div className="flex items-center gap-1 mt-1">
+              <NetworkIcon
+                name={
+                  safeChain.toLowerCase() === "bsc"
+                    ? "binance-smart-chain"
+                    : safeChain.toLowerCase()
+                }
+                size={14}
+                className={getChainColor(safeChain)}
+                fallback={
+                  <span
+                    className={`text-xs ${getChainColor(safeChain)} font-bold`}
+                  >
+                    {chainIcons[safeChain.toLowerCase()] || chainIcons.default}
+                  </span>
+                }
+              />
+              <span className={`text-xs ${getChainColor(safeChain)}`}>
+                {safeChain === "default" ? "Unknown" : safeChain}
+              </span>
+              {stage && (
+                <span className="text-xs text-blue-400/80 ml-2">{stage}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </TableCell>
+      {!isPublicMode && (
+        <TableCell className="text-center">
+          <TooltipProvider delayDuration={0}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onStatusChange(!isActive)}
+                  className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${isActive ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}
+                >
+                  {isActive ? (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4 md:h-5 md:w-5"
+                    >
+                      <path d="M20 6L9 17l-5-5"></path>
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4 md:h-5 md:w-5"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>
+                  {isActive
+                    ? "Active Project"
+                    : "Inactive Project - Click to Activate"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </TableCell>
+      )}
+      <td className="p-4 text-center">
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {showDeleteButton ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onDelete}
+                  className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${showDeleteButton ? "text-red-500" : ""}`}
+                >
+                  {showDeleteButton ? (
+                    <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
+                  ) : (
+                    <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => window.open(projectLink, "_blank")}
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-blue-500"
+                >
+                  <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
+                </Button>
+              )}
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="animate-slide-up-fade">
+              <p>{showDeleteButton ? "Delete Project" : "Visit Project"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </td>
+      <td className="p-4 text-center">
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => window.open(twitterLink, "_blank")}
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-purple-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-4 w-4 md:h-5 md:w-5"
+                >
+                  <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                </svg>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="animate-slide-up-fade">
+              <p>Twitter Profile</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </td>
+      <td className="p-4 text-center">
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              {onNotesClick !== (() => {}) && !isPublicMode ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={onNotesClick}
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-green-500"
+                >
+                  {showEditButton ? (
+                    <Pencil className="h-4 w-4 md:h-5 md:w-5" />
+                  ) : (
+                    <FileText className="h-4 w-4 md:h-5 md:w-5" />
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {}}
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-green-500"
+                >
+                  <FileText className="h-4 w-4 md:h-5 md:w-5" />
+                </Button>
+              )}
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="animate-slide-up-fade">
+              {isPublicMode && notes ? (
+                <div className="max-w-xs">
+                  <p className="font-medium mb-1">Notes:</p>
+                  <p className="text-sm">{notes}</p>
+                </div>
+              ) : (
+                <p>
+                  {showEditButton
+                    ? "Edit Project"
+                    : isPublicMode
+                      ? "View Notes"
+                      : "View/Edit Notes"}
+                </p>
+              )}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </td>
+      {isFullMode && (
+        <>
+          <td className="p-2 text-center">
+            <span className="text-[0.8rem] text-white/80 whitespace-nowrap">
+              {(() => {
+                try {
+                  const date = new Date(joinDate);
+                  if (isNaN(date.getTime())) {
+                    return <div>Invalid date</div>;
+                  }
+
+                  const today = new Date();
+                  const diffTime = Math.abs(today.getTime() - date.getTime());
+                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                  return (
+                    <div className="flex flex-col items-center">
+                      <div>{`${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(date.getFullYear()).slice(2)}`}</div>
+                      <div className="text-xs text-blue-400 mt-1">
+                        {diffDays} {diffDays === 1 ? "day" : "days"}
+                      </div>
+                    </div>
+                  );
+                } catch (error) {
+                  return <div>Invalid date</div>;
+                }
+              })()}
+            </span>
+          </td>
+          <td className="p-2 text-center">
+            <div className="flex items-center justify-center">
+              <NetworkIcon
+                name={
+                  safeChain.toLowerCase() === "bsc"
+                    ? "binance-smart-chain"
+                    : safeChain.toLowerCase()
+                }
+                size={24}
+                className={getChainColor(safeChain)}
+                fallback={
+                  <span
+                    className={`text-xl ${getChainColor(safeChain)} font-bold`}
+                  >
+                    {chainIcons[safeChain.toLowerCase()] || chainIcons.default}
+                  </span>
+                }
+              />
+            </div>
+          </td>
+          <td className="p-2 text-center">
+            <span className="text-[0.8rem] text-white/80">{stage || "-"}</span>
+          </td>
+          <td className="p-2 text-center">
+            <div className="flex gap-1 justify-center flex-wrap">
+              {Array.isArray(tags) && tags.length > 0 ? (
+                <div className="flex flex-wrap gap-1 justify-center">
+                  {tags.map((tag, index) => {
+                    // Generate a unique gradient for each tag based on its content
+                    const gradientClass = (() => {
+                      const hash = tag
+                        .split("")
+                        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                      const gradients = [
+                        "from-pink-500 to-purple-500",
+                        "from-blue-500 to-cyan-500",
+                        "from-green-500 to-emerald-500",
+                        "from-yellow-500 to-orange-500",
+                        "from-red-500 to-pink-500",
+                        "from-purple-500 to-indigo-500",
+                        "from-indigo-500 to-blue-500",
+                      ];
+                      return gradients[hash % gradients.length];
+                    })();
+
+                    return (
+                      <span
+                        key={index}
+                        className={`px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r ${gradientClass} shadow-lg`}
+                      >
+                        {typeof tag === "string"
+                          ? tag
+                              .replace(/[\[\]"]/g, "")
+                              .replace(/[^a-zA-Z]/g, "")
+                          : tag}
+                      </span>
+                    );
+                  })}
+                </div>
+              ) : (
+                <span className="text-[0.8rem] text-white/50">-</span>
+              )}
+            </div>
+          </td>
+          <td className="p-2 text-center">
+            <span className="text-[0.8rem] text-white/80">{type}</span>
+          </td>
+          <td className="p-2 text-center">
+            <span className="text-[0.8rem] text-white/80">${cost}</span>
+          </td>
+        </>
+      )}
+      {!isPublicMode && (
+        <td className="p-4 text-center">
+          <span className="text-[0.8rem] text-blue-400 font-medium whitespace-nowrap">
+            {(() => {
+              try {
+                const activityDate = new Date(lastActivity);
+                if (isNaN(activityDate.getTime())) {
+                  return "Invalid date";
+                }
+
+                // Format time as HH:MM with AM/PM
+                return activityDate.toLocaleTimeString(undefined, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                });
+              } catch (error) {
+                return "Invalid date";
+              }
+            })()}
+          </span>
+        </td>
+      )}
+    </TableRow>
+  );
+};
+
+export default ProjectRow;

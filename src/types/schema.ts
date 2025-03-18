@@ -8,7 +8,7 @@ export type Project = {
   lastActivity: string;
   notes: string;
   joinDate: string;
-  chain: string;
+  chain: string | string[];
   stage: "Waitlist" | "Testnet" | "Early Access" | "Mainnet";
   tags: string[];
   type: "Retroactive" | "Testnet" | "Mini App" | "Node";

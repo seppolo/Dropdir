@@ -121,7 +121,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     setEditProject(null);
   };
 
-  const handleEditSave = (updatedProject: Project) => {
+  const handleEditSave = async (updatedProject: Project) => {
     // Format tags properly before saving
     const formattedProject = {
       ...updatedProject,
@@ -131,38 +131,46 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         : updatedProject.tags,
     };
 
-    // Call the parent component's update function
-    onUpdateProject(formattedProject);
+    try {
+      // Call the parent component's update function
+      await onUpdateProject(formattedProject);
 
-    // Also update the local state immediately for better UX
-    setProjects((currentProjects) =>
-      currentProjects.map((project) =>
-        project.id === updatedProject.id
-          ? {
-              ...project,
-              ...updatedProject,
-              // Handle field name variations
-              project: updatedProject.name || updatedProject.project,
-              name: updatedProject.name || updatedProject.project,
-              twitter: updatedProject.twitterLink || updatedProject.twitter,
-              twitterLink: updatedProject.twitterLink || updatedProject.twitter,
-              logo: updatedProject.logo || updatedProject.image,
-              image: updatedProject.logo || updatedProject.image,
-              joinDate: updatedProject.joinDate || updatedProject.join_date,
-              join_date: updatedProject.joinDate || updatedProject.join_date,
-              lastActivity: new Date().toISOString(),
-              last_activity: new Date().toISOString(),
-              isActive:
-                updatedProject.isActive || updatedProject.status === "active",
-              status:
-                updatedProject.status ||
-                (updatedProject.isActive ? "active" : "pending"),
-              is_active:
-                updatedProject.isActive || updatedProject.status === "active",
-            }
-          : project,
-      ),
-    );
+      // Force refresh projects from database
+      window.dispatchEvent(new Event("forceDataReload"));
+
+      // Also update the local state immediately for better UX
+      setProjects((currentProjects) =>
+        currentProjects.map((project) =>
+          project.id === updatedProject.id
+            ? {
+                ...project,
+                ...updatedProject,
+                // Handle field name variations
+                project: updatedProject.name || updatedProject.project,
+                name: updatedProject.name || updatedProject.project,
+                twitter: updatedProject.twitterLink || updatedProject.twitter,
+                twitterLink:
+                  updatedProject.twitterLink || updatedProject.twitter,
+                logo: updatedProject.logo || updatedProject.image,
+                image: updatedProject.logo || updatedProject.image,
+                joinDate: updatedProject.joinDate || updatedProject.join_date,
+                join_date: updatedProject.joinDate || updatedProject.join_date,
+                lastActivity: new Date().toISOString(),
+                last_activity: new Date().toISOString(),
+                isActive:
+                  updatedProject.isActive || updatedProject.status === "active",
+                status:
+                  updatedProject.status ||
+                  (updatedProject.isActive ? "active" : "pending"),
+                is_active:
+                  updatedProject.isActive || updatedProject.status === "active",
+              }
+            : project,
+        ),
+      );
+    } catch (error) {
+      console.error("Error updating project:", error);
+    }
 
     handleEditClose();
   };
@@ -194,10 +202,10 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           {isLoggedIn && (
             <Button
               onClick={() => setShowAddModal(true)}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20 flex items-center justify-center"
+              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-purple-600 bg-purple-500/20 hover:bg-purple-500/30 flex items-center justify-center"
             >
               <div className="flex items-center justify-center">
-                <span className="text-white font-bold text-lg">+</span>
+                <span className="text-purple-400 font-bold text-lg">+</span>
               </div>
             </Button>
           )}
@@ -209,9 +217,9 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsDeleteMode(!isDeleteMode)}
-                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20"
+                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-green-600 bg-green-500/20 hover:bg-green-500/30"
                 >
-                  <Pencil className="h-4 w-4 text-white" />
+                  <Pencil className="h-4 w-4 text-green-400" />
                 </Button>
               </>
             )}
@@ -220,16 +228,16 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchVisible(!isSearchVisible)}
-                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20"
+                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-blue-600 bg-blue-500/20 hover:bg-blue-500/30"
               >
-                <Search className="h-4 w-4 text-white" />
+                <Search className="h-4 w-4 text-blue-400" />
               </Button>
               {isSearchVisible && (
                 <Input
                   placeholder="Search projects..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-40 h-8 ml-2 text-sm bg-[#0A101F] border-[#1D4ED8]/30 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
+                  className="w-40 h-8 ml-2 text-sm bg-[#0A101F] border-gray-600 focus:border-gray-500 rounded-full"
                   autoFocus
                   onBlur={() => setIsSearchVisible(false)}
                 />
@@ -267,12 +275,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
                     Join Date
                   </TableHead>
-                  <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                    Chain
-                  </TableHead>
-                  <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                    Stage
-                  </TableHead>
+
                   <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
                     Tags
                   </TableHead>

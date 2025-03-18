@@ -1,8 +1,18 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, Download, Archive } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Download,
+  Archive,
+  Share2,
+  List,
+  User,
+  Globe,
+} from "lucide-react";
 import DownloadInstructions from "./DownloadInstructions";
 import AuthController from "../auth/AuthController";
+import { Link } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -45,14 +55,21 @@ const Header = ({
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="mr-2">
-          <AuthController />
-        </div>
         <Button
-          variant="ghost"
+          variant="outline"
+          size="icon"
+          className="rounded-none dark:text-gray-400 h-9 w-9"
+          title="Profile"
+        >
+          <User className="h-5 w-5" />
+        </Button>
+
+        <Button
+          variant="outline"
           size="icon"
           onClick={onThemeToggle}
-          className="dark:text-gray-400"
+          className="rounded-none dark:text-gray-400 h-9 w-9"
+          title="Toggle Theme"
         >
           {isDarkMode ? (
             <Sun className="h-5 w-5" />
@@ -62,36 +79,48 @@ const Header = ({
         </Button>
 
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           onClick={() => setShowBackupModal(true)}
-          className="dark:text-gray-400"
+          className="rounded-none dark:text-gray-400 h-9 w-9"
           title="Backup Project"
         >
           <Archive className="h-5 w-5" />
         </Button>
 
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           onClick={() => setShowDownloadModal(true)}
-          className="dark:text-gray-400"
+          className="rounded-none dark:text-gray-400 h-9 w-9"
+          title="Download Instructions"
         >
           <Download className="h-5 w-5" />
         </Button>
 
-        <div className="ml-2 flex items-center gap-2">
-          {localStorage.getItem("auth_state") && (
-            <a
-              href={`/${JSON.parse(localStorage.getItem("auth_state")).username}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-blue-400 hover:underline"
-            >
-              My Public Page
-            </a>
-          )}
-        </div>
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-none dark:text-gray-400 h-9 w-9"
+          title="Share Public Page"
+          asChild
+        >
+          <Link to="/public" target="_blank" rel="noopener noreferrer">
+            <Globe className="h-5 w-5" />
+          </Link>
+        </Button>
+
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-none dark:text-gray-400 h-9 w-9"
+          title="My Projects"
+          asChild
+        >
+          <Link to="/Moffuadi" target="_blank" rel="noopener noreferrer">
+            <List className="h-5 w-5" />
+          </Link>
+        </Button>
       </div>
 
       <DownloadInstructions

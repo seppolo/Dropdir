@@ -45,7 +45,7 @@
     "@supabase/supabase-js": "2.39.7",
     "@types/pg": "^8.11.11",
     "@web3icons/core": "^4.0.9",
-    "@web3icons/react": "^4.0.8",
+    "@web3icons/react": "^4.0.10",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",

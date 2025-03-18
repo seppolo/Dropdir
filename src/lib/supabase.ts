@@ -9,4 +9,16 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+  global: {
+    fetch: (...args) => {
+      // Log fetch requests for debugging
+      console.log("Supabase fetch request:", args[0]);
+      return fetch(...args);
+    },
+  },
+});

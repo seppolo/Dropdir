@@ -253,7 +253,7 @@ const AllPublicAirdrops = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => window.open(project.link, "_blank")}
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-blue-500"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-blue-500"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -283,7 +283,7 @@ const AllPublicAirdrops = () => {
                                 "_blank",
                               )
                             }
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-purple-500"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-purple-500"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -306,7 +306,7 @@ const AllPublicAirdrops = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => {}}
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-green-500"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-green-500"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

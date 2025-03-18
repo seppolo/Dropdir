@@ -20,7 +20,15 @@ interface EditProjectModalProps {
   project?: Project;
 }
 
-const chains = ["Ethereum", "Solana", "Polygon", "BSC", "Arbitrum", "Optimism"];
+const chains = [
+  "Ethereum",
+  "Solana",
+  "Polygon",
+  "BSC",
+  "Arbitrum",
+  "Optimism",
+  "Monad",
+];
 const stages = ["Waitlist", "Testnet", "Early Access", "Mainnet"];
 const types = ["Retroactive", "Testnet", "Mini App", "Node"] as const;
 
@@ -55,7 +63,6 @@ const EditProjectModal = ({
     cost: project.cost.toString(),
     logo: project.logo,
     useTwitterProfileImage: false,
-    isPublic: project.is_public || false,
   });
 
   React.useEffect(() => {
@@ -70,7 +77,6 @@ const EditProjectModal = ({
         cost: (project.cost || 0).toString(),
         logo: project.image || project.logo || "",
         useTwitterProfileImage: false,
-        isPublic: project.is_public || false,
       });
       setPreviewUrl(project.image || project.logo || "");
     }
@@ -174,37 +180,110 @@ const EditProjectModal = ({
 
       // Save to database directly
       try {
+        // Add a small delay to ensure any previous operations are complete
+        await new Promise((resolve) => setTimeout(resolve, 100));
         const { supabase } = await import("@/lib/supabase");
-        const { error } = await supabase
+        console.log("Updating project in database with ID:", project.id);
+
+        // Get current username from localStorage
+        const authState = localStorage.getItem("auth_state");
+        if (!authState) {
+          console.error("No auth_state found in localStorage");
+          throw new Error("You must be logged in to update a project");
+        }
+
+        let username = "";
+        try {
+          const parsedState = JSON.parse(authState);
+          console.log("Parsed auth state:", parsedState);
+          username = parsedState.username || parsedState.user?.username || "";
+          if (!username) {
+            console.error("Username not found in auth state", parsedState);
+            throw new Error("Username not found in auth state");
+          }
+        } catch (parseError) {
+          console.error("Error parsing auth state:", parseError);
+          throw new Error("Invalid authentication state");
+        }
+
+        const updateData = {
+          project: formData.name,
+          link: formData.link,
+          twitter: formData.twitterLink,
+          chain: formData.chain,
+          stage: formData.stage,
+          type: formData.type,
+          cost: Number(formData.cost) || 0,
+          image: logoUrl,
+          image: logoUrl,
+          last_activity: new Date().toISOString(),
+          join_date: joinDate,
+          tags: tagsArray.join(", "),
+          status: project.status || (project.isActive ? "active" : "pending"),
+          notes: project.notes,
+          username: username, // Ensure username is included
+        };
+
+        // Remove any undefined or null values
+        Object.keys(updateData).forEach((key) => {
+          // @ts-ignore
+          if (updateData[key] === undefined || updateData[key] === null) {
+            // @ts-ignore
+            delete updateData[key];
+          }
+        });
+
+        console.log("Update data:", updateData);
+
+        // First try to update
+        console.log("Attempting to update with data:", updateData);
+        console.log("Project ID:", project.id);
+
+        const { data, error } = await supabase
           .from("user_airdrops")
-          .update({
-            project: formData.name,
-            link: formData.link,
-            twitter: formData.twitterLink,
-            chain: formData.chain,
-            stage: formData.stage,
-            type: formData.type,
-            cost: Number(formData.cost) || 0,
-            image: logoUrl,
-            logo: logoUrl,
-            last_activity: new Date().toISOString(),
-            join_date: joinDate,
-            tags: tagsArray.join(", "),
-            status: project.status || (project.isActive ? "active" : "pending"),
-            is_active:
-              project.isActive ||
-              project.status === "active" ||
-              project.is_active,
-            is_public: formData.isPublic,
-            notes: project.notes,
-          })
-          .eq("id", project.id);
+          .update(updateData)
+          .eq("id", project.id)
+          .select();
+
+        console.log("Update response:", { data, error });
 
         if (error) {
+          console.error("Supabase update error:", error);
           throw error;
         }
+
+        if (!data || data.length === 0) {
+          console.warn("No data returned from update operation");
+        }
+
+        console.log("Database update response:", data);
+
+        // Immediately fetch the updated record to confirm changes
+        try {
+          const { data: verifyData, error: verifyError } = await supabase
+            .from("user_airdrops")
+            .select("*")
+            .eq("id", project.id)
+            .single();
+
+          if (verifyError) {
+            console.error("Error verifying update:", verifyError);
+          } else {
+            console.log("Verified updated record:", verifyData);
+          }
+        } catch (verifyFetchError) {
+          console.error(
+            "Exception during verification fetch:",
+            verifyFetchError,
+          );
+          // Don't throw here, just log the error
+        }
+
+        // Force refresh projects
+        window.dispatchEvent(new Event("forceDataReload"));
       } catch (dbError) {
         console.error("Error updating project in database:", dbError);
+        throw dbError;
       }
 
       const updatedProject: Project = {
@@ -219,25 +298,41 @@ const EditProjectModal = ({
         type: formData.type,
         cost: Number(formData.cost) || 0,
         logo: logoUrl,
-        image: logoUrl, // Add image field to match database
+        image: logoUrl,
         lastActivity: new Date().toISOString(),
         last_activity: new Date().toISOString(), // Add last_activity field to match database
         joinDate: joinDate,
         join_date: joinDate, // Add join_date field to match database
         tags: tagsArray,
-        isActive:
-          project.isActive || project.status === "active" || project.is_active,
+        isActive: project.isActive || project.status === "active",
         status: project.status || (project.isActive ? "active" : "pending"),
-        is_active:
-          project.isActive || project.status === "active" || project.is_active,
-        is_public: formData.isPublic,
       };
 
       onSave(updatedProject);
       onClose();
     } catch (error) {
       console.error("Error updating project:", error);
-      alert("Failed to update project. Please try again.");
+
+      // Get detailed error message
+      let errorMessage = "Unknown error";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "object" && error !== null) {
+        errorMessage = JSON.stringify(error);
+      }
+
+      alert(`Failed to update project: ${errorMessage}`);
+
+      // Try to log more details about the error
+      if (error && typeof error === "object") {
+        console.log("Error details:", Object.keys(error));
+        // @ts-ignore
+        if (error.code) console.log("Error code:", error.code);
+        // @ts-ignore
+        if (error.details) console.log("Error details:", error.details);
+        // @ts-ignore
+        if (error.hint) console.log("Error hint:", error.hint);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -413,6 +508,7 @@ const EditProjectModal = ({
                     { id: "optimism", name: "Optimism" },
                     { id: "avalanche", name: "Avalanche" },
                     { id: "binance-smart-chain", name: "BSC" },
+                    { id: "monad", name: "Monad" },
                   ].map((chain) => (
                     <button
                       key={chain.id}
@@ -531,35 +627,6 @@ const EditProjectModal = ({
                   className="sketch-input h-10"
                   id="join-date-input"
                 />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
-                  Public Visibility
-                </label>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="public-visibility"
-                    checked={formData.isPublic}
-                    onCheckedChange={(checked) =>
-                      setFormData({
-                        ...formData,
-                        isPublic: checked,
-                      })
-                    }
-                  />
-                  <label
-                    htmlFor="public-visibility"
-                    className="text-sm text-white/70 cursor-pointer flex items-center gap-2"
-                  >
-                    <Globe className="h-4 w-4 text-blue-400" />
-                    Make publicly visible
-                  </label>
-                </div>
-                <p className="text-xs text-white/50 mt-1">
-                  When enabled, this project will be visible on your public
-                  profile
-                </p>
               </div>
             </div>
           </div>

@@ -19,7 +19,15 @@ interface AddProjectModalProps {
   onAdd: (project: any) => void;
 }
 
-const chains = ["Ethereum", "Solana", "Polygon", "BSC", "Arbitrum", "Optimism"];
+const chains = [
+  "Ethereum",
+  "Solana",
+  "Polygon",
+  "BSC",
+  "Arbitrum",
+  "Optimism",
+  "Monad",
+];
 const stages = ["Waitlist", "Testnet", "Early Access", "Mainnet"];
 const types = ["Retroactive", "Testnet", "Mini App", "Node"];
 const statuses = ["pending", "active", "completed", "failed"];
@@ -350,6 +358,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                     { id: "optimism", name: "Optimism" },
                     { id: "avalanche", name: "Avalanche" },
                     { id: "binance-smart-chain", name: "BSC" },
+                    { id: "monad", name: "Monad" },
                   ].map((chain) => (
                     <button
                       key={chain.id}

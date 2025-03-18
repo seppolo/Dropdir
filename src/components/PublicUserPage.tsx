@@ -116,7 +116,7 @@ const PublicUserPage = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsSearchVisible(!isSearchVisible)}
-                    className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20 transition-all shadow-[0_0_10px_rgba(29,78,216,0.3)]"
+                    className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-transparent hover:bg-gray-800 transition-all"
                   >
                     <Search className="h-4 w-4 text-[#3B82F6]" />
                   </Button>
@@ -136,7 +136,7 @@ const PublicUserPage = () => {
               variant="ghost"
               size="icon"
               onClick={() => (window.location.href = "/")}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-[#1D4ED8]/50 bg-transparent hover:bg-[#1D4ED8]/20 transition-all shadow-[0_0_10px_rgba(29,78,216,0.3)]"
+              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-transparent hover:bg-gray-800 transition-all"
             >
               <LogIn className="h-4 w-4 text-[#3B82F6]" />
             </Button>
@@ -185,12 +185,7 @@ const PublicUserPage = () => {
                             <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
                               Join Date
                             </TableHead>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                              Chain
-                            </TableHead>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                              Stage
-                            </TableHead>
+
                             <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
                               Tags
                             </TableHead>

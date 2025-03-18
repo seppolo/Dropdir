@@ -47,6 +47,13 @@ const chainColors = {
   base: "text-blue-400",
   zksync: "text-purple-500",
   starknet: "text-pink-400",
+  monad: "text-orange-500",
+  cosmos: "text-purple-300",
+  polkadot: "text-pink-500",
+  near: "text-blue-300",
+  flow: "text-green-400",
+  tezos: "text-blue-500",
+  algorand: "text-green-500",
   default:
     "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500",
 };
@@ -65,7 +72,8 @@ const chainIcons = {
   base: "⚪",
   zksync: "⚡",
   starknet: "⚡",
-  default: "⚪",
+  monad: "⚫",
+  default: "💀",
 };
 
 const ProjectRow = ({
@@ -124,7 +132,7 @@ const ProjectRow = ({
             </Tooltip>
           </TooltipProvider>
           <div className="flex flex-col">
-            <span className="text-white truncate max-w-[200px] font-medium">
+            <span className="text-white truncate max-w-[200px] font-medium bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
               {projectName}
             </span>
             <div className="flex items-center gap-1 mt-1">
@@ -140,11 +148,13 @@ const ProjectRow = ({
                   <span
                     className={`text-xs ${getChainColor(safeChain)} font-bold`}
                   >
-                    {chainIcons[safeChain.toLowerCase()] || chainIcons.default}
+                    {chainIcons[safeChain.toLowerCase()] || "💀"}
                   </span>
                 }
               />
-              <span className={`text-xs ${getChainColor(safeChain)}`}>
+              <span
+                className={`text-xs ${chainColors[safeChain.toLowerCase()] ? getChainColor(safeChain) : "bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-yellow-500 font-bold"}`}
+              >
                 {safeChain === "default" ? "Unknown" : safeChain}
               </span>
               {stage && (
@@ -221,20 +231,16 @@ const ProjectRow = ({
                   onClick={onDelete}
                   className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${showDeleteButton ? "text-red-500" : ""}`}
                 >
-                  {showDeleteButton ? (
-                    <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
-                  ) : (
-                    <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
-                  )}
+                  <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               ) : (
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => window.open(projectLink, "_blank")}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-blue-500"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800"
                 >
-                  <ExternalLink className="h-4 w-4 md:h-5 md:w-5" />
+                  <ExternalLink className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
                 </Button>
               )}
             </TooltipTrigger>
@@ -252,7 +258,7 @@ const ProjectRow = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => window.open(twitterLink, "_blank")}
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-purple-500"
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -264,7 +270,7 @@ const ProjectRow = ({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="h-4 w-4 md:h-5 md:w-5"
+                  className="h-4 w-4 md:h-5 md:w-5 text-cyan-400"
                 >
                   <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
                 </svg>
@@ -285,12 +291,12 @@ const ProjectRow = ({
                   variant="ghost"
                   size="icon"
                   onClick={onNotesClick}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-green-500"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800"
                 >
                   {showEditButton ? (
-                    <Pencil className="h-4 w-4 md:h-5 md:w-5" />
+                    <Pencil className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
                   ) : (
-                    <FileText className="h-4 w-4 md:h-5 md:w-5" />
+                    <FileText className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
                   )}
                 </Button>
               ) : (
@@ -298,9 +304,9 @@ const ProjectRow = ({
                   variant="ghost"
                   size="icon"
                   onClick={() => {}}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#1D4ED8]/50 bg-[#1D4ED8]/10 hover:bg-[#1D4ED8]/20 text-green-500"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800"
                 >
-                  <FileText className="h-4 w-4 md:h-5 md:w-5" />
+                  <FileText className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
                 </Button>
               )}
             </TooltipTrigger>
@@ -326,7 +332,7 @@ const ProjectRow = ({
       {isFullMode && (
         <>
           <td className="p-2 text-center">
-            <span className="text-[0.8rem] text-white/80 whitespace-nowrap">
+            <span className="text-[0.8rem] text-amber-400 whitespace-nowrap">
               {(() => {
                 try {
                   const date = new Date(joinDate);
@@ -341,7 +347,7 @@ const ProjectRow = ({
                   return (
                     <div className="flex flex-col items-center">
                       <div>{`${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(date.getFullYear()).slice(2)}`}</div>
-                      <div className="text-xs text-blue-400 mt-1">
+                      <div className="text-xs text-cyan-400 mt-1">
                         {diffDays} {diffDays === 1 ? "day" : "days"}
                       </div>
                     </div>
@@ -352,29 +358,7 @@ const ProjectRow = ({
               })()}
             </span>
           </td>
-          <td className="p-2 text-center">
-            <div className="flex items-center justify-center">
-              <NetworkIcon
-                name={
-                  safeChain.toLowerCase() === "bsc"
-                    ? "binance-smart-chain"
-                    : safeChain.toLowerCase()
-                }
-                size={24}
-                className={getChainColor(safeChain)}
-                fallback={
-                  <span
-                    className={`text-xl ${getChainColor(safeChain)} font-bold`}
-                  >
-                    {chainIcons[safeChain.toLowerCase()] || chainIcons.default}
-                  </span>
-                }
-              />
-            </div>
-          </td>
-          <td className="p-2 text-center">
-            <span className="text-[0.8rem] text-white/80">{stage || "-"}</span>
-          </td>
+
           <td className="p-2 text-center">
             <div className="flex gap-1 justify-center flex-wrap">
               {Array.isArray(tags) && tags.length > 0 ? (
@@ -412,15 +396,23 @@ const ProjectRow = ({
                   })}
                 </div>
               ) : (
-                <span className="text-[0.8rem] text-white/50">-</span>
+                <div className="flex flex-wrap gap-1 justify-center">
+                  <span className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
+                    Airdrop
+                  </span>
+                </div>
               )}
             </div>
           </td>
           <td className="p-2 text-center">
-            <span className="text-[0.8rem] text-white/80">{type}</span>
+            <span className="text-[0.8rem] text-purple-400 font-medium">
+              {type}
+            </span>
           </td>
           <td className="p-2 text-center">
-            <span className="text-[0.8rem] text-white/80">${cost}</span>
+            <span className="text-[0.8rem] text-green-400 font-medium">
+              ${cost}
+            </span>
           </td>
         </>
       )}

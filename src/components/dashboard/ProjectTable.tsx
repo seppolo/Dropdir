@@ -7,6 +7,7 @@ import {
   Moon,
   Sun,
   Globe,
+  Settings,
 } from "lucide-react";
 import SupabaseStatus from "./SupabaseStatus";
 import {
@@ -24,6 +25,7 @@ import { Button } from "../ui/button";
 import AuthController from "../auth/AuthController";
 import { Input } from "../ui/input";
 import MakeAllPublicModal from "./MakeAllPublicModal";
+import ColumnSettingsModal from "./ColumnSettingsModal";
 
 interface Project {
   id: string;
@@ -70,6 +72,23 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [showMakeAllPublicModal, setShowMakeAllPublicModal] = useState(false);
+  const [isPublicMode, setIsPublicMode] = useState(false);
+  const [showColumnSettings, setShowColumnSettings] = useState(false);
+  const [autoStatusTime, setAutoStatusTime] = useState("09:00 AM");
+  const [visibleColumns, setVisibleColumns] = useState({
+    Project: true,
+    Status: true,
+    Link: true,
+    Twitter: true,
+    Notes: true,
+    "Join Date": true,
+    Chain: true,
+    Stage: true,
+    Tags: true,
+    Type: true,
+    Cost: true,
+    "Last Activity": true,
+  });
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -78,8 +97,64 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    // Load auto status time from localStorage
+    const savedAutoStatusTime = localStorage.getItem("autoStatusTime");
+    if (savedAutoStatusTime) {
+      setAutoStatusTime(savedAutoStatusTime);
+    }
+
+    // Load visible columns from localStorage
+    const savedVisibleColumns = localStorage.getItem("visibleColumns");
+    if (savedVisibleColumns) {
+      try {
+        setVisibleColumns(JSON.parse(savedVisibleColumns));
+      } catch (error) {
+        console.error("Error parsing visible columns from localStorage", error);
+      }
+    }
+
+    // Load public mode setting from localStorage
+    const savedPublicMode = localStorage.getItem("isPublicMode");
+    if (savedPublicMode) {
+      try {
+        setIsPublicMode(JSON.parse(savedPublicMode));
+      } catch (error) {
+        console.error("Error parsing public mode from localStorage", error);
+      }
+    }
+
+    // Set up daily auto status change
+    const checkAndUpdateStatus = () => {
+      const now = new Date();
+      const currentTimeStr = now.toLocaleTimeString(undefined, {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+
+      if (currentTimeStr === autoStatusTime) {
+        console.log("Auto activating all projects");
+        // Activate all inactive projects
+        projects.forEach((project) => {
+          if (
+            !project.isActive &&
+            !project.is_active &&
+            project.status !== "active"
+          ) {
+            onStatusChange(project.id, true);
+          }
+        });
+      }
+    };
+
+    // Check every minute
+    const intervalId = setInterval(checkAndUpdateStatus, 60000);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearInterval(intervalId);
+    };
+  }, [projects, autoStatusTime, onStatusChange]);
 
   const filteredProjects = projects.filter(
     (project) =>
@@ -195,17 +270,44 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     onStatusChange(projectId, status);
   };
 
+  const handleTogglePublicMode = () => {
+    const newPublicMode = !isPublicMode;
+    setIsPublicMode(newPublicMode);
+    localStorage.setItem("isPublicMode", JSON.stringify(newPublicMode));
+
+    // If turning on public mode, show the make all public modal
+    if (newPublicMode) {
+      setShowMakeAllPublicModal(true);
+    }
+  };
+
+  // Get username from localStorage
+  const [username, setUsername] = React.useState("Moffuadi");
+  React.useEffect(() => {
+    try {
+      const authState = localStorage.getItem("auth_state");
+      if (authState) {
+        const parsedState = JSON.parse(authState);
+        if (parsedState.username) {
+          setUsername(parsedState.username);
+        }
+      }
+    } catch (error) {
+      console.error("Error getting username from localStorage", error);
+    }
+  }, []);
+
   return (
-    <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#0A101F]/80 backdrop-blur-sm border border-[#1D4ED8]/20 mb-6">
-      <div className="p-4 flex items-center justify-between border-b border-[#1D4ED8]/20">
+    <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 mb-6">
+      <div className="p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
         <div className="flex items-center gap-3 relative w-full md:w-auto">
           {isLoggedIn && (
             <Button
               onClick={() => setShowAddModal(true)}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-purple-600 bg-purple-500/20 hover:bg-purple-500/30 flex items-center justify-center"
+              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700 flex items-center justify-center"
             >
               <div className="flex items-center justify-center">
-                <span className="text-purple-400 font-bold text-lg">+</span>
+                <span className="text-white font-bold text-lg">+</span>
               </div>
             </Button>
           )}
@@ -217,20 +319,28 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsDeleteMode(!isDeleteMode)}
-                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-green-600 bg-green-500/20 hover:bg-green-500/30"
+                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
                 >
-                  <Pencil className="h-4 w-4 text-green-400" />
+                  <Pencil className="h-4 w-4 text-white" />
                 </Button>
               </>
             )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowColumnSettings(true)}
+              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700 ml-2"
+            >
+              <Settings className="h-4 w-4 text-white" />
+            </Button>
             <div className="flex items-center">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchVisible(!isSearchVisible)}
-                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-blue-600 bg-blue-500/20 hover:bg-blue-500/30"
+                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
               >
-                <Search className="h-4 w-4 text-blue-400" />
+                <Search className="h-4 w-4 text-white" />
               </Button>
               {isSearchVisible && (
                 <Input
@@ -251,45 +361,73 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin">
+      <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A1A]">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-b border-[#1D4ED8]/20">
-              <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#0A101F] z-10">
+            <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">
+              <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10">
                 Project
               </TableHead>
-              <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                Status
-              </TableHead>
-              <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                Link
-              </TableHead>
-              <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                Twitter
-              </TableHead>
-              <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                Notes
-              </TableHead>
+              {visibleColumns.Status && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Status
+                </TableHead>
+              )}
+              {visibleColumns.Link && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Link
+                </TableHead>
+              )}
+              {visibleColumns.Twitter && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Twitter
+                </TableHead>
+              )}
+              {visibleColumns.Notes && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Notes
+                </TableHead>
+              )}
               {isFullMode && (
                 <>
-                  <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                    Join Date
-                  </TableHead>
+                  {visibleColumns["Join Date"] && (
+                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                      Join Date
+                    </TableHead>
+                  )}
 
-                  <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                    Tags
-                  </TableHead>
-                  <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                    Type
-                  </TableHead>
-                  <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                    Cost
-                  </TableHead>
+                  {visibleColumns.Chain && (
+                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                      Chain
+                    </TableHead>
+                  )}
+                  {visibleColumns.Stage && (
+                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                      Stage
+                    </TableHead>
+                  )}
+                  {visibleColumns.Tags && (
+                    <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                      Tags
+                    </TableHead>
+                  )}
+                  {visibleColumns.Type && (
+                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                      Type
+                    </TableHead>
+                  )}
+                  {visibleColumns.Cost && (
+                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                      Cost
+                    </TableHead>
+                  )}
                 </>
               )}
-              <TableHead className="w-[120px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
-                Last Activity
-              </TableHead>
+              {visibleColumns["Last Activity"] && (
+                <TableHead className="w-[120px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Last Activity
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -349,6 +487,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                       : project.tags
                   }
                   isPublicMode={false}
+                  visibleColumns={visibleColumns}
                 />
               ))}
           </TableBody>
@@ -390,6 +529,37 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           // Force refresh of projects
           window.dispatchEvent(new Event("forceDataReload"));
         }}
+      />
+
+      <ColumnSettingsModal
+        isOpen={showColumnSettings}
+        onClose={() => setShowColumnSettings(false)}
+        columns={Object.keys(visibleColumns).map((name) => ({
+          name,
+          visible: visibleColumns[name],
+        }))}
+        onColumnToggle={(columnName) => {
+          console.log(`Toggle column: ${columnName}`);
+          const updatedColumns = {
+            ...visibleColumns,
+            [columnName]: !visibleColumns[columnName],
+          };
+          setVisibleColumns(updatedColumns);
+          localStorage.setItem(
+            "visibleColumns",
+            JSON.stringify(updatedColumns),
+          );
+        }}
+        onAutoStatusTimeChange={(time) => {
+          setAutoStatusTime(time);
+          console.log(`Auto status time set to: ${time}`);
+          // Implement auto status time change functionality here
+          localStorage.setItem("autoStatusTime", time);
+        }}
+        autoStatusTime={autoStatusTime}
+        onTogglePublicMode={handleTogglePublicMode}
+        isPublicMode={isPublicMode}
+        username={username}
       />
     </div>
   );

@@ -102,7 +102,7 @@ const Header = ({
           variant="outline"
           size="icon"
           className="rounded-none dark:text-gray-400 h-9 w-9"
-          title="Share Public Page"
+          title="Share Profile"
           asChild
         >
           <Link to="/public" target="_blank" rel="noopener noreferrer">

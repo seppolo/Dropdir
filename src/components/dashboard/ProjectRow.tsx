@@ -3,14 +3,9 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { NetworkIcon } from "@web3icons/react";
 import { ExternalLink, FileText, Pencil, Trash2 } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface ProjectRowProps {
+  visibleColumns?: Record<string, boolean>;
   projectName: string;
   projectLogo: string;
   projectLink: string;
@@ -97,6 +92,20 @@ const ProjectRow = ({
   stage = "Testnet",
   tags = [],
   isPublicMode = false,
+  visibleColumns = {
+    Project: true,
+    Status: true,
+    Link: true,
+    Twitter: true,
+    Notes: true,
+    "Join Date": true,
+    Chain: true,
+    Stage: true,
+    Tags: true,
+    Type: true,
+    Cost: true,
+    "Last Activity": true,
+  },
 }: ProjectRowProps) => {
   // Get chain color based on chain name
   const getChainColor = (chainName: string) => {
@@ -109,54 +118,42 @@ const ProjectRow = ({
   const safeChain = chain || "default";
 
   return (
-    <TableRow className="hover:bg-gray-800/30 transition-colors">
+    <TableRow className="border-b border-gray-800">
       <TableCell className="font-medium p-2 text-left">
         <div className="flex items-center gap-3 pl-2">
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border-2 border-gray-600 hover:border-blue-500 transition-colors cursor-pointer shadow-md">
-                  <img
-                    src={projectLogo}
-                    alt={projectName}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${projectName}`;
-                    }}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                <p>{projectName}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border-2 border-gray-600 cursor-pointer shadow-md">
+            <img
+              src={projectLogo}
+              alt={projectName}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${projectName}`;
+              }}
+            />
+          </div>
           <div className="flex flex-col">
             <span className="text-white truncate max-w-[200px] font-medium bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
               {projectName}
             </span>
             <div className="flex items-center gap-1 mt-1">
-              <NetworkIcon
-                name={
-                  safeChain.toLowerCase() === "bsc"
-                    ? "binance-smart-chain"
-                    : safeChain.toLowerCase()
-                }
-                size={14}
-                className={getChainColor(safeChain)}
-                fallback={
-                  <span
-                    className={`text-xs ${getChainColor(safeChain)} font-bold`}
-                  >
-                    {chainIcons[safeChain.toLowerCase()] || "💀"}
-                  </span>
-                }
-              />
-              <span
-                className={`text-xs ${chainColors[safeChain.toLowerCase()] ? getChainColor(safeChain) : "bg-clip-text text-transparent bg-gradient-to-r from-orange-500 to-yellow-500 font-bold"}`}
-              >
-                {safeChain === "default" ? "Unknown" : safeChain}
-              </span>
+              <div>
+                <NetworkIcon
+                  name={
+                    safeChain.toLowerCase() === "bsc"
+                      ? "binance-smart-chain"
+                      : safeChain.toLowerCase()
+                  }
+                  size={14}
+                  className={getChainColor(safeChain)}
+                  fallback={
+                    <span
+                      className={`text-xs ${getChainColor(safeChain)} font-bold`}
+                    >
+                      {chainIcons[safeChain.toLowerCase()] || "💀"}
+                    </span>
+                  }
+                />
+              </div>
               {stage && (
                 <span className="text-xs text-blue-400/80 ml-2">{stage}</span>
               )}
@@ -164,259 +161,253 @@ const ProjectRow = ({
           </div>
         </div>
       </TableCell>
-      {!isPublicMode && (
+      {!isPublicMode && visibleColumns.Status && (
         <TableCell className="text-center">
-          <TooltipProvider delayDuration={0}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onStatusChange(!isActive)}
-                  className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${isActive ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"}`}
-                >
-                  {isActive ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-4 w-4 md:h-5 md:w-5"
-                    >
-                      <path d="M20 6L9 17l-5-5"></path>
-                    </svg>
-                  ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-4 w-4 md:h-5 md:w-5"
-                    >
-                      <line x1="18" y1="6" x2="6" y2="18"></line>
-                      <line x1="6" y1="6" x2="18" y2="18"></line>
-                    </svg>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>
-                  {isActive
-                    ? "Active Project"
-                    : "Inactive Project - Click to Activate"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onStatusChange(!isActive)}
+            className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${isActive ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"} border border-gray-600`}
+          >
+            {isActive ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 md:h-5 md:w-5"
+              >
+                <path d="M20 6L9 17l-5-5"></path>
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-4 w-4 md:h-5 md:w-5"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            )}
+          </Button>
         </TableCell>
       )}
-      <td className="p-4 text-center">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {showDeleteButton ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onDelete}
-                  className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${showDeleteButton ? "text-red-500" : ""}`}
-                >
-                  <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
-                </Button>
+      {visibleColumns.Link && (
+        <td className="p-4 text-center">
+          {showDeleteButton ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onDelete}
+              className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${showDeleteButton ? "text-red-500" : ""}`}
+            >
+              <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => window.open(projectLink, "_blank")}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+            >
+              <ExternalLink className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
+            </Button>
+          )}
+        </td>
+      )}
+      {visibleColumns.Twitter && (
+        <td className="p-4 text-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => window.open(twitterLink, "_blank")}
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4 md:h-5 md:w-5 text-cyan-400"
+            >
+              <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+            </svg>
+          </Button>
+        </td>
+      )}
+      {visibleColumns.Notes && (
+        <td className="p-4 text-center">
+          {onNotesClick !== (() => {}) && !isPublicMode ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onNotesClick}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+            >
+              {showEditButton ? (
+                <Pencil className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
               ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => window.open(projectLink, "_blank")}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800"
-                >
-                  <ExternalLink className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
-                </Button>
+                <FileText className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
               )}
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="animate-slide-up-fade">
-              <p>{showDeleteButton ? "Delete Project" : "Visit Project"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </td>
-      <td className="p-4 text-center">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => window.open(twitterLink, "_blank")}
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-4 w-4 md:h-5 md:w-5 text-cyan-400"
-                >
-                  <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-                </svg>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="animate-slide-up-fade">
-              <p>Twitter Profile</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </td>
-      <td className="p-4 text-center">
-        <TooltipProvider delayDuration={0}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              {onNotesClick !== (() => {}) && !isPublicMode ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onNotesClick}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800"
-                >
-                  {showEditButton ? (
-                    <Pencil className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
-                  ) : (
-                    <FileText className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
-                  )}
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {}}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800"
-                >
-                  <FileText className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
-                </Button>
-              )}
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="animate-slide-up-fade">
-              {isPublicMode && notes ? (
-                <div className="max-w-xs">
-                  <p className="font-medium mb-1">Notes:</p>
-                  <p className="text-sm">{notes}</p>
-                </div>
-              ) : (
-                <p>
-                  {showEditButton
-                    ? "Edit Project"
-                    : isPublicMode
-                      ? "View Notes"
-                      : "View/Edit Notes"}
-                </p>
-              )}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </td>
-      {isFullMode && (
+            </Button>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {}}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+            >
+              <FileText className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
+            </Button>
+          )}
+        </td>
+      )}
+      {(isFullMode || isPublicMode) && (
         <>
-          <td className="p-2 text-center">
-            <span className="text-[0.8rem] text-amber-400 whitespace-nowrap">
-              {(() => {
-                try {
-                  const date = new Date(joinDate);
-                  if (isNaN(date.getTime())) {
-                    return <div>Invalid date</div>;
-                  }
+          {visibleColumns["Join Date"] && (
+            <td className="p-2 text-center">
+              <span className="text-[0.8rem] text-amber-400 whitespace-nowrap">
+                {(() => {
+                  try {
+                    const date = new Date(joinDate);
+                    if (isNaN(date.getTime())) {
+                      return <div>Invalid date</div>;
+                    }
 
-                  const today = new Date();
-                  const diffTime = Math.abs(today.getTime() - date.getTime());
-                  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                  return (
-                    <div className="flex flex-col items-center">
-                      <div>{`${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(date.getFullYear()).slice(2)}`}</div>
-                      <div className="text-xs text-cyan-400 mt-1">
-                        {diffDays} {diffDays === 1 ? "day" : "days"}
-                      </div>
-                    </div>
-                  );
-                } catch (error) {
-                  return <div>Invalid date</div>;
-                }
-              })()}
-            </span>
-          </td>
-
-          <td className="p-2 text-center">
-            <div className="flex gap-1 justify-center flex-wrap">
-              {Array.isArray(tags) && tags.length > 0 ? (
-                <div className="flex flex-wrap gap-1 justify-center">
-                  {tags.map((tag, index) => {
-                    // Generate a unique gradient for each tag based on its content
-                    const gradientClass = (() => {
-                      const hash = tag
-                        .split("")
-                        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                      const gradients = [
-                        "from-pink-500 to-purple-500",
-                        "from-blue-500 to-cyan-500",
-                        "from-green-500 to-emerald-500",
-                        "from-yellow-500 to-orange-500",
-                        "from-red-500 to-pink-500",
-                        "from-purple-500 to-indigo-500",
-                        "from-indigo-500 to-blue-500",
-                      ];
-                      return gradients[hash % gradients.length];
-                    })();
+                    const today = new Date();
+                    const diffTime = Math.abs(today.getTime() - date.getTime());
+                    const diffDays = Math.ceil(
+                      diffTime / (1000 * 60 * 60 * 24),
+                    );
 
                     return (
-                      <span
-                        key={index}
-                        className={`px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r ${gradientClass} shadow-lg`}
-                      >
-                        {typeof tag === "string"
-                          ? tag
-                              .replace(/[\[\]"]/g, "")
-                              .replace(/[^a-zA-Z]/g, "")
-                          : tag}
-                      </span>
+                      <div className="flex flex-col items-center">
+                        <div>{`${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(date.getFullYear()).slice(2)}`}</div>
+                        <div className="text-xs text-cyan-400 mt-1">
+                          {diffDays} {diffDays === 1 ? "day" : "days"}
+                        </div>
+                      </div>
                     );
-                  })}
-                </div>
-              ) : (
-                <div className="flex flex-wrap gap-1 justify-center">
-                  <span className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
-                    Airdrop
-                  </span>
-                </div>
-              )}
-            </div>
-          </td>
-          <td className="p-2 text-center">
-            <span className="text-[0.8rem] text-purple-400 font-medium">
-              {type}
-            </span>
-          </td>
-          <td className="p-2 text-center">
-            <span className="text-[0.8rem] text-green-400 font-medium">
-              ${cost}
-            </span>
-          </td>
+                  } catch (error) {
+                    return <div>Invalid date</div>;
+                  }
+                })()}
+              </span>
+            </td>
+          )}
+
+          {visibleColumns.Chain && (
+            <td className="p-2 text-center">
+              <div className="flex justify-center">
+                <NetworkIcon
+                  name={
+                    safeChain.toLowerCase() === "bsc"
+                      ? "binance-smart-chain"
+                      : safeChain.toLowerCase()
+                  }
+                  size={24}
+                  className={getChainColor(safeChain)}
+                  fallback={
+                    <span
+                      className={`text-lg ${getChainColor(safeChain)} font-bold`}
+                    >
+                      {chainIcons[safeChain.toLowerCase()] || "💀"}
+                    </span>
+                  }
+                />
+              </div>
+            </td>
+          )}
+
+          {visibleColumns.Stage && (
+            <td className="p-2 text-center">
+              <span className="text-[0.8rem] text-blue-400/80 font-medium">
+                {stage || "Unknown"}
+              </span>
+            </td>
+          )}
+
+          {visibleColumns.Tags && (
+            <td className="p-2 text-center">
+              <div className="flex gap-1 justify-center flex-wrap">
+                {Array.isArray(tags) && tags.length > 0 ? (
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    {tags.map((tag, index) => {
+                      // Generate a unique gradient for each tag based on its content
+                      const gradientClass = (() => {
+                        const hash = tag
+                          .split("")
+                          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                        const gradients = [
+                          "from-pink-500 to-purple-500",
+                          "from-blue-500 to-cyan-500",
+                          "from-green-500 to-emerald-500",
+                          "from-yellow-500 to-orange-500",
+                          "from-red-500 to-pink-500",
+                          "from-purple-500 to-indigo-500",
+                          "from-indigo-500 to-blue-500",
+                        ];
+                        return gradients[hash % gradients.length];
+                      })();
+
+                      return (
+                        <span
+                          key={index}
+                          className={`px-2 py-1 text-xs rounded-full text-white border border-gray-600 bg-gradient-to-r ${gradientClass} shadow-lg`}
+                        >
+                          {typeof tag === "string"
+                            ? tag
+                                .replace(/[\[\]"]/g, "")
+                                .replace(/[^a-zA-Z]/g, "")
+                            : tag}
+                        </span>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1 justify-center">
+                    <span className="px-2 py-1 text-xs rounded-full text-white border border-gray-600 bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
+                      Airdrop
+                    </span>
+                  </div>
+                )}
+              </div>
+            </td>
+          )}
+          {visibleColumns.Type && (
+            <td className="p-2 text-center">
+              <span className="text-[0.8rem] text-purple-400 font-medium">
+                {type}
+              </span>
+            </td>
+          )}
+          {visibleColumns.Cost && (
+            <td className="p-2 text-center">
+              <span className="text-[0.8rem] text-green-400 font-medium">
+                ${cost}
+              </span>
+            </td>
+          )}
         </>
       )}
-      {!isPublicMode && (
+      {!isPublicMode && visibleColumns["Last Activity"] && (
         <td className="p-4 text-center">
           <span className="text-[0.8rem] text-blue-400 font-medium whitespace-nowrap">
             {(() => {

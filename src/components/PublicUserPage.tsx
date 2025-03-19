@@ -6,6 +6,7 @@ import ProjectRow from "./dashboard/ProjectRow";
 import { Search, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import DoodlesBackground from "./DoodlesBackground";
 
 const PublicUserPage = () => {
   const { username } = useParams();
@@ -74,41 +75,12 @@ const PublicUserPage = () => {
 
   return (
     <div className="h-screen bg-[#050A14] relative overflow-hidden">
-      {/* Background pattern */}
-      <div className="absolute inset-0 z-0 opacity-10">
-        <svg width="100%" height="100%">
-          <pattern
-            id="pattern-circles"
-            x="0"
-            y="0"
-            width="50"
-            height="50"
-            patternUnits="userSpaceOnUse"
-            patternContentUnits="userSpaceOnUse"
-          >
-            <circle
-              id="pattern-circle"
-              cx="10"
-              cy="10"
-              r="1.6257413380501518"
-              fill="none"
-              stroke="#1D4ED8"
-              strokeWidth="1"
-            ></circle>
-          </pattern>
-          <rect
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-            fill="url(#pattern-circles)"
-          ></rect>
-        </svg>
-      </div>
+      {/* Add doodles background */}
+      <DoodlesBackground />
 
       <main className="container mx-auto px-4 py-8 relative z-10">
-        <div className="w-full rounded-xl overflow-visible flex flex-col bg-[#0A101F]/80 backdrop-blur-sm border border-[#1D4ED8]/20">
-          <div className="p-4 flex items-center justify-between border-b border-[#1D4ED8]/20">
+        <div className="w-full rounded-xl overflow-visible flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700">
+          <div className="p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
             <div className="flex items-center gap-3 relative w-full md:w-auto">
               <div className="flex items-center gap-2 relative">
                 <div className="flex items-center">
@@ -116,7 +88,7 @@ const PublicUserPage = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsSearchVisible(!isSearchVisible)}
-                    className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-transparent hover:bg-gray-800 transition-all"
+                    className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-transparent"
                   >
                     <Search className="h-4 w-4 text-[#3B82F6]" />
                   </Button>
@@ -125,7 +97,7 @@ const PublicUserPage = () => {
                       placeholder="Search projects..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-40 h-8 ml-2 text-sm bg-[#0A101F] border-[#1D4ED8]/30 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
+                      className="w-40 h-8 ml-2 text-sm bg-[#1A1A1A] border-gray-600 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
                       autoFocus
                     />
                   )}
@@ -134,11 +106,11 @@ const PublicUserPage = () => {
             </div>
             <Button
               variant="ghost"
-              size="icon"
+              size="sm"
               onClick={() => (window.location.href = "/")}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-transparent hover:bg-gray-800 transition-all"
+              className="rounded-md border border-gray-600 bg-transparent text-[#3B82F6]"
             >
-              <LogIn className="h-4 w-4 text-[#3B82F6]" />
+              Login
             </Button>
           </div>
 
@@ -166,33 +138,38 @@ const PublicUserPage = () => {
                 <div className="overflow-x-auto max-h-[calc(100vh-150px)] scrollbar-thin scrollbar-thin">
                   <Table className="relative">
                     <TableHeader>
-                      <TableRow className="hover:bg-transparent border-b border-[#1D4ED8]/20">
-                        <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#0A101F] z-10">
+                      <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">
+                        <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10">
                           Project
                         </TableHead>
 
-                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
+                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Link
                         </TableHead>
-                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
+                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Twitter
                         </TableHead>
-                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
+                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Notes
                         </TableHead>
                         {isFullMode && (
                           <>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
+                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                               Join Date
                             </TableHead>
-
-                            <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
+                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                              Chain
+                            </TableHead>
+                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                              Stage
+                            </TableHead>
+                            <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                               Tags
                             </TableHead>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
+                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                               Type
                             </TableHead>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#0A101F] z-10">
+                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                               Cost
                             </TableHead>
                           </>

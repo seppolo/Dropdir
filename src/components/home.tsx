@@ -8,6 +8,7 @@ import { getUserProjects } from "@/lib/projectService";
 import { Project } from "@/types/schema";
 import SupabaseStatus from "./dashboard/SupabaseStatus";
 import { Button } from "@/components/ui/button";
+import DoodlesBackground from "./DoodlesBackground";
 
 import { setupDailyReset } from "@/lib/dailyReset";
 
@@ -575,6 +576,9 @@ const Home = () => {
 
   return (
     <div className="h-screen bg-[#050A14] relative overflow-hidden">
+      {/* Add doodles background */}
+      <DoodlesBackground />
+
       <main className="h-full container mx-auto px-4 py-8 relative z-10">
         {connectionError && isLoggedIn && (
           <div className="bg-red-900/50 border border-red-600 text-red-200 px-4 py-2 rounded-md mb-4">

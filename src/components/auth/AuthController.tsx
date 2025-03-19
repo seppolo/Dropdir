@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  LogIn,
-  LogOut,
-  User,
-  ChevronDown,
-  Settings,
-  Globe,
-  Eye,
-} from "lucide-react";
+import { LogIn, LogOut, User, ChevronDown } from "lucide-react";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import {
@@ -19,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
 
 interface AuthControllerProps {
   onAuthStateChange?: (isLoggedIn: boolean) => void;
@@ -123,18 +114,6 @@ const AuthController: React.FC<AuthControllerProps> = ({
               My Account
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-gray-700" />
-            <DropdownMenuItem className="text-gray-300 hover:bg-gray-700 focus:bg-gray-700 cursor-pointer">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-gray-300 hover:bg-gray-700 focus:bg-gray-700 cursor-pointer"
-              onSelect={() => window.open(`/${username}`, "_blank")}
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              <span>View Public Profile</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-gray-700" />
             <DropdownMenuItem
               className="text-red-400 hover:bg-gray-700 focus:bg-gray-700 cursor-pointer"
               onSelect={handleLogout}
@@ -151,7 +130,6 @@ const AuthController: React.FC<AuthControllerProps> = ({
           onClick={() => setShowLoginModal(true)}
           className="text-gray-300 border-gray-700 hover:bg-gray-800"
         >
-          <LogIn className="h-4 w-4 mr-1" />
           Login
         </Button>
       )}

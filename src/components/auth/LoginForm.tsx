@@ -90,7 +90,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
         {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button
+        type="submit"
+        className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium"
+        disabled={isLoading}
+      >
         {isLoading ? "Logging in..." : "Login"}
       </Button>
 
@@ -98,7 +102,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
         <span className="text-sm text-muted-foreground">
           Don't have an account?{" "}
         </span>
-        <Button variant="link" className="p-0" onClick={onRegisterClick}>
+        <Button
+          variant="link"
+          className="p-0 text-purple-500 hover:text-purple-700"
+          onClick={onRegisterClick}
+        >
           Register now
         </Button>
       </div>

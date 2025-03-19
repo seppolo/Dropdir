@@ -72,8 +72,8 @@ const AllPublicAirdrops = () => {
   );
 
   return (
-    <div className="w-full h-full sketch-card rounded-lg overflow-hidden flex flex-col sketch-font bg-gray-900">
-      <div className="p-4 flex items-center justify-between border-b border-gray-700">
+    <div className="w-full h-full rounded-lg overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700">
+      <div className="p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
         <div className="flex items-center gap-3 relative w-full md:w-auto">
           <div className="flex items-center gap-2 relative">
             <div className="flex items-center">
@@ -81,16 +81,16 @@ const AllPublicAirdrops = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchVisible(!isSearchVisible)}
-                className="sketch-button rounded-full w-8 h-8 md:w-10 md:h-10 border border-white/20 bg-transparent hover:bg-white/10"
+                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-transparent hover:bg-gray-800"
               >
-                <Search className="h-4 w-4 text-white" />
+                <Search className="h-4 w-4 text-[#3B82F6]" />
               </Button>
               {isSearchVisible && (
                 <Input
                   placeholder="Search projects or users..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-40 h-8 ml-2 sketch-input text-sm"
+                  className="w-40 h-8 ml-2 text-sm bg-[#1A1A1A] border-gray-600 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
                   autoFocus
                 />
               )}
@@ -100,7 +100,7 @@ const AllPublicAirdrops = () => {
 
         <div className="flex items-center gap-3">
           <div className="text-white text-sm">
-            <a href="/" className="text-blue-400 hover:underline">
+            <a href="/" className="text-[#3B82F6] hover:underline">
               Go to Dashboard
             </a>
           </div>
@@ -108,7 +108,7 @@ const AllPublicAirdrops = () => {
             variant="outline"
             size="sm"
             onClick={() => (window.location.href = "/Moffuadi")}
-            className="sketch-button bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border-purple-500/50"
+            className="bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border-purple-500/50"
           >
             <List className="h-4 w-4 mr-1" />
             List
@@ -121,7 +121,7 @@ const AllPublicAirdrops = () => {
               // Set a flag in localStorage to show login modal on dashboard
               localStorage.setItem("showLoginModal", "true");
             }}
-            className="sketch-button bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border-blue-500/50"
+            className="bg-[#3B82F6]/20 text-[#3B82F6] hover:bg-[#3B82F6]/30 border-[#3B82F6]/50"
           >
             Login
           </Button>
@@ -130,7 +130,7 @@ const AllPublicAirdrops = () => {
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center h-full py-20">
-          <div className="rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-4"></div>
+          <div className="rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3B82F6] mb-4"></div>
           <div className="text-white/80 text-lg font-medium">
             Loading public airdrops...
           </div>
@@ -152,40 +152,40 @@ const AllPublicAirdrops = () => {
             <div className="overflow-x-auto max-h-[calc(100vh-150px)] scrollbar-thin">
               <Table className="relative">
                 <TableHeader>
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-gray-900 z-10">
+                  <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">
+                    <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10">
                       Project
                     </TableHead>
-                    <TableHead className="w-[80px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                    <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                       Link
                     </TableHead>
-                    <TableHead className="w-[80px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                    <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                       Twitter
                     </TableHead>
-                    <TableHead className="w-[80px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                    <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                       Notes
                     </TableHead>
-                    <TableHead className="w-[120px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                    <TableHead className="w-[120px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                       User
                     </TableHead>
                     {isFullMode && (
                       <>
-                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Join Date
                         </TableHead>
-                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Chain
                         </TableHead>
-                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Stage
                         </TableHead>
-                        <TableHead className="w-[200px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                        <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Tags
                         </TableHead>
-                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Type
                         </TableHead>
-                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-gray-900 z-10">
+                        <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                           Cost
                         </TableHead>
                       </>
@@ -211,11 +211,11 @@ const AllPublicAirdrops = () => {
                     .map((project) => (
                       <TableRow
                         key={project.id}
-                        className="hover:bg-gray-800/30 transition-colors"
+                        className="hover:bg-gray-800/50 transition-colors border-b border-gray-800"
                       >
                         <td className="font-medium p-2 text-left">
                           <div className="flex items-center gap-3 pl-2">
-                            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border-2 border-gray-600 hover:border-blue-500 transition-colors cursor-pointer shadow-md">
+                            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border-2 border-gray-600 hover:border-[#3B82F6] transition-colors cursor-pointer shadow-md">
                               <img
                                 src={
                                   project.image ||
@@ -235,11 +235,11 @@ const AllPublicAirdrops = () => {
                               </span>
                               {project.chain && (
                                 <div className="flex items-center gap-1 mt-1">
-                                  <span className="text-xs text-blue-400">
+                                  <span className="text-xs text-[#3B82F6]">
                                     {project.chain}
                                   </span>
                                   {project.stage && (
-                                    <span className="text-xs text-blue-400/80 ml-2">
+                                    <span className="text-xs text-[#3B82F6]/80 ml-2">
                                       {project.stage}
                                     </span>
                                   )}
@@ -253,7 +253,7 @@ const AllPublicAirdrops = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => window.open(project.link, "_blank")}
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-blue-500"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-[#3B82F6]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -283,7 +283,7 @@ const AllPublicAirdrops = () => {
                                 "_blank",
                               )
                             }
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-purple-500"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-[#3B82F6]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -306,7 +306,7 @@ const AllPublicAirdrops = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => {}}
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-green-500"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-[#3B82F6]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -331,7 +331,7 @@ const AllPublicAirdrops = () => {
                         <td className="p-4 text-center">
                           <a
                             href={`/${project.username}`}
-                            className="text-blue-400 hover:underline text-sm"
+                            className="text-[#3B82F6] hover:underline text-sm"
                           >
                             {project.username}
                           </a>
@@ -375,7 +375,7 @@ const AllPublicAirdrops = () => {
                                       .map((tag, index) => (
                                         <span
                                           key={index}
-                                          className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg"
+                                          className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] shadow-lg"
                                         >
                                           {tag
                                             .trim()
@@ -390,7 +390,7 @@ const AllPublicAirdrops = () => {
                                     {project.tags.map((tag, index) => (
                                       <span
                                         key={index}
-                                        className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg"
+                                        className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] shadow-lg"
                                       >
                                         {typeof tag === "string"
                                           ? tag

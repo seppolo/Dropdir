@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "./ui/table";
 import ProjectRow from "./dashboard/ProjectRow";
-import { Search, LogIn } from "lucide-react";
+import { Search, LogIn, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import DoodlesBackground from "./DoodlesBackground";
@@ -15,6 +15,19 @@ const PublicUserPage = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [visibleColumns, setVisibleColumns] = useState({
+    Project: true,
+    Link: true,
+    Twitter: true,
+    Notes: true,
+    "Join Date": window.innerWidth >= 768,
+    Chain: window.innerWidth >= 768,
+    Stage: window.innerWidth >= 768,
+    Tags: window.innerWidth >= 768,
+    Type: window.innerWidth >= 768,
+    Cost: window.innerWidth >= 768,
+  });
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -22,8 +35,21 @@ const PublicUserPage = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsFullMode(window.innerWidth >= 768);
+      const isMobile = window.innerWidth < 768;
+      setIsFullMode(!isMobile);
+
+      // Update visible columns based on screen size
+      setVisibleColumns((prev) => ({
+        ...prev,
+        "Join Date": !isMobile,
+        Chain: !isMobile,
+        Stage: !isMobile,
+        Tags: !isMobile,
+        Type: !isMobile,
+        Cost: !isMobile,
+      }));
     };
+
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -73,15 +99,36 @@ const PublicUserPage = () => {
         project.tags.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
+  const toggleColumn = (columnName) => {
+    setVisibleColumns((prev) => ({
+      ...prev,
+      [columnName]: !prev[columnName],
+    }));
+  };
+
   return (
-    <div className="h-screen bg-[#050A14] relative overflow-hidden">
+    <div className="min-h-screen bg-[#050A14] relative overflow-hidden">
       {/* Add doodles background */}
       <DoodlesBackground />
 
-      <main className="container mx-auto px-4 py-8 relative z-10">
+      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative z-10">
         <div className="w-full rounded-xl overflow-visible flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700">
-          <div className="p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
-            <div className="flex items-center gap-3 relative w-full md:w-auto">
+          <div className="p-2 sm:p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A] sticky top-0 z-20">
+            <div className="flex items-center gap-2 relative w-full">
+              {/* Mobile menu button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="rounded-full w-8 h-8 border border-gray-600 bg-transparent md:hidden"
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-4 w-4 text-[#3B82F6]" />
+                ) : (
+                  <Menu className="h-4 w-4 text-[#3B82F6]" />
+                )}
+              </Button>
+
               <div className="flex items-center gap-2 relative">
                 <div className="flex items-center">
                   <Button
@@ -97,7 +144,7 @@ const PublicUserPage = () => {
                       placeholder="Search projects..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-40 h-8 ml-2 text-sm bg-[#1A1A1A] border-gray-600 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
+                      className="w-32 sm:w-40 h-8 ml-2 text-sm bg-[#1A1A1A] border-gray-600 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
                       autoFocus
                     />
                   )}
@@ -108,15 +155,37 @@ const PublicUserPage = () => {
               variant="ghost"
               size="sm"
               onClick={() => (window.location.href = "/")}
-              className="rounded-md border border-gray-600 bg-transparent text-[#3B82F6]"
+              className="rounded-md border border-gray-600 bg-transparent text-[#3B82F6] text-xs sm:text-sm px-2 sm:px-4"
             >
               Login
             </Button>
           </div>
 
+          {/* Mobile column selector menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden bg-[#1A1A1A] border-b border-gray-600 p-3 animate-slide-down-fade">
+              <div className="text-white text-sm mb-2 font-medium">
+                Show/Hide Columns:
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {Object.keys(visibleColumns).map((columnName) => (
+                  <Button
+                    key={columnName}
+                    variant={visibleColumns[columnName] ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => toggleColumn(columnName)}
+                    className={`text-xs rounded-full ${visibleColumns[columnName] ? "bg-blue-600 hover:bg-blue-700" : "text-gray-300"}`}
+                  >
+                    {columnName}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {isLoading ? (
             <div className="flex flex-col items-center justify-center h-full py-20">
-              <div className="rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3B82F6] mb-4"></div>
+              <div className="rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3B82F6] animate-spin mb-4"></div>
               <div className="text-white/80 text-lg font-medium">
                 Loading {username}'s projects...
               </div>
@@ -135,44 +204,59 @@ const PublicUserPage = () => {
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto max-h-[calc(100vh-150px)] scrollbar-thin scrollbar-thin">
+                <div className="overflow-x-auto max-h-[calc(100vh-150px)] scrollbar-thin">
                   <Table className="relative">
                     <TableHeader>
                       <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">
-                        <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10">
-                          Project
-                        </TableHead>
-
-                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                          Link
-                        </TableHead>
-                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                          Twitter
-                        </TableHead>
-                        <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                          Notes
-                        </TableHead>
-                        {isFullMode && (
-                          <>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                              Join Date
-                            </TableHead>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                              Chain
-                            </TableHead>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                              Stage
-                            </TableHead>
-                            <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                              Tags
-                            </TableHead>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                              Type
-                            </TableHead>
-                            <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                              Cost
-                            </TableHead>
-                          </>
+                        {visibleColumns.Project && (
+                          <TableHead className="w-[200px] md:w-[300px] text-white text-left pl-4 sticky top-0 left-0 bg-[#1A1A1A] z-10">
+                            Project
+                          </TableHead>
+                        )}
+                        {visibleColumns.Link && (
+                          <TableHead className="w-[60px] md:w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Link
+                          </TableHead>
+                        )}
+                        {visibleColumns.Twitter && (
+                          <TableHead className="w-[60px] md:w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Twitter
+                          </TableHead>
+                        )}
+                        {visibleColumns.Notes && (
+                          <TableHead className="w-[60px] md:w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Notes
+                          </TableHead>
+                        )}
+                        {visibleColumns["Join Date"] && (
+                          <TableHead className="w-[80px] md:w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Join Date
+                          </TableHead>
+                        )}
+                        {visibleColumns.Chain && (
+                          <TableHead className="w-[80px] md:w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Chain
+                          </TableHead>
+                        )}
+                        {visibleColumns.Stage && (
+                          <TableHead className="w-[80px] md:w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Stage
+                          </TableHead>
+                        )}
+                        {visibleColumns.Tags && (
+                          <TableHead className="w-[150px] md:w-[200px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Tags
+                          </TableHead>
+                        )}
+                        {visibleColumns.Type && (
+                          <TableHead className="w-[80px] md:w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Type
+                          </TableHead>
+                        )}
+                        {visibleColumns.Cost && (
+                          <TableHead className="w-[80px] md:w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                            Cost
+                          </TableHead>
                         )}
                       </TableRow>
                     </TableHeader>
@@ -180,6 +264,7 @@ const PublicUserPage = () => {
                       {filteredProjects.map((project) => (
                         <ProjectRow
                           key={project.id}
+                          visibleColumns={visibleColumns}
                           projectName={project.project || project.name}
                           projectLogo={
                             project.image ||

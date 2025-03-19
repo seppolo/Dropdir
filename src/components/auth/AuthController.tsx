@@ -37,6 +37,17 @@ const AuthController: React.FC<AuthControllerProps> = ({
         console.error("Error parsing auth state:", error);
       }
     }
+
+    // Listen for showRegisterModal event
+    const handleShowRegisterModal = () => {
+      setShowRegisterModal(true);
+    };
+
+    window.addEventListener("showRegisterModal", handleShowRegisterModal);
+
+    return () => {
+      window.removeEventListener("showRegisterModal", handleShowRegisterModal);
+    };
   }, [onAuthStateChange]);
 
   const handleLoginSuccess = () => {
@@ -87,8 +98,8 @@ const AuthController: React.FC<AuthControllerProps> = ({
     onAuthStateChange(false);
     // Clear projects immediately
     window.dispatchEvent(new Event("userLoggedOut"));
-    // Reload the page
-    window.location.reload();
+    // Redirect to Moffuadi's public page
+    window.location.href = "/Moffuadi";
   };
 
   return (
@@ -135,8 +146,8 @@ const AuthController: React.FC<AuthControllerProps> = ({
       )}
 
       <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
+        open={showLoginModal}
+        onOpenChange={(open) => setShowLoginModal(open)}
         onLoginSuccess={handleLoginSuccess}
         onRegisterClick={() => {
           setShowLoginModal(false);
@@ -145,8 +156,8 @@ const AuthController: React.FC<AuthControllerProps> = ({
       />
 
       <RegisterModal
-        isOpen={showRegisterModal}
-        onClose={() => setShowRegisterModal(false)}
+        open={showRegisterModal}
+        onOpenChange={(open) => setShowRegisterModal(open)}
         onRegisterSuccess={handleRegisterSuccess}
         onLoginClick={() => {
           setShowRegisterModal(false);

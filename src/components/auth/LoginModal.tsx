@@ -9,20 +9,24 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
+import RegisterModal from "./RegisterModal";
 
 interface LoginModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onLoginSuccess: () => void;
-  onRegisterClick: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onLoginSuccess?: () => void;
+  onRegisterClick?: () => void;
+  isPublicMode?: boolean;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({
-  isOpen,
-  onClose,
-  onLoginSuccess,
-  onRegisterClick,
+  open,
+  onOpenChange,
+  onLoginSuccess = () => {},
+  onRegisterClick = () => {},
+  isPublicMode = false,
 }) => {
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -96,7 +100,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
       }
 
       onLoginSuccess();
-      onClose();
+      onOpenChange(false);
     } catch (err) {
       console.error("Login error:", err);
       setError("An unexpected error occurred");
@@ -106,66 +110,89 @@ const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sketch-card w-[350px]">
-        <DialogHeader>
-          <DialogTitle className="text-xl sketch-font">
-            Login to Airdrop Manager
-          </DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sketch-card w-[350px] bg-[#1A1A1A] border border-gray-700">
+          <DialogHeader>
+            <DialogTitle className="text-xl sketch-font">
+              Login Ke Dropdir
+            </DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Username</label>
-            <Input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter username"
-              className="sketch-input"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleLogin();
-                }
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Username</label>
+              <Input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter username"
+                className="sketch-input"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleLogin();
+                  }
+                }}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Password</label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="sketch-input"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleLogin();
+                  }
+                }}
+              />
+              {error && <p className="text-sm text-red-500">{error}</p>}
+            </div>
+
+            <Button
+              onClick={handleLogin}
+              className="w-full bg-white text-black hover:bg-white"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Login"}
+            </Button>
+          </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-2">
+            <div className="text-sm text-muted-foreground">
+              Don't have an account?
+            </div>
+            <Button
+              variant="link"
+              className="h-auto p-0"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onOpenChange(false); // Close login modal first
+                setTimeout(() => {
+                  setShowRegisterModal(true); // Open register modal
+                }, 100); // Small delay before opening register
               }}
-            />
-          </div>
+              data-testid="register-button"
+            >
+              Register now
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Password</label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter password"
-              className="sketch-input"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleLogin();
-                }
-              }}
-            />
-            {error && <p className="text-sm text-red-500">{error}</p>}
-          </div>
-
-          <Button onClick={handleLogin} className="w-full" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login"}
-          </Button>
-        </div>
-
-        <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-2">
-          <div className="text-sm text-muted-foreground">
-            Don't have an account?
-          </div>
-          <Button
-            variant="link"
-            className="h-auto p-0"
-            onClick={onRegisterClick}
-          >
-            Register now
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <RegisterModal
+        open={showRegisterModal}
+        onOpenChange={setShowRegisterModal}
+        onLoginClick={() => {
+          setShowRegisterModal(false);
+          setTimeout(() => onOpenChange(true), 100);
+        }}
+      />
+    </>
   );
 };
 

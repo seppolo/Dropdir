@@ -7,6 +7,7 @@ import { Search, LogIn, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import DoodlesBackground from "./DoodlesBackground";
+import LoginModal from "./auth/LoginModal";
 
 const PublicUserPage = () => {
   const { username } = useParams();
@@ -28,6 +29,7 @@ const PublicUserPage = () => {
     Cost: window.innerWidth >= 768,
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -106,6 +108,14 @@ const PublicUserPage = () => {
     }));
   };
 
+  const handleRegisterClick = () => {
+    setLoginModalOpen(false);
+    // Dispatch event to show register modal on main app
+    window.dispatchEvent(new Event("showRegisterModal"));
+    // Redirect to main app
+    window.location.href = "/";
+  };
+
   return (
     <div className="min-h-screen bg-[#050A14] relative overflow-hidden">
       {/* Add doodles background */}
@@ -154,7 +164,7 @@ const PublicUserPage = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => (window.location.href = "/")}
+              onClick={() => setLoginModalOpen(true)}
               className="rounded-md border border-gray-600 bg-transparent text-[#3B82F6] text-xs sm:text-sm px-2 sm:px-4"
             >
               Login
@@ -302,6 +312,14 @@ const PublicUserPage = () => {
           )}
         </div>
       </main>
+      {/* Login Modal */}
+      <LoginModal
+        open={loginModalOpen}
+        onOpenChange={setLoginModalOpen}
+        onLoginSuccess={() => (window.location.href = "/")}
+        isPublicMode={true}
+        onRegisterClick={handleRegisterClick}
+      />
     </div>
   );
 };

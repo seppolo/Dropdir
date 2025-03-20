@@ -80,6 +80,21 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
     }
   };
 
+  const fetchTwitterProfileImage = async (twitterUrl: string) => {
+    try {
+      // Import the function dynamically to avoid circular dependencies
+      const { getTwitterProfileImageFromUrl } = await import("@/lib/twitter");
+      const twitterProfileImage =
+        await getTwitterProfileImageFromUrl(twitterUrl);
+      if (twitterProfileImage) {
+        setPreviewUrl(twitterProfileImage);
+        setFormData((prev) => ({ ...prev, logo: twitterProfileImage }));
+      }
+    } catch (error) {
+      console.error("Error fetching Twitter profile image:", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.project) {
@@ -104,6 +119,25 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
       // Determine logo source
       let logoUrl = formData.logo;
+
+      // If Twitter profile image is selected and we have a Twitter link
+      if (formData.useTwitterProfileImage && formData.twitter) {
+        try {
+          // Import the function dynamically to avoid circular dependencies
+          const { getTwitterProfileImageFromUrl } = await import(
+            "@/lib/twitter"
+          );
+          const twitterProfileImage = await getTwitterProfileImageFromUrl(
+            formData.twitter,
+          );
+          if (twitterProfileImage) {
+            logoUrl = twitterProfileImage;
+            console.log("Using Twitter profile image:", twitterProfileImage);
+          }
+        } catch (error) {
+          console.error("Error getting Twitter profile image:", error);
+        }
+      }
 
       if (!logoUrl) {
         logoUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${formData.project}`;
@@ -202,31 +236,38 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
             {/* Left Column */}
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-4 items-start">
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full sm:w-24 h-24 rounded-lg overflow-hidden border-2 border-white/10 bg-white/5 flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 transition-all flex-shrink-0 group"
-                >
-                  {previewUrl ? (
-                    <img
-                      src={previewUrl}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-white/70 group-hover:text-white gap-2 transition-colors">
-                      <ImagePlus size={24} />
-                      <div className="text-xs text-center font-medium">
-                        Upload Logo
+                <div className="flex flex-col items-center gap-2">
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full sm:w-24 h-24 rounded-lg overflow-hidden border-2 border-white/10 bg-white/5 flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 transition-all flex-shrink-0 group"
+                  >
+                    {previewUrl ? (
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-white/70 group-hover:text-white gap-2 transition-colors">
+                        <ImagePlus size={24} />
+                        <div className="text-xs text-center font-medium">
+                          Upload Logo
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </div>
+                  <p className="text-xs text-center text-white/70 w-24">
+                    {formData.useTwitterProfileImage
+                      ? "Using Twitter profile image"
+                      : "Use project twitter logo"}
+                  </p>
                 </div>
 
                 <div className="flex-1 space-y-4">
@@ -296,18 +337,23 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                       <Switch
                         id="use-twitter-image"
                         checked={formData.useTwitterProfileImage}
-                        onCheckedChange={(checked) =>
+                        onCheckedChange={(checked) => {
                           setFormData({
                             ...formData,
                             useTwitterProfileImage: checked,
-                          })
-                        }
+                          });
+
+                          // If enabling Twitter profile image and we have a Twitter link, fetch the image
+                          if (checked && formData.twitter) {
+                            fetchTwitterProfileImage(formData.twitter);
+                          }
+                        }}
                       />
                       <label
                         htmlFor="use-twitter-image"
                         className="text-sm text-white/70 cursor-pointer"
                       >
-                        Use logo
+                        Use Twitter profile image
                       </label>
                     </div>
                   </div>

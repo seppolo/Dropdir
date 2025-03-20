@@ -67,20 +67,46 @@ const EditProjectModal = ({
 
   React.useEffect(() => {
     if (project) {
+      const twitterLink = project.twitter || project.twitterLink || "";
+      const shouldUseTwitterImage =
+        Boolean(twitterLink) && !project.image && !project.logo;
+
       setFormData({
         name: project.project || project.name || "",
         link: project.link || "",
-        twitterLink: project.twitter || project.twitterLink || "",
+        twitterLink: twitterLink,
         chain: project.chain || "Ethereum",
         stage: project.stage || "Testnet",
         type: project.type || "Mini App",
         cost: (project.cost || 0).toString(),
         logo: project.image || project.logo || "",
-        useTwitterProfileImage: false,
+        useTwitterProfileImage: shouldUseTwitterImage,
       });
       setPreviewUrl(project.image || project.logo || "");
+
+      // If we should use Twitter image but don't have a preview yet, try to fetch it
+      if (
+        shouldUseTwitterImage &&
+        twitterLink &&
+        !project.image &&
+        !project.logo
+      ) {
+        fetchTwitterProfileImage(twitterLink);
+      }
     }
   }, [project]);
+
+  const fetchTwitterProfileImage = async (twitterUrl: string) => {
+    try {
+      const twitterProfileImage =
+        await getTwitterProfileImageFromUrl(twitterUrl);
+      if (twitterProfileImage) {
+        setPreviewUrl(twitterProfileImage);
+      }
+    } catch (error) {
+      console.error("Error fetching Twitter profile image:", error);
+    }
+  };
 
   const [previewUrl, setPreviewUrl] = React.useState(project.logo);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -146,6 +172,7 @@ const EditProjectModal = ({
           );
           if (twitterProfileImage) {
             logoUrl = twitterProfileImage;
+            console.log("Using Twitter profile image:", twitterProfileImage);
           }
         } catch (error) {
           console.error("Error getting Twitter profile image:", error);
@@ -352,31 +379,38 @@ const EditProjectModal = ({
             {/* Left Column */}
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-4 items-start">
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full sm:w-24 h-24 rounded-lg overflow-hidden border-2 border-white/10 bg-white/5 flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 transition-all flex-shrink-0 group"
-                >
-                  {previewUrl ? (
-                    <img
-                      src={previewUrl}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-white/70 group-hover:text-white gap-2 transition-colors">
-                      <ImagePlus size={24} />
-                      <div className="text-xs text-center font-medium">
-                        Upload Logo
+                <div className="flex flex-col items-center gap-2">
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full sm:w-24 h-24 rounded-lg overflow-hidden border-2 border-white/10 bg-white/5 flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 transition-all flex-shrink-0 group"
+                  >
+                    {previewUrl ? (
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-white/70 group-hover:text-white gap-2 transition-colors">
+                        <ImagePlus size={24} />
+                        <div className="text-xs text-center font-medium">
+                          Upload Logo
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </div>
+                  <p className="text-xs text-center text-white/70 w-24">
+                    {formData.useTwitterProfileImage
+                      ? "Using Twitter profile image"
+                      : "Use project twitter logo"}
+                  </p>
                 </div>
 
                 <div className="flex-1 space-y-4">
@@ -446,18 +480,23 @@ const EditProjectModal = ({
                       <Switch
                         id="use-twitter-image"
                         checked={formData.useTwitterProfileImage}
-                        onCheckedChange={(checked) =>
+                        onCheckedChange={(checked) => {
                           setFormData({
                             ...formData,
                             useTwitterProfileImage: checked,
-                          })
-                        }
+                          });
+
+                          // If enabling Twitter profile image and we have a Twitter link, fetch the image
+                          if (checked && formData.twitterLink) {
+                            fetchTwitterProfileImage(formData.twitterLink);
+                          }
+                        }}
                       />
                       <label
                         htmlFor="use-twitter-image"
                         className="text-sm text-white/70 cursor-pointer"
                       >
-                        Use logo
+                        Use Twitter profile image
                       </label>
                     </div>
                   </div>

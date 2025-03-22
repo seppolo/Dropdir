@@ -264,7 +264,7 @@ const ProjectRow = ({
               {showEditButton ? (
                 <Pencil className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
               ) : (
-                <FileText className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
+                <FileText className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
               )}
             </Button>
           ) : (
@@ -274,7 +274,7 @@ const ProjectRow = ({
               onClick={() => {}}
               className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
             >
-              <FileText className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
+              <FileText className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
             </Button>
           )}
         </td>

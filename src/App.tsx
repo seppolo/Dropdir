@@ -3,6 +3,7 @@ import { Routes, Route, useRoutes, Navigate } from "react-router-dom";
 import Home from "./components/home";
 import routes from "tempo-routes";
 import AuthGuard from "./components/auth/AuthGuard";
+import TelegramJoinModal from "./components/TelegramJoinModal";
 
 // Lazy load components for better performance
 const PublicUserPage = lazy(() => import("./components/PublicUserPage"));
@@ -47,6 +48,19 @@ const HomeRedirect = () => {
 };
 
 function App() {
+  const [showTelegramModal, setShowTelegramModal] = useState(false);
+
+  useEffect(() => {
+    // Check if the modal has been shown before
+    const telegramModalShown = localStorage.getItem("telegramModalShown");
+
+    if (!telegramModalShown) {
+      // If not shown before, show it and set the flag in localStorage
+      setShowTelegramModal(true);
+      localStorage.setItem("telegramModalShown", "true");
+    }
+  }, []);
+
   return (
     <Suspense
       fallback={
@@ -73,6 +87,12 @@ function App() {
         {/* Add explicit Tempo route to prevent catch-all conflicts */}
         {import.meta.env.VITE_TEMPO === "true" && <Route path="/tempobook/*" />}
       </Routes>
+
+      {/* Telegram Join Modal - shows only once */}
+      <TelegramJoinModal
+        open={showTelegramModal}
+        onOpenChange={setShowTelegramModal}
+      />
     </Suspense>
   );
 }

@@ -8,6 +8,7 @@ import {
   Sun,
   Globe,
   Settings,
+  MessageCircle,
 } from "lucide-react";
 import SupabaseStatus from "./SupabaseStatus";
 import {
@@ -372,6 +373,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
             >
               <Settings className="h-4 w-4 text-white" />
             </Button>
+
             <div className="flex items-center">
               <Button
                 variant="ghost"
@@ -395,11 +397,26 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
+          <a
+            href="https://t.me/dropdirs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors mr-2"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 512 512"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M470.435 45.423L16.827 221.249c-18.254 8.188-24.428 24.585-4.412 33.484l116.37 37.173 281.368-174.79c15.363-10.973 31.091-8.047 17.557 4.024L186.053 341.075l-7.591 93.041c7.031 14.371 19.905 14.438 28.117 7.22l66.858-63.87 111.836 85.45c33.214 19.554 49.291 8.439 55.955-30.168l88.662-359.853c6.767-39.536-6.328-53.428-59.455-27.472z" />
+            </svg>
+          </a>
           <AuthController />
         </div>
       </div>
-
       <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A1A]">
         <Table>
           <TableHeader>
@@ -532,7 +549,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           </TableBody>
         </Table>
       </div>
-
       {selectedProject && (
         <NotesModal
           isOpen={true}
@@ -542,7 +558,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           onSave={handleNotesSave}
         />
       )}
-
       {editProject && (
         <EditProjectModal
           isOpen={true}
@@ -551,7 +566,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           onSave={handleEditSave}
         />
       )}
-
       <AddProjectModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -560,7 +574,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           setShowAddModal(false);
         }}
       />
-
       <MakeAllPublicModal
         isOpen={showMakeAllPublicModal}
         onClose={() => setShowMakeAllPublicModal(false)}
@@ -569,7 +582,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           window.dispatchEvent(new Event("forceDataReload"));
         }}
       />
-
       <ColumnSettingsModal
         isOpen={showColumnSettings}
         onClose={() => setShowColumnSettings(false)}
@@ -600,26 +612,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         isPublicMode={isPublicMode}
         username={username}
       />
-
-      <a
-        href="https://t.me/dropdirs"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute bottom-4 left-4 text-blue-400 hover:text-blue-300 transition-colors"
-      >
-        <div className="telegram-icon-container">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="40"
-            height="40"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-10 h-10"
-          >
-            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-          </svg>
-        </div>
-      </a>
     </div>
   );
 };

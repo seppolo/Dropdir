@@ -79,6 +79,7 @@ export default function PublicUserPageWrapper() {
   return (
     <MockRouterProvider username="testuser">
       <PublicUserPage />
+      <div className="w-[800px] h-[600px]"></div>
     </MockRouterProvider>
   );
 }

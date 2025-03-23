@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import AllPublicAirdrops from "./AllPublicAirdrops";
 import DoodlesBackground from "./DoodlesBackground";
-import { List, LogIn } from "lucide-react";
+import { List, LogIn, MessageCircle } from "lucide-react";
 
 const PublicPage = () => {
   useEffect(() => {
@@ -32,6 +32,14 @@ const PublicPage = () => {
           >
             <List className="h-4 w-4" />
             List
+          </a>
+          <a
+            href="https://t.me/dropdirs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors"
+          >
+            <MessageCircle className="h-4 w-4" />
           </a>
           <a
             href="/"

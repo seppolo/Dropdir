@@ -74,6 +74,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [showMakeAllPublicModal, setShowMakeAllPublicModal] = useState(false);
   const [isPublicMode, setIsPublicMode] = useState(false);
+  const [isNestedByEcosystem, setIsNestedByEcosystem] = useState(false);
   const [showColumnSettings, setShowColumnSettings] = useState(false);
   const [autoStatusTime, setAutoStatusTime] = useState("09:00 AM");
   const [visibleColumns, setVisibleColumns] = useState({
@@ -124,6 +125,19 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
       }
     }
 
+    // Load nested by ecosystem setting from localStorage
+    const savedNestedByEcosystem = localStorage.getItem("isNestedByEcosystem");
+    if (savedNestedByEcosystem) {
+      try {
+        setIsNestedByEcosystem(JSON.parse(savedNestedByEcosystem));
+      } catch (error) {
+        console.error(
+          "Error parsing nested by ecosystem from localStorage",
+          error,
+        );
+      }
+    }
+
     // Set up daily auto status change
     const checkAndUpdateStatus = () => {
       const now = new Date();
@@ -157,12 +171,38 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     };
   }, [projects, autoStatusTime, onStatusChange]);
 
-  const filteredProjects = projects.filter(
-    (project) =>
-      project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.chain?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.type?.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredProjects = projects.filter((project) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      project.name?.toLowerCase().includes(query) ||
+      project.chain?.toLowerCase().includes(query) ||
+      project.type?.toLowerCase().includes(query) ||
+      project.notes?.toLowerCase().includes(query) ||
+      project.stage?.toLowerCase().includes(query) ||
+      (project.tags &&
+        (typeof project.tags === "string"
+          ? project.tags.toLowerCase().includes(query)
+          : project.tags.some((tag) => tag.toLowerCase().includes(query)))) ||
+      (project.joinDate || project.join_date)?.toLowerCase().includes(query) ||
+      (project.cost?.toString() || "").includes(query) ||
+      project.link?.toLowerCase().includes(query)
+    );
+  });
+
+  // Get unique chains from filtered projects
+  const uniqueChains = [
+    ...new Set(filteredProjects.map((project) => project.chain || "Unknown")),
+  ];
+
+  // State to track expanded chains
+  const [expandedChains, setExpandedChains] = useState<string[]>(uniqueChains);
+
+  // Toggle chain expansion
+  const toggleChainExpansion = (chain: string) => {
+    setExpandedChains((prev) =>
+      prev.includes(chain) ? prev.filter((c) => c !== chain) : [...prev, chain],
+    );
+  };
 
   const handleNotesClick = (project: Project) => {
     setSelectedProject(project);
@@ -280,6 +320,15 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     if (newPublicMode) {
       setShowMakeAllPublicModal(true);
     }
+  };
+
+  const handleToggleNestedByEcosystem = () => {
+    const newNestedByEcosystem = !isNestedByEcosystem;
+    setIsNestedByEcosystem(newNestedByEcosystem);
+    localStorage.setItem(
+      "isNestedByEcosystem",
+      JSON.stringify(newNestedByEcosystem),
+    );
   };
 
   // Get username from localStorage
@@ -487,65 +536,169 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProjects
-              .sort((a, b) => {
-                // Sort by active status first (active projects at the top)
-                const aActive =
-                  a.status === "active" || a.is_active || a.isActive;
-                const bActive =
-                  b.status === "active" || b.is_active || b.isActive;
-                if (aActive && !bActive) return -1;
-                if (!aActive && bActive) return 1;
-                // Then sort by last activity date
-                return (
-                  new Date(b.last_activity || b.lastActivity).getTime() -
-                  new Date(a.last_activity || a.lastActivity).getTime()
-                );
-              })
-              .map((project) => (
-                <ProjectRow
-                  key={project.id}
-                  projectName={project.project || project.name}
-                  projectLogo={
-                    project.image ||
-                    project.logo ||
-                    `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.project || project.name}`
-                  }
-                  projectLink={project.link}
-                  twitterLink={project.twitter || project.twitterLink}
-                  isActive={
-                    project.status === "active" ||
-                    project.is_active ||
-                    project.isActive
-                  }
-                  lastActivity={project.last_activity || project.lastActivity}
-                  notes={project.notes}
-                  onStatusChange={(status) =>
-                    handleStatusChange(project.id, status)
-                  }
-                  onNotesClick={() =>
-                    isDeleteMode
-                      ? handleEditClick(project)
-                      : handleNotesClick(project)
-                  }
-                  onDelete={() => onDeleteProject(project.id)}
-                  showDeleteButton={isDeleteMode}
-                  showEditButton={isDeleteMode}
-                  isFullMode={isFullMode}
-                  type={project.type}
-                  cost={project.cost}
-                  joinDate={project.join_date || project.joinDate}
-                  chain={project.chain}
-                  stage={project.stage}
-                  tags={
-                    typeof project.tags === "string"
-                      ? project.tags.split(",").map((tag) => tag.trim())
-                      : project.tags
-                  }
-                  isPublicMode={false}
-                  visibleColumns={visibleColumns}
-                />
-              ))}
+            {isNestedByEcosystem
+              ? // Nested by ecosystem view
+                uniqueChains.sort().map((chain) => (
+                  <React.Fragment key={chain}>
+                    {/* Chain header row */}
+                    <TableRow
+                      className="hover:bg-gray-800 cursor-pointer border-b border-gray-700"
+                      onClick={() => toggleChainExpansion(chain)}
+                    >
+                      <TableHead colSpan={12} className="py-2 pl-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-blue-400 font-medium">
+                            {expandedChains.includes(chain) ? "▼" : "►"}
+                          </span>
+                          <span className="font-bold text-blue-400">
+                            {chain} (
+                            {
+                              filteredProjects.filter(
+                                (p) => (p.chain || "Unknown") === chain,
+                              ).length
+                            }
+                            )
+                          </span>
+                        </div>
+                      </TableHead>
+                    </TableRow>
+
+                    {/* Projects in this chain */}
+                    {expandedChains.includes(chain) &&
+                      filteredProjects
+                        .filter(
+                          (project) => (project.chain || "Unknown") === chain,
+                        )
+                        .sort((a, b) => {
+                          // Sort by active status first (active projects at the top)
+                          const aActive =
+                            a.status === "active" || a.is_active || a.isActive;
+                          const bActive =
+                            b.status === "active" || b.is_active || b.isActive;
+                          if (aActive && !bActive) return -1;
+                          if (!aActive && bActive) return 1;
+                          // Then sort by last activity date
+                          return (
+                            new Date(
+                              b.last_activity || b.lastActivity,
+                            ).getTime() -
+                            new Date(
+                              a.last_activity || a.lastActivity,
+                            ).getTime()
+                          );
+                        })
+                        .map((project) => (
+                          <ProjectRow
+                            key={project.id}
+                            projectName={project.project || project.name}
+                            projectLogo={
+                              project.image ||
+                              project.logo ||
+                              `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.project || project.name}`
+                            }
+                            projectLink={project.link}
+                            twitterLink={project.twitter || project.twitterLink}
+                            isActive={
+                              project.status === "active" ||
+                              project.is_active ||
+                              project.isActive
+                            }
+                            lastActivity={
+                              project.last_activity || project.lastActivity
+                            }
+                            notes={project.notes}
+                            onStatusChange={(status) =>
+                              handleStatusChange(project.id, status)
+                            }
+                            onNotesClick={() =>
+                              isDeleteMode
+                                ? handleEditClick(project)
+                                : handleNotesClick(project)
+                            }
+                            onDelete={() => onDeleteProject(project.id)}
+                            showDeleteButton={isDeleteMode}
+                            showEditButton={isDeleteMode}
+                            isFullMode={isFullMode}
+                            type={project.type}
+                            cost={project.cost}
+                            joinDate={project.join_date || project.joinDate}
+                            chain={project.chain}
+                            stage={project.stage}
+                            tags={
+                              typeof project.tags === "string"
+                                ? project.tags
+                                    .split(",")
+                                    .map((tag) => tag.trim())
+                                : project.tags
+                            }
+                            isPublicMode={false}
+                            visibleColumns={visibleColumns}
+                          />
+                        ))}
+                  </React.Fragment>
+                ))
+              : // Regular flat view
+                filteredProjects
+                  .sort((a, b) => {
+                    // Sort by active status first (active projects at the top)
+                    const aActive =
+                      a.status === "active" || a.is_active || a.isActive;
+                    const bActive =
+                      b.status === "active" || b.is_active || b.isActive;
+                    if (aActive && !bActive) return -1;
+                    if (!aActive && bActive) return 1;
+                    // Then sort by last activity date
+                    return (
+                      new Date(b.last_activity || b.lastActivity).getTime() -
+                      new Date(a.last_activity || a.lastActivity).getTime()
+                    );
+                  })
+                  .map((project) => (
+                    <ProjectRow
+                      key={project.id}
+                      projectName={project.project || project.name}
+                      projectLogo={
+                        project.image ||
+                        project.logo ||
+                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.project || project.name}`
+                      }
+                      projectLink={project.link}
+                      twitterLink={project.twitter || project.twitterLink}
+                      isActive={
+                        project.status === "active" ||
+                        project.is_active ||
+                        project.isActive
+                      }
+                      lastActivity={
+                        project.last_activity || project.lastActivity
+                      }
+                      notes={project.notes}
+                      onStatusChange={(status) =>
+                        handleStatusChange(project.id, status)
+                      }
+                      onNotesClick={() =>
+                        isDeleteMode
+                          ? handleEditClick(project)
+                          : handleNotesClick(project)
+                      }
+                      onDelete={() => onDeleteProject(project.id)}
+                      showDeleteButton={isDeleteMode}
+                      showEditButton={isDeleteMode}
+                      isFullMode={isFullMode}
+                      type={project.type}
+                      cost={project.cost}
+                      joinDate={project.join_date || project.joinDate}
+                      chain={project.chain}
+                      stage={project.stage}
+                      tags={
+                        typeof project.tags === "string"
+                          ? project.tags.split(",").map((tag) => tag.trim())
+                          : project.tags
+                      }
+                      isPublicMode={false}
+                      visibleColumns={visibleColumns}
+                    />
+                  ))}
           </TableBody>
         </Table>
       </div>
@@ -611,6 +764,8 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         onTogglePublicMode={handleTogglePublicMode}
         isPublicMode={isPublicMode}
         username={username}
+        isNestedByEcosystem={isNestedByEcosystem}
+        onToggleNestedByEcosystem={handleToggleNestedByEcosystem}
       />
     </div>
   );

@@ -224,15 +224,18 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sketch-card fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[800px] max-w-4xl h-fit rounded-lg transform transition-all duration-300 ease-in-out bg-background border-2 border-white/10 shadow-2xl overflow-hidden">
+      <DialogContent className="sketch-card fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[800px] max-w-4xl max-h-[90vh] rounded-lg transform transition-all duration-300 ease-in-out bg-background border-2 border-white/10 shadow-2xl overflow-hidden">
         <DialogHeader className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 mb-4">
           <DialogTitle className="text-2xl font-bold sketch-font text-white">
             Add New Project
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="px-6 pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <form
+          onSubmit={handleSubmit}
+          className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-120px)] overflow-x-hidden"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {/* Left Column */}
             <div className="space-y-6">
               <div className="flex flex-col sm:flex-row gap-4 items-start">

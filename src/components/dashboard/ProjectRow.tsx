@@ -147,9 +147,9 @@ const ProjectRow = ({
                   className={getChainColor(safeChain)}
                   fallback={
                     <span
-                      className={`text-xs ${getChainColor(safeChain)} font-bold`}
+                      className={`text-xs ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500"} font-bold`}
                     >
-                      {chainIcons[safeChain.toLowerCase()] || "💀"}
+                      {chainIcons[safeChain.toLowerCase()] || safeChain}
                     </span>
                   }
                 />
@@ -326,9 +326,9 @@ const ProjectRow = ({
                   className={getChainColor(safeChain)}
                   fallback={
                     <span
-                      className={`text-lg ${getChainColor(safeChain)} font-bold`}
+                      className={`text-lg ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500"} font-bold`}
                     >
-                      {chainIcons[safeChain.toLowerCase()] || "💀"}
+                      {chainIcons[safeChain.toLowerCase()] || safeChain}
                     </span>
                   }
                 />

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Clock, Globe, ExternalLink, Share2 } from "lucide-react";
+import { Clock, Globe, ExternalLink, Share2, Layers } from "lucide-react";
 import AutoStatusSettings from "./AutoStatusSettings";
 import { Link } from "react-router-dom";
 
@@ -27,6 +27,8 @@ interface ColumnSettingsModalProps {
   onTogglePublicMode?: () => void;
   isPublicMode?: boolean;
   username?: string;
+  isNestedByEcosystem?: boolean;
+  onToggleNestedByEcosystem?: () => void;
 }
 
 const ColumnSettingsModal = ({
@@ -51,6 +53,8 @@ const ColumnSettingsModal = ({
   onTogglePublicMode = () => {},
   isPublicMode = false,
   username = "Moffuadi",
+  isNestedByEcosystem = false,
+  onToggleNestedByEcosystem = () => {},
 }: ColumnSettingsModalProps) => {
   const [showAutoStatusSettings, setShowAutoStatusSettings] =
     React.useState(false);
@@ -90,6 +94,25 @@ const ColumnSettingsModal = ({
             </div>
             <p className="text-xs text-gray-400 mt-1">
               Share your airdrop list with others through a public profile link
+            </p>
+          </div>
+
+          <div className="pt-2 pb-4 border-b border-gray-700">
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-2">
+                <Layers className="h-4 w-4 text-blue-400" />
+                <span className="text-sm font-medium sketch-font">
+                  Group by Ecosystem
+                </span>
+              </div>
+              <Switch
+                checked={isNestedByEcosystem}
+                onCheckedChange={onToggleNestedByEcosystem}
+                className="scale-90"
+              />
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+              Group projects by their blockchain ecosystem/chain
             </p>
           </div>
 

@@ -2,7 +2,7 @@ import React from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { NetworkIcon } from "@web3icons/react";
-import { ExternalLink, FileText, Pencil, Trash2 } from "lucide-react";
+import { Copy, ExternalLink, FileText, Pencil, Trash2 } from "lucide-react";
 
 interface ProjectRowProps {
   visibleColumns?: Record<string, boolean>;
@@ -26,6 +26,9 @@ interface ProjectRowProps {
   stage?: string;
   tags?: string[];
   isPublicMode?: boolean;
+  isOwnProfile?: boolean;
+  onCopyProject?: () => void;
+  isCopied?: boolean;
 }
 
 // Chain color mapping
@@ -92,6 +95,9 @@ const ProjectRow = ({
   stage = "Testnet",
   tags = [],
   isPublicMode = false,
+  isOwnProfile = true,
+  onCopyProject = () => {},
+  isCopied = false,
   visibleColumns = {
     Project: true,
     Status: true,
@@ -266,6 +272,23 @@ const ProjectRow = ({
               ) : (
                 <FileText className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
               )}
+            </Button>
+          ) : isPublicMode && !isOwnProfile ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onCopyProject}
+              className={`w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent ${isCopied ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-500/10"}`}
+              title={
+                isCopied
+                  ? "Already copied to your projects"
+                  : "Copy to my projects"
+              }
+              disabled={isCopied}
+            >
+              <Copy
+                className={`h-4 w-4 md:h-5 md:w-5 ${isCopied ? "text-gray-400" : "text-blue-400"}`}
+              />
             </Button>
           ) : (
             <Button

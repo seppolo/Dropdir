@@ -8,6 +8,9 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import DoodlesBackground from "./DoodlesBackground";
 import LoginModal from "./auth/LoginModal";
+import { getCurrentUser } from "@/lib/projectService";
+import { addProject } from "@/lib/projectService";
+import { useToast } from "./ui/use-toast";
 
 const PublicUserPage = () => {
   const { username } = useParams();
@@ -16,6 +19,7 @@ const PublicUserPage = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [copiedProjects, setCopiedProjects] = useState({});
   const [visibleColumns, setVisibleColumns] = useState({
     Project: true,
     Link: true,
@@ -30,10 +34,28 @@ const PublicUserPage = () => {
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
-  }, []);
+
+    // Get current logged in user
+    const user = getCurrentUser();
+    setCurrentUser(user);
+
+    // Initialize copied projects from localStorage if available
+    const savedCopiedProjects = localStorage.getItem(
+      `copiedProjects_${username}`,
+    );
+    if (savedCopiedProjects) {
+      try {
+        setCopiedProjects(JSON.parse(savedCopiedProjects));
+      } catch (error) {
+        console.error("Error parsing saved copied projects:", error);
+      }
+    }
+  }, [username]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -114,6 +136,65 @@ const PublicUserPage = () => {
     window.dispatchEvent(new Event("showRegisterModal"));
     // Redirect to main app
     window.location.href = "/";
+  };
+
+  const handleCopyProject = async (project) => {
+    if (!currentUser) {
+      setLoginModalOpen(true);
+      return;
+    }
+
+    try {
+      // Format project data for adding to user's database
+      const projectData = {
+        project: project.project || project.name,
+        image: project.image || project.logo,
+        link: project.link,
+        twitter: project.twitter || project.twitterLink,
+        status: "active",
+        chain: project.chain,
+        stage: project.stage,
+        type: project.type,
+        cost: project.cost,
+        join_date: new Date().toISOString(),
+        last_activity: new Date().toISOString(),
+        tags:
+          typeof project.tags === "string"
+            ? project.tags
+            : Array.isArray(project.tags)
+              ? project.tags.join(", ")
+              : "",
+        notes: `Copied from ${username}'s public profile`,
+      };
+
+      await addProject(projectData);
+
+      // Mark this project as copied
+      const updatedCopiedProjects = {
+        ...copiedProjects,
+        [project.id]: true,
+      };
+      setCopiedProjects(updatedCopiedProjects);
+
+      // Save to localStorage
+      localStorage.setItem(
+        `copiedProjects_${username}`,
+        JSON.stringify(updatedCopiedProjects),
+      );
+
+      toast({
+        title: "Project copied successfully",
+        description: `${project.project || project.name} has been added to your projects`,
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error copying project:", error);
+      toast({
+        title: "Failed to copy project",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -341,7 +422,10 @@ const PublicUserPage = () => {
                               : project.tags
                           }
                           isPublicMode={true}
+                          isOwnProfile={currentUser?.username === username}
                           notes={project.notes}
+                          onCopyProject={() => handleCopyProject(project)}
+                          isCopied={copiedProjects[project.id]}
                         />
                       ))}
                     </TableBody>

@@ -20,6 +20,21 @@ export const getUserProjects = async () => {
     const user = getCurrentUser();
     if (!user) return [];
 
+    // Check for cached data first
+    const cachedProjects = localStorage.getItem("user_projects");
+    const cachedTimestamp = localStorage.getItem("user_projects_timestamp");
+    const now = new Date().getTime();
+
+    // Use cache if it's less than 5 minutes old (increased from 2 minutes for better performance)
+    if (
+      cachedProjects &&
+      cachedTimestamp &&
+      now - parseInt(cachedTimestamp) < 5 * 60 * 1000
+    ) {
+      console.log("Using cached projects in getUserProjects");
+      return JSON.parse(cachedProjects);
+    }
+
     const { data, error } = await supabase
       .from("user_airdrops")
       .select("*")
@@ -28,12 +43,27 @@ export const getUserProjects = async () => {
 
     if (error) {
       console.error("Error fetching projects:", error);
+      // Try to use cached data even if it's older
+      if (cachedProjects) {
+        return JSON.parse(cachedProjects);
+      }
       return [];
+    }
+
+    // Update cache with new data
+    if (data) {
+      localStorage.setItem("user_projects", JSON.stringify(data));
+      localStorage.setItem("user_projects_timestamp", now.toString());
     }
 
     return data || [];
   } catch (error) {
     console.error("Unexpected error fetching projects:", error);
+    // Try to use cached data in case of error
+    const cachedProjects = localStorage.getItem("user_projects");
+    if (cachedProjects) {
+      return JSON.parse(cachedProjects);
+    }
     return [];
   }
 };

@@ -83,6 +83,25 @@ const PublicUserPage = () => {
     const fetchUserProjects = async () => {
       setIsLoading(true);
       try {
+        // Check if we have cached data for this user
+        const cachedData = localStorage.getItem(`cached_projects_${username}`);
+        const cachedTimestamp = localStorage.getItem(
+          `cached_projects_timestamp_${username}`,
+        );
+        const now = new Date().getTime();
+
+        // Use cache if it exists and is less than 10 minutes old (increased from 5 minutes for better performance)
+        if (
+          cachedData &&
+          cachedTimestamp &&
+          now - parseInt(cachedTimestamp) < 10 * 60 * 1000
+        ) {
+          console.log("Using cached projects data for:", username);
+          setProjects(JSON.parse(cachedData));
+          setIsLoading(false);
+          return;
+        }
+
         console.log("Fetching projects for username:", username);
         // Fetch all projects for this user (without checking is_public)
         const { data, error } = await supabase
@@ -95,6 +114,19 @@ const PublicUserPage = () => {
           console.error("Supabase error:", error);
           // Continue with empty data instead of throwing
         }
+
+        // Cache the results
+        if (data) {
+          localStorage.setItem(
+            `cached_projects_${username}`,
+            JSON.stringify(data),
+          );
+          localStorage.setItem(
+            `cached_projects_timestamp_${username}`,
+            now.toString(),
+          );
+        }
+
         console.log("Public projects for user:", data);
         setProjects(data || []);
       } catch (error) {
@@ -206,39 +238,11 @@ const PublicUserPage = () => {
         .telegram-icon-container {
           border-radius: 50%;
           padding: 4px;
-          animation: blinkingBorder 4.5s infinite;
           display: flex;
           align-items: center;
           justify-content: center;
           background-color: black;
-        }
-
-        @keyframes blinkingBorder {
-          0%,
-          100% {
-            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-            color: rgb(239, 68, 68);
-          }
-          16% {
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.7);
-            color: rgb(239, 68, 68);
-          }
-          33% {
-            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-            color: rgb(34, 197, 94);
-          }
-          50% {
-            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.7);
-            color: rgb(34, 197, 94);
-          }
-          66% {
-            box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
-            color: rgb(234, 179, 8);
-          }
-          83% {
-            box-shadow: 0 0 0 4px rgba(234, 179, 8, 0.7);
-            color: rgb(234, 179, 8);
-          }
+          color: #3b82f6;
         }
       `}</style>
 

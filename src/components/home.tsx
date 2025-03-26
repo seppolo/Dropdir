@@ -157,6 +157,23 @@ const Home = () => {
 
     setIsLoading(true);
     try {
+      // Check if we have recent cached data (less than 5 minutes old - increased from 2 minutes for better performance)
+      const cachedProjects = localStorage.getItem("user_projects");
+      const cachedTimestamp = localStorage.getItem("user_projects_timestamp");
+      const now = new Date().getTime();
+
+      if (
+        cachedProjects &&
+        cachedTimestamp &&
+        now - parseInt(cachedTimestamp) < 5 * 60 * 1000
+      ) {
+        console.log("Using cached projects data");
+        setProjects(JSON.parse(cachedProjects));
+        setIsLoading(false);
+        setConnectionError(false);
+        return;
+      }
+
       // Check if Supabase is connected
       const isConnected = await checkSupabaseConnection();
 
@@ -172,22 +189,38 @@ const Home = () => {
 
         setProjects(projectsData || []);
 
-        // Cache the projects
+        // Cache the projects with timestamp
         localStorage.setItem(
           "user_projects",
           JSON.stringify(projectsData || []),
         );
+        localStorage.setItem("user_projects_timestamp", now.toString());
 
         setConnectionError(false);
       } else {
         console.error("Failed to connect to Supabase");
         setConnectionError(true);
-        setProjects([]);
+
+        // Try to use cached data even if it's older than 2 minutes
+        if (cachedProjects) {
+          console.log("Using older cached data due to connection error");
+          setProjects(JSON.parse(cachedProjects));
+        } else {
+          setProjects([]);
+        }
       }
     } catch (error) {
       console.error("Error loading projects:", error);
       setConnectionError(true);
-      setProjects([]);
+
+      // Try to use cached data in case of error
+      const cachedProjects = localStorage.getItem("user_projects");
+      if (cachedProjects) {
+        console.log("Using cached data due to error");
+        setProjects(JSON.parse(cachedProjects));
+      } else {
+        setProjects([]);
+      }
     } finally {
       setIsLoading(false);
     }

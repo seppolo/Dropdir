@@ -138,7 +138,7 @@ const ProjectRow = ({
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-white truncate max-w-[200px] font-medium bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500">
+            <span className="text-white truncate max-w-[200px] font-medium">
               {projectName}
             </span>
             <div className="flex items-center gap-1 mt-1">
@@ -153,7 +153,7 @@ const ProjectRow = ({
                   className={getChainColor(safeChain)}
                   fallback={
                     <span
-                      className={`text-xs ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500"} font-bold`}
+                      className={`text-xs ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "text-blue-500"} font-bold`}
                     >
                       {chainIcons[safeChain.toLowerCase()] || safeChain}
                     </span>
@@ -349,7 +349,7 @@ const ProjectRow = ({
                   className={getChainColor(safeChain)}
                   fallback={
                     <span
-                      className={`text-lg ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500"} font-bold`}
+                      className={`text-lg ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "text-blue-500"} font-bold`}
                     >
                       {chainIcons[safeChain.toLowerCase()] || safeChain}
                     </span>
@@ -373,27 +373,13 @@ const ProjectRow = ({
                 {Array.isArray(tags) && tags.length > 0 ? (
                   <div className="flex flex-wrap gap-1 justify-center">
                     {tags.map((tag, index) => {
-                      // Generate a unique gradient for each tag based on its content
-                      const gradientClass = (() => {
-                        const hash = tag
-                          .split("")
-                          .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-                        const gradients = [
-                          "from-pink-500 to-purple-500",
-                          "from-blue-500 to-cyan-500",
-                          "from-green-500 to-emerald-500",
-                          "from-yellow-500 to-orange-500",
-                          "from-red-500 to-pink-500",
-                          "from-purple-500 to-indigo-500",
-                          "from-indigo-500 to-blue-500",
-                        ];
-                        return gradients[hash % gradients.length];
-                      })();
+                      // Use a single color instead of gradients for better performance
+                      const colorClass = "bg-blue-500";
 
                       return (
                         <span
                           key={index}
-                          className={`px-2 py-1 text-xs rounded-full text-white border border-gray-600 bg-gradient-to-r ${gradientClass} shadow-lg`}
+                          className={`px-2 py-1 text-xs rounded-full text-white border border-gray-600 ${colorClass}`}
                         >
                           {typeof tag === "string"
                             ? tag
@@ -406,7 +392,7 @@ const ProjectRow = ({
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-1 justify-center">
-                    <span className="px-2 py-1 text-xs rounded-full text-white border border-gray-600 bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
+                    <span className="px-2 py-1 text-xs rounded-full text-white border border-gray-600 bg-blue-500">
                       Airdrop
                     </span>
                   </div>
@@ -440,12 +426,14 @@ const ProjectRow = ({
                   return "Invalid date";
                 }
 
-                // Format time as HH:MM with AM/PM
-                return activityDate.toLocaleTimeString(undefined, {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                });
+                // Format time to show in 24-hour format with WIB timezone
+                return (
+                  activityDate.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  }) + " WIB"
+                );
               } catch (error) {
                 return "Invalid date";
               }

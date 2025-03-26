@@ -12,9 +12,37 @@ if (process.env.TEMPO === "true") {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === "development" ? "/" : process.env.VITE_BASE_PATH || "/",
+  base:
+    process.env.NODE_ENV === "development"
+      ? "/"
+      : process.env.VITE_BASE_PATH || "/",
   optimizeDeps: {
     entries: ["src/main.tsx", "src/tempobook/**/*"],
+    esbuildOptions: {
+      target: "es2020",
+    },
+  },
+  build: {
+    target: "es2020",
+    minify: "terser",
+    cssMinify: true,
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          ui: ["./src/components/ui/**/*.tsx"],
+          supabase: ["@supabase/supabase-js"],
+        },
+      },
+    },
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
   },
   plugins: [
     react({
@@ -31,5 +59,5 @@ export default defineConfig({
   server: {
     // @ts-ignore
     allowedHosts: true,
-  }
+  },
 });

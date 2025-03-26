@@ -1,4 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+/* Preload fonts with display=swap for better performance */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap&text=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,/()%25-:;");
 
 @tailwind base;
 @tailwind components;

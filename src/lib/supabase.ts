@@ -16,9 +16,17 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
   global: {
     fetch: (...args) => {
-      // Log fetch requests for debugging
-      console.log("Supabase fetch request:", args[0]);
+      // Remove logging in production for better performance
+      if (import.meta.env.DEV) {
+        console.log("Supabase fetch request:", args[0]);
+      }
       return fetch(...args);
     },
+  },
+  db: {
+    schema: "public",
+  },
+  realtime: {
+    timeout: 30000, // Increase timeout for better reliability
   },
 });

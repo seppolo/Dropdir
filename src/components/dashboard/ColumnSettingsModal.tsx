@@ -29,6 +29,7 @@ interface ColumnSettingsModalProps {
   username?: string;
   isNestedByEcosystem?: boolean;
   onToggleNestedByEcosystem?: () => void;
+  onResetInactiveProjects?: () => void;
 }
 
 const ColumnSettingsModal = ({
@@ -55,6 +56,7 @@ const ColumnSettingsModal = ({
   username = "Moffuadi",
   isNestedByEcosystem = false,
   onToggleNestedByEcosystem = () => {},
+  onResetInactiveProjects = () => {},
 }: ColumnSettingsModalProps) => {
   const [showAutoStatusSettings, setShowAutoStatusSettings] =
     React.useState(false);
@@ -143,21 +145,20 @@ const ColumnSettingsModal = ({
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-blue-400" />
               <span className="text-sm font-medium sketch-font">
-                Auto-activate projects at:
+                Auto-activate all projects
               </span>
             </div>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowAutoStatusSettings(true)}
-              className="border-gray-600 text-sm"
+              onClick={onResetInactiveProjects}
+              className="border-gray-600 text-sm bg-blue-600 hover:bg-blue-700 text-white"
             >
-              {autoStatusTime}
+              Reset Now
             </Button>
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            All inactive projects will automatically be set to active at this
-            time daily.
+            Click the button to immediately set all inactive projects to active.
           </p>
         </div>
       </DialogContent>

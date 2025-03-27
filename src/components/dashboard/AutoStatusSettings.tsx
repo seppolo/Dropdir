@@ -31,10 +31,12 @@ const AutoStatusSettings = ({
   currentTime = "09:00",
 }: AutoStatusSettingsProps) => {
   const [autoActivateTime, setAutoActivateTime] = useState(currentTime);
+  const [period, setPeriod] = useState<"AM" | "PM">("AM");
 
   const handleSave = () => {
-    // Save time in 24-hour format
-    onSave(autoActivateTime);
+    // Format time with period
+    const formattedTime = `${autoActivateTime} ${period}`;
+    onSave(formattedTime);
     onClose();
   };
 
@@ -60,6 +62,18 @@ const AutoStatusSettings = ({
                 onChange={(e) => setAutoActivateTime(e.target.value)}
                 className="w-32 bg-gray-800 border-gray-600"
               />
+              <Select
+                value={period}
+                onValueChange={(value) => setPeriod(value as "AM" | "PM")}
+              >
+                <SelectTrigger className="w-20 bg-gray-800 border-gray-600">
+                  <SelectValue placeholder="AM/PM" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="AM">AM</SelectItem>
+                  <SelectItem value="PM">PM</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <p className="text-sm text-gray-400 mt-2">
               All inactive projects will automatically be set to active at this

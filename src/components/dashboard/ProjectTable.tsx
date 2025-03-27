@@ -93,55 +93,52 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   });
 
   React.useEffect(() => {
-    // Debounced resize handler for better performance
-    let resizeTimer;
     const handleResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        setIsFullMode(window.innerWidth >= 768);
-      }, 100);
+      setIsFullMode(window.innerWidth >= 768);
     };
-
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    // Load all localStorage settings at once to reduce operations
-    const loadLocalStorageSettings = () => {
-      // Auto status time
-      const savedAutoStatusTime = localStorage.getItem("autoStatusTime");
-      if (savedAutoStatusTime) {
-        setAutoStatusTime(savedAutoStatusTime);
-      }
+    // Load auto status time from localStorage
+    const savedAutoStatusTime = localStorage.getItem("autoStatusTime");
+    if (savedAutoStatusTime) {
+      setAutoStatusTime(savedAutoStatusTime);
+    }
 
-      // Visible columns
+    // Load visible columns from localStorage
+    const savedVisibleColumns = localStorage.getItem("visibleColumns");
+    if (savedVisibleColumns) {
       try {
-        const savedVisibleColumns = localStorage.getItem("visibleColumns");
-        if (savedVisibleColumns) {
-          setVisibleColumns(JSON.parse(savedVisibleColumns));
-        }
-
-        // Public mode
-        const savedPublicMode = localStorage.getItem("isPublicMode");
-        if (savedPublicMode) {
-          setIsPublicMode(JSON.parse(savedPublicMode));
-        }
-
-        // Nested by ecosystem
-        const savedNestedByEcosystem = localStorage.getItem(
-          "isNestedByEcosystem",
-        );
-        if (savedNestedByEcosystem) {
-          setIsNestedByEcosystem(JSON.parse(savedNestedByEcosystem));
-        }
+        setVisibleColumns(JSON.parse(savedVisibleColumns));
       } catch (error) {
-        // Single error handler for all localStorage operations
-        console.error("Error loading settings from localStorage", error);
+        console.error("Error parsing visible columns from localStorage", error);
       }
-    };
+    }
 
-    loadLocalStorageSettings();
+    // Load public mode setting from localStorage
+    const savedPublicMode = localStorage.getItem("isPublicMode");
+    if (savedPublicMode) {
+      try {
+        setIsPublicMode(JSON.parse(savedPublicMode));
+      } catch (error) {
+        console.error("Error parsing public mode from localStorage", error);
+      }
+    }
 
-    // Set up daily auto status change with optimized check
+    // Load nested by ecosystem setting from localStorage
+    const savedNestedByEcosystem = localStorage.getItem("isNestedByEcosystem");
+    if (savedNestedByEcosystem) {
+      try {
+        setIsNestedByEcosystem(JSON.parse(savedNestedByEcosystem));
+      } catch (error) {
+        console.error(
+          "Error parsing nested by ecosystem from localStorage",
+          error,
+        );
+      }
+    }
+
+    // Set up daily auto status change
     const checkAndUpdateStatus = () => {
       const now = new Date();
       const currentTimeStr = now.toLocaleTimeString(undefined, {
@@ -151,19 +148,17 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
       });
 
       if (currentTimeStr === autoStatusTime) {
-        // Use filter before forEach for better performance
-        const inactiveProjects = projects.filter(
-          (project) =>
+        console.log("Auto activating all projects");
+        // Activate all inactive projects
+        projects.forEach((project) => {
+          if (
             !project.isActive &&
             !project.is_active &&
-            project.status !== "active",
-        );
-
-        if (inactiveProjects.length > 0) {
-          inactiveProjects.forEach((project) => {
+            project.status !== "active"
+          ) {
             onStatusChange(project.id, true);
-          });
-        }
+          }
+        });
       }
     };
 
@@ -172,47 +167,27 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      clearTimeout(resizeTimer);
       clearInterval(intervalId);
     };
   }, [projects, autoStatusTime, onStatusChange]);
 
-  // Memoize filtered projects to prevent unnecessary recalculations
-  const filteredProjects = React.useMemo(() => {
-    if (!searchQuery) return projects;
-
+  const filteredProjects = projects.filter((project) => {
     const query = searchQuery.toLowerCase();
-    return projects.filter((project) => {
-      // Check the most common fields first for better performance
-      if (project.name?.toLowerCase().includes(query)) return true;
-      if (project.chain?.toLowerCase().includes(query)) return true;
-      if (project.type?.toLowerCase().includes(query)) return true;
-
-      // Then check less commonly searched fields
-      if (project.notes?.toLowerCase().includes(query)) return true;
-      if (project.stage?.toLowerCase().includes(query)) return true;
-      if (project.link?.toLowerCase().includes(query)) return true;
-
-      // Check complex fields last
-      if (project.tags) {
-        if (typeof project.tags === "string") {
-          if (project.tags.toLowerCase().includes(query)) return true;
-        } else if (
-          project.tags.some((tag) => tag.toLowerCase().includes(query))
-        ) {
-          return true;
-        }
-      }
-
-      if (
-        (project.joinDate || project.join_date)?.toLowerCase().includes(query)
-      )
-        return true;
-      if ((project.cost?.toString() || "").includes(query)) return true;
-
-      return false;
-    });
-  }, [projects, searchQuery]);
+    return (
+      project.name?.toLowerCase().includes(query) ||
+      project.chain?.toLowerCase().includes(query) ||
+      project.type?.toLowerCase().includes(query) ||
+      project.notes?.toLowerCase().includes(query) ||
+      project.stage?.toLowerCase().includes(query) ||
+      (project.tags &&
+        (typeof project.tags === "string"
+          ? project.tags.toLowerCase().includes(query)
+          : project.tags.some((tag) => tag.toLowerCase().includes(query)))) ||
+      (project.joinDate || project.join_date)?.toLowerCase().includes(query) ||
+      (project.cost?.toString() || "").includes(query) ||
+      project.link?.toLowerCase().includes(query)
+    );
+  });
 
   // Get unique chains from filtered projects
   const uniqueChains = [
@@ -791,6 +766,19 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         username={username}
         isNestedByEcosystem={isNestedByEcosystem}
         onToggleNestedByEcosystem={handleToggleNestedByEcosystem}
+        onResetInactiveProjects={() => {
+          console.log("Activating all inactive projects");
+          // Activate all inactive projects
+          projects.forEach((project) => {
+            if (
+              !project.isActive &&
+              !project.is_active &&
+              project.status !== "active"
+            ) {
+              onStatusChange(project.id, true);
+            }
+          });
+        }}
       />
     </div>
   );

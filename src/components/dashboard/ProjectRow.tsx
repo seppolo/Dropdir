@@ -426,14 +426,12 @@ const ProjectRow = ({
                   return "Invalid date";
                 }
 
-                // Format time to show in 24-hour format with WIB timezone
-                return (
-                  activityDate.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  }) + " WIB"
-                );
+                // Format time to show in 24-hour format without timezone
+                return activityDate.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                });
               } catch (error) {
                 return "Invalid date";
               }

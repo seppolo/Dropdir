@@ -1,13 +1,13 @@
-import { Suspense, lazy, useEffect, useState, memo } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, useRoutes, Navigate } from "react-router-dom";
+import Home from "./components/home";
 import routes from "tempo-routes";
 import AuthGuard from "./components/auth/AuthGuard";
+import TelegramJoinModal from "./components/TelegramJoinModal";
 
-// Lazy load all components for better performance
-const Home = lazy(() => import("./components/home"));
+// Lazy load components for better performance
 const PublicUserPage = lazy(() => import("./components/PublicUserPage"));
 const PublicPage = lazy(() => import("./components/PublicPage"));
-const TelegramJoinModal = lazy(() => import("./components/TelegramJoinModal"));
 
 // Redirect component for the homepage that checks auth status
 const HomeRedirect = () => {

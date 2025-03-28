@@ -25,19 +25,22 @@ export const getUserProjects = async () => {
     const cachedTimestamp = localStorage.getItem("user_projects_timestamp");
     const now = new Date().getTime();
 
-    // Use cache if it's less than 5 minutes old (increased from 2 minutes for better performance)
+    // Use cache if it's less than 10 minutes old (increased from 5 minutes for better performance)
     if (
       cachedProjects &&
       cachedTimestamp &&
-      now - parseInt(cachedTimestamp) < 5 * 60 * 1000
+      now - parseInt(cachedTimestamp) < 10 * 60 * 1000
     ) {
       console.log("Using cached projects in getUserProjects");
       return JSON.parse(cachedProjects);
     }
 
+    // Only select the fields we actually need to reduce data transfer
     const { data, error } = await supabase
       .from("user_airdrops")
-      .select("*")
+      .select(
+        "id, project, name, image, logo, link, twitter, twitterLink, status, is_active, isActive, last_activity, lastActivity, notes, join_date, joinDate, chain, stage, tags, type, cost, username",
+      )
       .eq("username", user.username)
       .order("last_activity", { ascending: false });
 

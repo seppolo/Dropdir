@@ -1,13 +1,14 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, useRoutes, Navigate } from "react-router-dom";
-import Home from "./components/home";
 import routes from "tempo-routes";
-import AuthGuard from "./components/auth/AuthGuard";
-import TelegramJoinModal from "./components/TelegramJoinModal";
 
-// Lazy load components for better performance
+// Lazy load all components for better performance
+const AuthGuard = lazy(() => import("./components/auth/AuthGuard"));
+const TelegramJoinModal = lazy(() => import("./components/TelegramJoinModal"));
+const Home = lazy(() => import("./components/home"));
 const PublicUserPage = lazy(() => import("./components/PublicUserPage"));
 const PublicPage = lazy(() => import("./components/PublicPage"));
+const PoolPage = lazy(() => import("./components/PoolPage"));
 
 // Redirect component for the homepage that checks auth status
 const HomeRedirect = () => {
@@ -79,6 +80,14 @@ function App() {
           element={
             <AuthGuard>
               <Home />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/pool"
+          element={
+            <AuthGuard>
+              <PoolPage />
             </AuthGuard>
           }
         />

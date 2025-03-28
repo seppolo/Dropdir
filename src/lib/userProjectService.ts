@@ -94,6 +94,20 @@ export const createUserProject = async (
   }
 };
 
+// Memory cache for projects with expiration
+const projectsCache: {
+  data: Project[];
+  timestamp: number;
+  username: string;
+} = {
+  data: [],
+  timestamp: 0,
+  username: "",
+};
+
+// Cache expiration time in milliseconds (10 minutes)
+const CACHE_EXPIRATION = 10 * 60 * 1000;
+
 // Get all projects for the current user
 export const getUserProjects = async (): Promise<Project[]> => {
   try {
@@ -104,14 +118,51 @@ export const getUserProjects = async (): Promise<Project[]> => {
       return [];
     }
 
+    // Check in-memory cache first (faster than localStorage)
+    const now = Date.now();
+    if (
+      projectsCache.username === username &&
+      projectsCache.data.length > 0 &&
+      now - projectsCache.timestamp < CACHE_EXPIRATION
+    ) {
+      console.log("Using in-memory cache for projects");
+      return projectsCache.data;
+    }
+
+    // Check localStorage cache next
+    const cachedProjects = localStorage.getItem(`user_projects_${username}`);
+    const cachedTimestamp = localStorage.getItem(
+      `user_projects_timestamp_${username}`,
+    );
+
+    if (
+      cachedProjects &&
+      cachedTimestamp &&
+      now - parseInt(cachedTimestamp) < CACHE_EXPIRATION
+    ) {
+      console.log("Using localStorage cache for projects");
+      const parsedProjects = JSON.parse(cachedProjects) as Project[];
+
+      // Update in-memory cache
+      projectsCache.data = parsedProjects;
+      projectsCache.timestamp = now;
+      projectsCache.username = username;
+
+      return parsedProjects;
+    }
+
     let allProjects: Project[] = [];
+
+    // Only select fields we need to reduce data transfer
+    const neededFields =
+      "id, name, logo, link, twitterLink, isActive, lastActivity, notes, joinDate, chain, stage, tags, type, cost, username, created_at, updated_at";
 
     // Try to get projects from user's specific table if it exists
     if (tableName) {
       try {
         const { data: userData, error: userError } = await supabase
           .from(tableName)
-          .select("*")
+          .select(neededFields)
           .order("created_at", { ascending: false });
 
         if (!userError && userData) {
@@ -125,12 +176,28 @@ export const getUserProjects = async (): Promise<Project[]> => {
     // Also get projects from the shared user_projects table
     const { data: sharedData, error: sharedError } = await supabase
       .from("user_projects")
-      .select("*")
+      .select(neededFields)
       .eq("username", username)
       .order("created_at", { ascending: false });
 
     if (!sharedError && sharedData) {
       allProjects = [...allProjects, ...sharedData];
+    }
+
+    // Update both caches
+    if (allProjects.length > 0) {
+      localStorage.setItem(
+        `user_projects_${username}`,
+        JSON.stringify(allProjects),
+      );
+      localStorage.setItem(
+        `user_projects_timestamp_${username}`,
+        now.toString(),
+      );
+
+      projectsCache.data = allProjects;
+      projectsCache.timestamp = now;
+      projectsCache.username = username;
     }
 
     return allProjects;

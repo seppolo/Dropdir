@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo, useState } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { NetworkIcon } from "@web3icons/react";
@@ -74,7 +74,7 @@ const chainIcons = {
   default: "💀",
 };
 
-const ProjectRow = ({
+const ProjectRow = memo(function ProjectRow({
   projectName,
   projectLogo,
   projectLink,
@@ -112,7 +112,7 @@ const ProjectRow = ({
     Cost: true,
     "Last Activity": true,
   },
-}: ProjectRowProps) => {
+}: ProjectRowProps) {
   // Get chain color based on chain name
   const getChainColor = (chainName: string) => {
     if (!chainName) return chainColors.default;
@@ -123,17 +123,28 @@ const ProjectRow = ({
   // Ensure chain is never empty for icon display
   const safeChain = chain || "default";
 
+  // Use state to track if image is loaded
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <TableRow className="border-b border-gray-800">
       <TableCell className="font-medium p-2 text-left">
         <div className="flex items-center gap-3 pl-2">
           <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-700 flex-shrink-0 border-2 border-gray-600 cursor-pointer shadow-md">
+            {!imageLoaded && (
+              <div className="w-full h-full flex items-center justify-center bg-gray-800">
+                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
             <img
               src={projectLogo}
               alt={projectName}
-              className="w-full h-full object-cover"
+              loading="lazy"
+              className={`w-full h-full object-cover ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+              onLoad={() => setImageLoaded(true)}
               onError={(e) => {
                 e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${projectName}`;
+                setImageLoaded(true);
               }}
             />
           </div>
@@ -441,6 +452,6 @@ const ProjectRow = ({
       )}
     </TableRow>
   );
-};
+});
 
 export default ProjectRow;

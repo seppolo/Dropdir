@@ -9,6 +9,7 @@ import {
   List,
   User,
   Globe,
+  Layers,
 } from "lucide-react";
 import DownloadInstructions from "./DownloadInstructions";
 import AuthController from "../auth/AuthController";
@@ -107,6 +108,18 @@ const Header = ({
         >
           <Link to="/public" target="_blank" rel="noopener noreferrer">
             <Globe className="h-5 w-5" />
+          </Link>
+        </Button>
+
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-none dark:text-gray-400 h-9 w-9"
+          title="Project Pool"
+          asChild
+        >
+          <Link to="/pool">
+            <Layers className="h-5 w-5" />
           </Link>
         </Button>
 

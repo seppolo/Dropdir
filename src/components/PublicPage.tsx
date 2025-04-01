@@ -56,7 +56,7 @@ const PublicPage = () => {
         </div>
       </header>
 
-      <main className="h-full container mx-auto px-4 py-8 pt-20 relative z-10">
+      <main className="container mx-auto px-4 py-4 pt-20 pb-2 relative z-10 max-w-[1400px]">
         <AllPublicAirdrops />
       </main>
     </div>

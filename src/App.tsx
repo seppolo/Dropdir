@@ -1,14 +1,15 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, useRoutes, Navigate } from "react-router-dom";
 import routes from "tempo-routes";
+import TelegramJoinModal from "./components/TelegramJoinModal";
 
 // Lazy load all components for better performance
 const AuthGuard = lazy(() => import("./components/auth/AuthGuard"));
-const TelegramJoinModal = lazy(() => import("./components/TelegramJoinModal"));
 const Home = lazy(() => import("./components/home"));
 const PublicUserPage = lazy(() => import("./components/PublicUserPage"));
 const PublicPage = lazy(() => import("./components/PublicPage"));
 const PoolPage = lazy(() => import("./components/PoolPage"));
+const AdminDashboard = lazy(() => import("./components/admin/AdminDashboard"));
 
 // Redirect component for the homepage that checks auth status
 const HomeRedirect = () => {
@@ -92,6 +93,7 @@ function App() {
           }
         />
         <Route path="/public" element={<PublicPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/:username" element={<PublicUserPage />} />
         {/* Add explicit Tempo route to prevent catch-all conflicts */}
         {import.meta.env.VITE_TEMPO === "true" && <Route path="/tempobook/*" />}

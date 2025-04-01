@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Table, TableBody, TableHead, TableHeader, TableRow } from "./ui/table";
 import ProjectRow from "./dashboard/ProjectRow";
-import { Search, LogIn, Menu, X } from "lucide-react";
+import { Search, LogIn, Menu, X, Send } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import DoodlesBackground from "./DoodlesBackground";
@@ -235,18 +235,24 @@ const PublicUserPage = () => {
       <DoodlesBackground />
 
       <style jsx>{`
-        .telegram-icon-container {
-          border-radius: 50%;
-          padding: 4px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: black;
-          color: #3b82f6;
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0);
+            filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.7));
+          }
+          50% {
+            transform: translateY(-5px);
+            filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.9));
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
         }
       `}</style>
 
-      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative z-10">
+      <main className="container mx-auto w-[78%] px-2 sm:px-4 py-2 sm:py-4 relative z-10">
         <div className="w-full rounded-xl overflow-visible flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700">
           <div className="p-2 sm:p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A] sticky top-0 z-20">
             <div className="flex items-center gap-2 relative w-full">
@@ -255,12 +261,12 @@ const PublicUserPage = () => {
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="rounded-full w-8 h-8 border border-gray-600 bg-transparent md:hidden"
+                className="rounded-full w-10 h-10 border border-gray-600 bg-transparent md:hidden"
               >
                 {mobileMenuOpen ? (
-                  <X className="h-4 w-4 text-[#3B82F6]" />
+                  <X className="h-5 w-5 text-[#3B82F6]" />
                 ) : (
-                  <Menu className="h-4 w-4 text-[#3B82F6]" />
+                  <Menu className="h-5 w-5 text-[#3B82F6]" />
                 )}
               </Button>
 
@@ -270,30 +276,44 @@ const PublicUserPage = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsSearchVisible(!isSearchVisible)}
-                    className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-transparent"
+                    className="rounded-full w-10 h-10 border border-gray-600 bg-transparent"
                   >
-                    <Search className="h-4 w-4 text-[#3B82F6]" />
+                    <Search className="h-5 w-5 text-[#3B82F6]" />
                   </Button>
                   {isSearchVisible && (
                     <Input
                       placeholder="Search projects..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-32 sm:w-40 h-8 ml-2 text-sm bg-[#1A1A1A] border-gray-600 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
+                      className="w-40 sm:w-48 h-10 ml-2 text-sm bg-[#1A1A1A] border-gray-600 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
                       autoFocus
                     />
                   )}
                 </div>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLoginModalOpen(true)}
-              className="rounded-md border border-gray-600 bg-transparent text-[#3B82F6] text-xs sm:text-sm px-2 sm:px-4"
-            >
-              Login
-            </Button>
+            <div className="flex items-center gap-2">
+              <a
+                href="https://t.me/dropdirs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center text-cyan-400 hover:bg-cyan-900/30 transition-all duration-200 shadow-md hover:shadow-cyan-500/30 w-10 h-10 animate-float"
+              >
+                <Send className="h-5 w-5" />
+              </a>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  currentUser
+                    ? (window.location.href = "/dashboard")
+                    : setLoginModalOpen(true)
+                }
+                className="rounded-md border border-gray-600 bg-transparent text-[#3B82F6] text-sm sm:text-base px-4 sm:px-6 h-10"
+              >
+                {currentUser ? "Dashboard" : "Login"}
+              </Button>
+            </div>
           </div>
 
           {/* Mobile column selector menu */}
@@ -339,7 +359,7 @@ const PublicUserPage = () => {
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto max-h-[calc(100vh-150px)] scrollbar-thin">
+                <div className="overflow-x-auto max-h-[calc(100vh-100px)] scrollbar-thin">
                   <Table className="relative">
                     <TableHeader>
                       <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">
@@ -440,27 +460,6 @@ const PublicUserPage = () => {
           )}
         </div>
       </main>
-
-      {/* Telegram Icon with blinking animation */}
-      <a
-        href="https://t.me/dropdirs"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="absolute bottom-4 left-4 text-blue-400 hover:text-blue-300 transition-colors"
-      >
-        <div className="telegram-icon-container">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="40"
-            height="40"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-10 h-10"
-          >
-            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-          </svg>
-        </div>
-      </a>
 
       {/* Login Modal */}
       <LoginModal

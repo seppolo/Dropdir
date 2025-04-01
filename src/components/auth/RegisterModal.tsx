@@ -182,60 +182,61 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sketch-card w-[400px]">
+      <DialogContent className="sketch-card w-[400px] bg-[#0A0A0A] border-2 border-gray-700 shadow-xl rounded-xl">
         <DialogHeader>
-          <DialogTitle className="text-xl sketch-font">
+          <DialogTitle className="text-xl sketch-font text-blue-400 font-bold text-center">
             Create New Account
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Username</label>
+          <div>
             <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Choose a username"
-              className="sketch-input"
+              placeholder="Username"
+              className="sketch-input h-12 bg-[#1A1A1A] text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500/30 rounded-lg px-4 py-3 text-base"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Password</label>
+          <div>
             <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Create password"
-              className="sketch-input"
+              placeholder="Password"
+              className="sketch-input h-12 bg-[#1A1A1A] text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500/30 rounded-lg px-4 py-3 text-base"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Confirm Password</label>
+          <div>
             <Input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm password"
-              className="sketch-input"
+              placeholder="Confirm Password"
+              className="sketch-input h-12 bg-[#1A1A1A] text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500/30 rounded-lg px-4 py-3 text-base"
             />
-            {error && <p className="text-sm text-red-500">{error}</p>}
+            {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
           </div>
 
           <Button
             onClick={handleRegister}
-            className="w-full"
+            className="w-full h-12 bg-blue-600 text-white hover:bg-blue-700 font-medium transition-colors rounded-lg py-2 mt-4 text-base"
             disabled={isLoading}
           >
             {isLoading ? "Creating Account..." : "Register"}
           </Button>
 
-          <div className="text-center mt-4">
-            <span className="text-sm text-muted-foreground">
+          <div className="text-center mt-6">
+            <span className="text-sm text-gray-400">
               Already have an account?{" "}
             </span>
-            <Button variant="link" className="p-0" onClick={onLoginClick}>
+            <Button
+              variant="link"
+              className="p-0 text-blue-400 hover:text-blue-300"
+              onClick={onLoginClick}
+            >
               Login instead
             </Button>
           </div>

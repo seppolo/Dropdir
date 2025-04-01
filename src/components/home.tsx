@@ -612,7 +612,22 @@ const Home = () => {
       {/* Add doodles background */}
       <DoodlesBackground />
 
-      <main className="h-full container mx-auto px-4 py-8 relative z-10">
+      {/* Add header for mobile view, matching PublicPage */}
+      <header className="w-full h-16 px-4 bg-[#1A1A1A] backdrop-blur-sm border-b border-gray-700 flex items-center justify-between fixed top-0 z-10 md:hidden">
+        <div className="flex items-center gap-4">
+          <img
+            src="https://api.dicebear.com/7.x/avataaars/svg?seed=airdrop"
+            alt="Logo"
+            className="w-8 h-8"
+          />
+          <h1 className="text-xl font-bold text-gray-100">
+            Airdrop Manager{" "}
+            <span className="text-[#3B82F6] text-sm">Dashboard</span>
+          </h1>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-4 relative z-10 max-w-[1400px] md:py-8 md:h-full pt-20 md:pt-8">
         {connectionError && isLoggedIn && (
           <div className="bg-red-900/50 border border-red-600 text-red-200 px-4 py-2 rounded-md mb-4">
             <p className="text-sm">

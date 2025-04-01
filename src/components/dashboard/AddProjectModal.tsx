@@ -224,25 +224,39 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sketch-card fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[800px] max-w-4xl max-h-[90vh] rounded-lg transform transition-all duration-300 ease-in-out bg-background border-2 border-white/10 shadow-2xl overflow-hidden">
-        <DialogHeader className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 mb-4">
-          <DialogTitle className="text-2xl font-bold sketch-font text-white">
+      <DialogContent className="sketch-card fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[800px] max-w-4xl max-h-[85vh] rounded-xl transform transition-all duration-300 ease-in-out bg-background border-2 border-white/10 shadow-2xl overflow-hidden">
+        <DialogHeader className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 mb-4 border-b border-white/10">
+          <DialogTitle className="text-2xl font-bold sketch-font text-white flex items-center gap-3">
+            <div className="bg-white/10 p-2 rounded-lg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14M5 12h14"></path>
+              </svg>
+            </div>
             Add New Project
           </DialogTitle>
         </DialogHeader>
 
         <form
           onSubmit={handleSubmit}
-          className="px-6 pb-6 overflow-y-auto max-h-[calc(90vh-120px)] overflow-x-hidden"
+          className="px-6 pb-6 overflow-y-auto max-h-[calc(85vh-120px)]"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Left Column */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-4 items-start">
                 <div className="flex flex-col items-center gap-2">
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full sm:w-24 h-24 rounded-lg overflow-hidden border-2 border-white/10 bg-white/5 flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 transition-all flex-shrink-0 group"
+                    className="w-full sm:w-24 h-24 rounded-lg overflow-hidden border-2 border-white/10 bg-white/5 flex items-center justify-center cursor-pointer hover:border-blue-500 hover:bg-blue-500/10 transition-all flex-shrink-0 group shadow-lg hover:shadow-blue-500/20 transform hover:scale-105 duration-200"
                   >
                     {previewUrl ? (
                       <img
@@ -273,9 +287,9 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                   </p>
                 </div>
 
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
+                    <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
                       Project Name <span className="text-blue-400">*</span>
                     </label>
                     <Input
@@ -283,14 +297,14 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                       onChange={(e) =>
                         setFormData({ ...formData, project: e.target.value })
                       }
-                      className="sketch-input h-10"
+                      className="sketch-input h-9"
                       placeholder="Enter project name"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
+                    <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
                       Project Link <span className="text-blue-400">*</span>
                     </label>
                     <Input
@@ -298,7 +312,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                       onChange={(e) =>
                         setFormData({ ...formData, link: e.target.value })
                       }
-                      className="sketch-input h-10"
+                      className="sketch-input h-9"
                       placeholder="https://"
                       type="url"
                       required
@@ -306,7 +320,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
+                    <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
                       Twitter Link
                     </label>
                     <div className="flex gap-2">
@@ -318,7 +332,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                             twitter: e.target.value,
                           })
                         }
-                        className="sketch-input h-10 flex-1"
+                        className="sketch-input h-9 flex-1"
                         placeholder="https://twitter.com/"
                         type="url"
                       />
@@ -326,7 +340,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                         type="button"
                         variant="outline"
                         size="icon"
-                        className="h-10 w-10 sketch-button"
+                        className="h-9 w-9 sketch-button"
                         onClick={() => {
                           if (formData.twitter) {
                             window.open(formData.twitter, "_blank");
@@ -336,7 +350,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                         <Twitter className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="flex items-center space-x-2 mt-2">
+                    <div className="flex items-center space-x-2 mt-1">
                       <Switch
                         id="use-twitter-image"
                         checked={formData.useTwitterProfileImage}
@@ -354,7 +368,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                       />
                       <label
                         htmlFor="use-twitter-image"
-                        className="text-sm text-white/70 cursor-pointer"
+                        className="text-xs text-white/70 cursor-pointer"
                       >
                         Use Twitter profile image
                       </label>
@@ -364,7 +378,25 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
+                <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
+                  Notes
+                </label>
+                <Textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  className="sketch-input min-h-[80px] resize-none"
+                  placeholder="Add any notes about this project"
+                />
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-4 flex flex-col justify-between">
+              <div>
+                <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
                   Chain <span className="text-blue-400">*</span>
                 </label>
                 <div className="relative">
@@ -374,7 +406,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                       const value = e.target.value;
                       setFormData({ ...formData, chain: value });
                     }}
-                    className="sketch-input h-10 w-full pl-10"
+                    className="sketch-input h-9 w-full pl-10"
                     placeholder="Search chain..."
                     list="chain-options"
                   />
@@ -398,7 +430,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                     ))}
                   </datalist>
                 </div>
-                <div className="mt-2 flex flex-wrap gap-2">
+                <div className="mt-2 flex flex-wrap gap-1">
                   {[
                     { id: "ethereum", name: "Ethereum" },
                     { id: "solana", name: "Solana" },
@@ -432,108 +464,94 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
-                  Notes
-                </label>
-                <Textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
-                  className="sketch-input min-h-[100px] resize-none"
-                  placeholder="Add any notes about this project"
-                />
-              </div>
-            </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
+                    Status
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) =>
+                      setFormData({ ...formData, status: e.target.value })
+                    }
+                    className="w-full h-9 rounded-md sketch-input px-2 py-1 text-sm sketch-font bg-background text-foreground focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  >
+                    {statuses.map((status) => (
+                      <option key={status} value={status}>
+                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            {/* Right Column */}
-            <div className="space-y-6 flex flex-col justify-between">
-              <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) =>
-                    setFormData({ ...formData, status: e.target.value })
-                  }
-                  className="w-full h-10 rounded-md sketch-input px-3 py-2 text-sm sketch-font bg-background text-foreground focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-                >
-                  {statuses.map((status) => (
-                    <option key={status} value={status}>
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
-                  Stage <span className="text-blue-400">*</span>
-                </label>
-                <select
-                  value={formData.stage}
-                  onChange={(e) =>
-                    setFormData({ ...formData, stage: e.target.value })
-                  }
-                  className="w-full h-10 rounded-md sketch-input px-3 py-2 text-sm sketch-font bg-background text-foreground focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-                >
-                  {stages.map((stage) => (
-                    <option key={stage} value={stage}>
-                      {stage}
-                    </option>
-                  ))}
-                </select>
+                <div>
+                  <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
+                    Stage <span className="text-blue-400">*</span>
+                  </label>
+                  <select
+                    value={formData.stage}
+                    onChange={(e) =>
+                      setFormData({ ...formData, stage: e.target.value })
+                    }
+                    className="w-full h-9 rounded-md sketch-input px-2 py-1 text-sm sketch-font bg-background text-foreground focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  >
+                    {stages.map((stage) => (
+                      <option key={stage} value={stage}>
+                        {stage}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
-                  Type <span className="text-blue-400">*</span>
-                </label>
-                <select
-                  value={formData.type}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      type: e.target.value,
-                    })
-                  }
-                  className="w-full h-10 rounded-md sketch-input px-3 py-2 text-sm sketch-font bg-background text-foreground focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
-                >
-                  {types.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
+                    Type <span className="text-blue-400">*</span>
+                  </label>
+                  <select
+                    value={formData.type}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        type: e.target.value,
+                      })
+                    }
+                    className="w-full h-9 rounded-md sketch-input px-2 py-1 text-sm sketch-font bg-background text-foreground focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                  >
+                    {types.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
-                  Cost ($) <span className="text-blue-400">*</span>
-                </label>
-                <Input
-                  value={formData.cost}
-                  onChange={(e) =>
-                    setFormData({ ...formData, cost: e.target.value })
-                  }
-                  className="sketch-input h-10"
-                  type="number"
-                  min="0"
-                  placeholder="Enter cost"
-                  required
-                />
+                <div>
+                  <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
+                    Cost ($) <span className="text-blue-400">*</span>
+                  </label>
+                  <Input
+                    value={formData.cost}
+                    onChange={(e) =>
+                      setFormData({ ...formData, cost: e.target.value })
+                    }
+                    className="sketch-input h-9"
+                    type="number"
+                    min="0"
+                    placeholder="Enter cost"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
+                <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
                   Tags
                 </label>
                 <Input
                   placeholder="Enter tags separated by commas"
-                  className="sketch-input h-10"
+                  className="sketch-input h-9"
                   id="tags-input"
                   defaultValue={formData.tags}
                   onChange={(e) =>
@@ -546,13 +564,13 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
               </div>
 
               <div>
-                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
+                <label className="text-sm font-medium text-white/90 sketch-font block mb-1">
                   Join Date
                 </label>
                 <Input
                   type="date"
                   defaultValue={new Date().toISOString().split("T")[0]}
-                  className="sketch-input h-10"
+                  className="sketch-input h-9"
                   id="join-date-input"
                 />
               </div>
@@ -567,11 +585,12 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
           <Button
             type="submit"
-            className="w-full h-12 text-sm sketch-font mt-8 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-lg shadow-lg transform hover:scale-[1.02] transition-all duration-200 border-none"
+            className="w-full h-10 text-sm sketch-font mt-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-lg shadow-lg transform hover:scale-[1.02] transition-all duration-200 border-none relative overflow-hidden group"
             disabled={isLoading}
           >
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/20 to-purple-500/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-700"></span>
             {isLoading ? (
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2 relative z-10">
                 <svg
                   className="animate-spin h-4 w-4 text-white"
                   xmlns="http://www.w3.org/2000/svg"
@@ -595,7 +614,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                 <span>Adding Project...</span>
               </div>
             ) : (
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2 relative z-10">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-5 w-5"

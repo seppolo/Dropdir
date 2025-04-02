@@ -252,7 +252,7 @@ const PublicUserPage = () => {
         }
       `}</style>
 
-      <main className="container mx-auto w-[78%] px-2 sm:px-4 py-2 sm:py-4 relative z-10">
+      <main className="w-full relative z-10">
         <div className="w-full rounded-xl overflow-visible flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700">
           <div className="p-2 sm:p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A] sticky top-0 z-20">
             <div className="flex items-center gap-2 relative w-full">

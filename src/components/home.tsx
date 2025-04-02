@@ -637,8 +637,6 @@ const Home = () => {
           </div>
         )}
 
-        {/* Header removed as requested */}
-
         {/* Show auth modal if not logged in */}
         <AuthModal
           isOpen={showAuthModal}

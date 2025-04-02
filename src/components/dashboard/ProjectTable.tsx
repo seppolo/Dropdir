@@ -66,7 +66,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   setProjects = () => {},
   isLoggedIn = false,
 }) => {
-  const [isFullMode, setIsFullMode] = useState(window.innerWidth >= 768);
+  const [isFullMode, setIsFullMode] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [editProject, setEditProject] = useState<Project | null>(null);
@@ -94,12 +94,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   });
 
   React.useEffect(() => {
-    const handleResize = () => {
-      setIsFullMode(window.innerWidth >= 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
     // Load auto status time from localStorage
     const savedAutoStatusTime = localStorage.getItem("autoStatusTime");
     if (savedAutoStatusTime) {
@@ -167,7 +161,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     const intervalId = setInterval(checkAndUpdateStatus, 60000);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
       clearInterval(intervalId);
     };
   }, [projects, autoStatusTime, onStatusChange]);
@@ -349,7 +342,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   }, []);
 
   return (
-    <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 mb-0 relative max-w-full md:max-w-[80%] mx-auto">
+    <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 mb-0 relative">
       <style jsx>{`
         a[href*="t.me"] svg {
           animation: floatingIcon 3s ease-in-out infinite;

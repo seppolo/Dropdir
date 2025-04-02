@@ -14,7 +14,7 @@ import { useToast } from "./ui/use-toast";
 
 const PublicUserPage = () => {
   const { username } = useParams();
-  const [isFullMode, setIsFullMode] = useState(window.innerWidth >= 768);
+  const [isFullMode, setIsFullMode] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [projects, setProjects] = useState([]);
@@ -58,25 +58,19 @@ const PublicUserPage = () => {
   }, [username]);
 
   useEffect(() => {
-    const handleResize = () => {
-      const isMobile = window.innerWidth < 768;
-      setIsFullMode(!isMobile);
-
-      // Update visible columns based on screen size
-      setVisibleColumns((prev) => ({
-        ...prev,
-        "Join Date": !isMobile,
-        Chain: !isMobile,
-        Stage: !isMobile,
-        Tags: !isMobile,
-        Type: !isMobile,
-        Cost: !isMobile,
-      }));
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    // Set all columns to visible in full mode
+    setVisibleColumns({
+      Project: true,
+      Link: true,
+      Twitter: true,
+      Notes: true,
+      "Join Date": true,
+      Chain: true,
+      Stage: true,
+      Tags: true,
+      Type: true,
+      Cost: true,
+    });
   }, []);
 
   useEffect(() => {

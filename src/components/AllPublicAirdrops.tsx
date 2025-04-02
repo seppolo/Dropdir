@@ -22,19 +22,15 @@ const AllPublicAirdrops = () => {
 
     checkAuth();
   }, []);
-  const [isFullMode, setIsFullMode] = useState(window.innerWidth >= 768);
+  const [isFullMode, setIsFullMode] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsFullMode(window.innerWidth >= 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    // Always use full mode
+    setIsFullMode(true);
   }, []);
 
   useEffect(() => {

@@ -612,8 +612,8 @@ const Home = () => {
       {/* Add doodles background */}
       <DoodlesBackground />
 
-      {/* Add header for mobile view, matching PublicPage */}
-      <header className="w-full h-16 px-4 bg-[#1A1A1A] backdrop-blur-sm border-b border-gray-700 flex items-center justify-between fixed top-0 z-10 md:hidden">
+      {/* Header removed for desktop-only mode */}
+      <header className="w-full h-16 px-4 bg-[#1A1A1A] backdrop-blur-sm border-b border-gray-700 flex items-center justify-between fixed top-0 z-10 hidden">
         <div className="flex items-center gap-4">
           <img
             src="https://api.dicebear.com/7.x/avataaars/svg?seed=airdrop"
@@ -627,7 +627,7 @@ const Home = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-4 relative z-10 max-w-[1400px] md:py-8 md:h-full pt-20 md:pt-8">
+      <main className="w-full py-8 relative z-10 h-full pt-8">
         {connectionError && isLoggedIn && (
           <div className="bg-red-900/50 border border-red-600 text-red-200 px-4 py-2 rounded-md mb-4">
             <p className="text-sm">
@@ -653,7 +653,7 @@ const Home = () => {
             </div>
           </div>
         ) : (
-          <div className="relative">
+          <div className="relative w-full">
             {isLoggedIn ? (
               <ProjectTable
                 projects={projects}

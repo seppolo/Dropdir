@@ -4,23 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient 3s ease infinite;
-}
-
 /* Sketch Style Base */
 .sketch-font {
   font-family:
@@ -213,45 +196,6 @@
   animation: spin 1s linear infinite;
 }
 
-/* Desktop Size Reduction */
-@media (min-width: 768px) {
-  html {
-    font-size: 70%; /* Reduce base font size by 30% on desktop */
-  }
-
-  /* Adjust icon sizes */
-  svg,
-  .lucide-react,
-  [class^="lucide-"],
-  [class*=" lucide-"] {
-    transform: scale(0.805);
-  }
-
-  /* Adjust logo sizes */
-  img[alt="Logo"],
-  .w-8,
-  .h-8,
-  .w-10,
-  .h-10 {
-    transform: scale(0.805);
-  }
-
-  /* Adjust spacing for reduced elements */
-  .gap-4 {
-    gap: 0.7rem;
-  }
-
-  /* Adjust padding for reduced text */
-  .p-4 {
-    padding: 0.7rem;
-  }
-
-  /* Adjust margins for reduced text */
-  .m-4 {
-    margin: 0.7rem;
-  }
-}
-
 /* Custom Scrollbar */
 @layer utilities {
   /* Firefox */
@@ -279,16 +223,6 @@
   .dark .scrollbar-thin::-webkit-scrollbar-thumb {
     background-color: #666;
     border-color: #666;
-  }
-
-  /* Hide scrollbar but keep functionality */
-  .hide-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
-
-  .hide-scrollbar::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
   }
 }
 

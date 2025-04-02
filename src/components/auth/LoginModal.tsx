@@ -112,20 +112,21 @@ const LoginModal: React.FC<LoginModalProps> = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sketch-card w-[400px] bg-[#0A0A0A] border-2 border-gray-700 shadow-xl rounded-xl">
+        <DialogContent className="sketch-card w-[350px] bg-[#1A1A1A] border border-gray-700">
           <DialogHeader>
-            <DialogTitle className="text-xl sketch-font text-blue-400 font-bold text-center">
+            <DialogTitle className="text-xl sketch-font">
               Login Ke Dropdir
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-6 py-6">
-            <div>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Username</label>
               <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-                className="sketch-input bg-[#1A1A1A] text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500/30 rounded-lg px-4 py-3 text-base h-12"
+                placeholder="Enter username"
+                className="sketch-input"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleLogin();
@@ -134,36 +135,39 @@ const LoginModal: React.FC<LoginModalProps> = ({
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Password</label>
               <Input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className="sketch-input bg-[#1A1A1A] text-white border-gray-600 focus:border-blue-500 focus:ring-blue-500/30 rounded-lg px-4 py-3 text-base h-12"
+                placeholder="Enter password"
+                className="sketch-input"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleLogin();
                   }
                 }}
               />
-              {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
+              {error && <p className="text-sm text-red-500">{error}</p>}
             </div>
 
             <Button
               onClick={handleLogin}
-              className="w-full bg-blue-600 text-white hover:bg-blue-700 font-medium transition-colors rounded-lg py-3 mt-4 text-base h-12"
+              className="w-full bg-white text-black hover:bg-white"
               disabled={isLoading}
             >
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </div>
 
-          <DialogFooter className="flex flex-col items-center gap-2 mt-4">
-            <div className="text-sm text-gray-400">Don't have an account?</div>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-2">
+            <div className="text-sm text-muted-foreground">
+              Don't have an account?
+            </div>
             <Button
               variant="link"
-              className="h-auto p-0 text-blue-400 hover:text-blue-300"
+              className="h-auto p-0"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();

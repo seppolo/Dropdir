@@ -3,7 +3,6 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { NetworkIcon } from "@web3icons/react";
 import { Copy, ExternalLink, FileText, Pencil, Trash2 } from "lucide-react";
-import { formatToWIBTime, formatJoinDate } from "@/lib/utils";
 
 interface ProjectRowProps {
   visibleColumns?: Record<string, boolean>;
@@ -54,7 +53,7 @@ const chainColors = {
   tezos: "text-blue-500",
   algorand: "text-green-500",
   default:
-    "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 animate-gradient",
+    "bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-blue-500",
 };
 
 // Chain icon fallbacks - ensure we always have a fallback icon
@@ -165,7 +164,7 @@ const ProjectRow = memo(function ProjectRow({
                   className={getChainColor(safeChain)}
                   fallback={
                     <span
-                      className={`${safeChain.toLowerCase() in chainIcons ? "text-xs" : "text-[10px]"} ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : chainColors.default} font-bold`}
+                      className={`text-xs ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "text-blue-500"} font-bold`}
                     >
                       {chainIcons[safeChain.toLowerCase()] || safeChain}
                     </span>
@@ -198,7 +197,7 @@ const ProjectRow = memo(function ProjectRow({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-4.4 w-4.4 md:h-5.5 md:w-5.5"
+                className="h-4 w-4 md:h-5 md:w-5"
               >
                 <path d="M20 6L9 17l-5-5"></path>
               </svg>
@@ -213,7 +212,7 @@ const ProjectRow = memo(function ProjectRow({
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-4.4 w-4.4 md:h-5.5 md:w-5.5"
+                className="h-4 w-4 md:h-5 md:w-5"
               >
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -231,7 +230,7 @@ const ProjectRow = memo(function ProjectRow({
               onClick={onDelete}
               className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${showDeleteButton ? "text-red-500" : ""}`}
             >
-              <Trash2 className="h-4.4 w-4.4 md:h-5.5 md:w-5.5" />
+              <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
           ) : (
             <Button
@@ -240,7 +239,7 @@ const ProjectRow = memo(function ProjectRow({
               onClick={() => window.open(projectLink, "_blank")}
               className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
             >
-              <ExternalLink className="h-4.4 w-4.4 md:h-5.5 md:w-5.5 text-blue-500" />
+              <ExternalLink className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
             </Button>
           )}
         </td>
@@ -263,7 +262,7 @@ const ProjectRow = memo(function ProjectRow({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-4.4 w-4.4 md:h-5.5 md:w-5.5 text-cyan-400"
+              className="h-4 w-4 md:h-5 md:w-5 text-cyan-400"
             >
               <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
             </svg>
@@ -280,9 +279,9 @@ const ProjectRow = memo(function ProjectRow({
               className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
             >
               {showEditButton ? (
-                <Pencil className="h-4.4 w-4.4 md:h-5.5 md:w-5.5 text-yellow-400" />
+                <Pencil className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
               ) : (
-                <FileText className="h-4.4 w-4.4 md:h-5.5 md:w-5.5 text-green-400" />
+                <FileText className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
               )}
             </Button>
           ) : isPublicMode && !isOwnProfile ? (
@@ -299,7 +298,7 @@ const ProjectRow = memo(function ProjectRow({
               disabled={isCopied}
             >
               <Copy
-                className={`h-4.4 w-4.4 md:h-5.5 md:w-5.5 ${isCopied ? "text-gray-400" : "text-blue-400"}`}
+                className={`h-4 w-4 md:h-5 md:w-5 ${isCopied ? "text-gray-400" : "text-blue-400"}`}
               />
             </Button>
           ) : (
@@ -309,7 +308,7 @@ const ProjectRow = memo(function ProjectRow({
               onClick={() => {}}
               className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
             >
-              <FileText className="h-4.4 w-4.4 md:h-5.5 md:w-5.5 text-green-400" />
+              <FileText className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
             </Button>
           )}
         </td>
@@ -320,20 +319,29 @@ const ProjectRow = memo(function ProjectRow({
             <td className="p-2 text-center">
               <span className="text-[0.8rem] text-amber-400 whitespace-nowrap">
                 {(() => {
-                  const { formattedDate, daysElapsed } =
-                    formatJoinDate(joinDate);
-                  if (formattedDate === "Invalid date") {
+                  try {
+                    const date = new Date(joinDate);
+                    if (isNaN(date.getTime())) {
+                      return <div>Invalid date</div>;
+                    }
+
+                    const today = new Date();
+                    const diffTime = Math.abs(today.getTime() - date.getTime());
+                    const diffDays = Math.ceil(
+                      diffTime / (1000 * 60 * 60 * 24),
+                    );
+
+                    return (
+                      <div className="flex flex-col items-center">
+                        <div>{`${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(date.getFullYear()).slice(2)}`}</div>
+                        <div className="text-xs text-cyan-400 mt-1">
+                          {diffDays} {diffDays === 1 ? "day" : "days"}
+                        </div>
+                      </div>
+                    );
+                  } catch (error) {
                     return <div>Invalid date</div>;
                   }
-
-                  return (
-                    <div className="flex flex-col items-center">
-                      <div>{formattedDate}</div>
-                      <div className="text-xs text-cyan-400 mt-1">
-                        {daysElapsed}
-                      </div>
-                    </div>
-                  );
                 })()}
               </span>
             </td>
@@ -352,7 +360,7 @@ const ProjectRow = memo(function ProjectRow({
                   className={getChainColor(safeChain)}
                   fallback={
                     <span
-                      className={`${safeChain.toLowerCase() in chainIcons ? "text-lg" : "text-sm"} ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : chainColors.default} font-bold`}
+                      className={`text-lg ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "text-blue-500"} font-bold`}
                     >
                       {chainIcons[safeChain.toLowerCase()] || safeChain}
                     </span>
@@ -376,10 +384,13 @@ const ProjectRow = memo(function ProjectRow({
                 {Array.isArray(tags) && tags.length > 0 ? (
                   <div className="flex flex-wrap gap-1 justify-center">
                     {tags.map((tag, index) => {
+                      // Use a single color instead of gradients for better performance
+                      const colorClass = "bg-blue-500";
+
                       return (
                         <span
                           key={index}
-                          className={`px-2 py-1 text-xs rounded-full text-white border border-gray-600 ${index % 4 === 0 ? "bg-red-600" : index % 4 === 1 ? "bg-red-500" : index % 4 === 2 ? "bg-orange-600" : "bg-orange-500"}`}
+                          className={`px-2 py-1 text-xs rounded-full text-white border border-gray-600 ${colorClass}`}
                         >
                           {typeof tag === "string"
                             ? tag
@@ -392,7 +403,7 @@ const ProjectRow = memo(function ProjectRow({
                   </div>
                 ) : (
                   <div className="flex flex-wrap gap-1 justify-center">
-                    <span className="px-2 py-1 text-xs rounded-full text-white border border-gray-600 bg-gradient-to-r from-red-600 to-orange-500">
+                    <span className="px-2 py-1 text-xs rounded-full text-white border border-gray-600 bg-blue-500">
                       Airdrop
                     </span>
                   </div>
@@ -419,7 +430,23 @@ const ProjectRow = memo(function ProjectRow({
       {!isPublicMode && visibleColumns["Last Activity"] && (
         <td className="p-4 text-center">
           <span className="text-[0.8rem] text-blue-400 font-medium whitespace-nowrap">
-            {formatToWIBTime(lastActivity)} WIB
+            {(() => {
+              try {
+                const activityDate = new Date(lastActivity);
+                if (isNaN(activityDate.getTime())) {
+                  return "Invalid date";
+                }
+
+                // Format time to show in 24-hour format without timezone
+                return activityDate.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                });
+              } catch (error) {
+                return "Invalid date";
+              }
+            })()}
           </span>
         </td>
       )}

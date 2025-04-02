@@ -612,22 +612,7 @@ const Home = () => {
       {/* Add doodles background */}
       <DoodlesBackground />
 
-      {/* Header removed for desktop-only mode */}
-      <header className="w-full h-16 px-4 bg-[#1A1A1A] backdrop-blur-sm border-b border-gray-700 flex items-center justify-between fixed top-0 z-10 hidden">
-        <div className="flex items-center gap-4">
-          <img
-            src="https://api.dicebear.com/7.x/avataaars/svg?seed=airdrop"
-            alt="Logo"
-            className="w-8 h-8"
-          />
-          <h1 className="text-xl font-bold text-gray-100">
-            Airdrop Manager{" "}
-            <span className="text-[#3B82F6] text-sm">Dashboard</span>
-          </h1>
-        </div>
-      </header>
-
-      <main className="w-full py-8 relative z-10 h-full pt-8">
+      <main className="h-full container mx-auto px-4 py-8 relative z-10">
         {connectionError && isLoggedIn && (
           <div className="bg-red-900/50 border border-red-600 text-red-200 px-4 py-2 rounded-md mb-4">
             <p className="text-sm">
@@ -636,6 +621,8 @@ const Home = () => {
             </p>
           </div>
         )}
+
+        {/* Header removed as requested */}
 
         {/* Show auth modal if not logged in */}
         <AuthModal
@@ -653,7 +640,7 @@ const Home = () => {
             </div>
           </div>
         ) : (
-          <div className="relative w-full">
+          <div className="relative">
             {isLoggedIn ? (
               <ProjectTable
                 projects={projects}

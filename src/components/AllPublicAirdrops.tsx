@@ -22,15 +22,19 @@ const AllPublicAirdrops = () => {
 
     checkAuth();
   }, []);
-  const [isFullMode, setIsFullMode] = useState(true);
+  const [isFullMode, setIsFullMode] = useState(window.innerWidth >= 768);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Always use full mode
-    setIsFullMode(true);
+    const handleResize = () => {
+      setIsFullMode(window.innerWidth >= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -68,84 +72,26 @@ const AllPublicAirdrops = () => {
   );
 
   return (
-    <div className="w-full rounded-xl overflow-hidden bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 relative max-w-[80%] mx-auto">
+    <div className="w-full h-full rounded-lg overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700">
       <div className="p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
-        <style jsx>{`
-          @keyframes float {
-            0%,
-            100% {
-              transform: translateY(0);
-              filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.7));
-            }
-            50% {
-              transform: translateY(-5px);
-              filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.9));
-            }
-          }
-
-          .animate-float {
-            animation: float 3s ease-in-out infinite;
-          }
-
-          @keyframes blinkingBorder {
-            0%,
-            100% {
-              box-shadow:
-                0 0 0 0 rgba(239, 68, 68, 0.7),
-                0 4px 12px rgba(0, 0, 0, 0.5);
-              color: rgb(239, 68, 68);
-            }
-            16% {
-              box-shadow:
-                0 0 0 4px rgba(239, 68, 68, 0.7),
-                0 4px 12px rgba(239, 68, 68, 0.5);
-              color: rgb(239, 68, 68);
-            }
-            33% {
-              box-shadow:
-                0 0 0 0 rgba(34, 197, 94, 0.7),
-                0 4px 12px rgba(0, 0, 0, 0.5);
-              color: rgb(34, 197, 94);
-            }
-            50% {
-              box-shadow:
-                0 0 0 4px rgba(34, 197, 94, 0.7),
-                0 4px 12px rgba(34, 197, 94, 0.5);
-              color: rgb(34, 197, 94);
-            }
-            66% {
-              box-shadow:
-                0 0 0 0 rgba(234, 179, 8, 0.7),
-                0 4px 12px rgba(0, 0, 0, 0.5);
-              color: rgb(234, 179, 8);
-            }
-            83% {
-              box-shadow:
-                0 0 0 4px rgba(234, 179, 8, 0.7),
-                0 4px 12px rgba(234, 179, 8, 0.5);
-              color: rgb(234, 179, 8);
-            }
-          }
-        `}</style>
         <div className="flex items-center gap-3 relative w-full md:w-auto">
-          <div className="flex items-center relative">
+          <div className="flex items-center gap-2 relative">
             <div className="flex items-center">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchVisible(!isSearchVisible)}
-                className="rounded-full w-10 h-10 md:w-12 md:h-12 border-2 border-blue-500 bg-gray-800 hover:bg-blue-900 transition-all duration-200 shadow-md hover:shadow-blue-500/30"
+                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-transparent hover:bg-gray-800"
               >
-                <Search className="h-5 w-5 text-blue-400" />
+                <Search className="h-4 w-4 text-[#3B82F6]" />
               </Button>
               {isSearchVisible && (
                 <Input
                   placeholder="Search projects or users..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-48 h-10 ml-3 text-sm bg-[#0A101F] border-2 border-blue-500/50 focus:border-blue-500 rounded-full pl-4 transition-all duration-200 focus:ring-2 focus:ring-blue-500/30"
+                  className="w-40 h-8 ml-2 text-sm bg-[#1A1A1A] border-gray-600 focus:border-[#3B82F6] focus:ring-[#3B82F6]/20 rounded-full"
                   autoFocus
-                  onBlur={() => setIsSearchVisible(false)}
                 />
               )}
             </div>
@@ -159,60 +105,38 @@ const AllPublicAirdrops = () => {
             </a>
           </div>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => (window.location.href = "/Moffuadi")}
-            className="rounded-full px-4 py-2 border-2 border-purple-500 bg-gray-800 hover:bg-purple-900 transition-all duration-200 shadow-md hover:shadow-purple-500/30 text-purple-400"
+            className="bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 border-purple-500/50"
           >
-            <List className="h-4 w-4 mr-2" />
+            <List className="h-4 w-4 mr-1" />
             List
           </Button>
           <Button
-            variant="ghost"
+            variant="outline"
             size="sm"
             onClick={() => {
               window.location.href = "/";
               // Set a flag in localStorage to show login modal on dashboard
               localStorage.setItem("showLoginModal", "true");
             }}
-            className="rounded-full px-4 py-2 border-2 border-blue-500 bg-gray-800 hover:bg-blue-900 transition-all duration-200 shadow-md hover:shadow-blue-500/30 text-blue-400"
+            className="bg-[#3B82F6]/20 text-[#3B82F6] hover:bg-[#3B82F6]/30 border-[#3B82F6]/50"
           >
             Login
           </Button>
-          <a
-            href="https://t.me/airdropcrypto"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full border-2 border-cyan-500 text-cyan-400 hover:bg-cyan-900/30 transition-all duration-200 shadow-md hover:shadow-cyan-500/30 w-9 h-9 ml-2 animate-float"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-4 w-4"
-            >
-              <path d="m22 2-7 20-4-9-9-4Z" />
-              <path d="M22 2 11 13" />
-            </svg>
-          </a>
         </div>
       </div>
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center h-full py-20">
-          <div className="rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3B82F6] animate-spin mb-4"></div>
+          <div className="rounded-full h-12 w-12 border-t-2 border-b-2 border-[#3B82F6] mb-4"></div>
           <div className="text-white/80 text-lg font-medium">
             Loading public airdrops...
           </div>
         </div>
       ) : (
-        <div className="overflow-auto max-h-[calc(100vh-80px)] scrollbar-thin bg-[#1A1A1A]">
+        <div className="flex-1">
           {filteredProjects.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full py-20">
               <div className="text-white/80 text-lg font-medium">
@@ -225,11 +149,11 @@ const AllPublicAirdrops = () => {
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto max-h-[calc(100vh-80px)] scrollbar-thin">
-              <Table>
+            <div className="overflow-x-auto max-h-[calc(100vh-150px)] scrollbar-thin">
+              <Table className="relative">
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">
-                    <TableHead className="w-[240px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10 text-base">
+                    <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10">
                       Project
                     </TableHead>
                     <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
@@ -329,7 +253,7 @@ const AllPublicAirdrops = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => window.open(project.link, "_blank")}
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-blue-500 bg-gray-800 hover:bg-blue-900 transition-all duration-200 shadow-md hover:shadow-blue-500/30 text-blue-400"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-[#3B82F6]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -359,7 +283,7 @@ const AllPublicAirdrops = () => {
                                 "_blank",
                               )
                             }
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-blue-500 bg-gray-800 hover:bg-blue-900 transition-all duration-200 shadow-md hover:shadow-blue-500/30 text-blue-400"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-[#3B82F6]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -382,7 +306,7 @@ const AllPublicAirdrops = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => {}}
-                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-blue-500 bg-gray-800 hover:bg-blue-900 transition-all duration-200 shadow-md hover:shadow-blue-500/30 text-blue-400"
+                            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent hover:bg-gray-800 text-[#3B82F6]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -451,7 +375,7 @@ const AllPublicAirdrops = () => {
                                       .map((tag, index) => (
                                         <span
                                           key={index}
-                                          className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-red-500 to-orange-500 shadow-lg"
+                                          className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] shadow-lg"
                                         >
                                           {tag
                                             .trim()
@@ -466,7 +390,7 @@ const AllPublicAirdrops = () => {
                                     {project.tags.map((tag, index) => (
                                       <span
                                         key={index}
-                                        className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-red-500 to-orange-500 shadow-lg"
+                                        className="px-2 py-1 text-xs rounded-full text-white border border-transparent bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] shadow-lg"
                                       >
                                         {typeof tag === "string"
                                           ? tag

@@ -14,7 +14,6 @@ import SupabaseStatus from "./SupabaseStatus";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -66,7 +65,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   setProjects = () => {},
   isLoggedIn = false,
 }) => {
-  const [isFullMode, setIsFullMode] = useState(true);
+  const [isFullMode, setIsFullMode] = useState(window.innerWidth >= 768);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [editProject, setEditProject] = useState<Project | null>(null);
@@ -94,6 +93,12 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   });
 
   React.useEffect(() => {
+    const handleResize = () => {
+      setIsFullMode(window.innerWidth >= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
     // Load auto status time from localStorage
     const savedAutoStatusTime = localStorage.getItem("autoStatusTime");
     if (savedAutoStatusTime) {
@@ -161,6 +166,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     const intervalId = setInterval(checkAndUpdateStatus, 60000);
 
     return () => {
+      window.removeEventListener("resize", handleResize);
       clearInterval(intervalId);
     };
   }, [projects, autoStatusTime, onStatusChange]);
@@ -342,88 +348,69 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   }, []);
 
   return (
-    <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 mb-0 relative">
+    <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 mb-6 relative">
       <style jsx>{`
-        a[href*="t.me"] svg {
-          animation: floatingIcon 3s ease-in-out infinite;
-          filter: drop-shadow(0 0 8px currentColor);
-        }
-
-        @keyframes floatingIcon {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-5px);
-          }
+        .telegram-icon-container {
+          border-radius: 50%;
+          padding: 4px;
+          animation: blinkingBorder 4.5s infinite;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: black;
         }
 
         @keyframes blinkingBorder {
           0%,
           100% {
-            box-shadow:
-              0 0 0 0 rgba(239, 68, 68, 0.7),
-              0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
             color: rgb(239, 68, 68);
           }
           16% {
-            box-shadow:
-              0 0 0 4px rgba(239, 68, 68, 0.7),
-              0 4px 12px rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.7);
             color: rgb(239, 68, 68);
           }
           33% {
-            box-shadow:
-              0 0 0 0 rgba(34, 197, 94, 0.7),
-              0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
             color: rgb(34, 197, 94);
           }
           50% {
-            box-shadow:
-              0 0 0 4px rgba(34, 197, 94, 0.7),
-              0 4px 12px rgba(34, 197, 94, 0.5);
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.7);
             color: rgb(34, 197, 94);
           }
           66% {
-            box-shadow:
-              0 0 0 0 rgba(234, 179, 8, 0.7),
-              0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
             color: rgb(234, 179, 8);
           }
           83% {
-            box-shadow:
-              0 0 0 4px rgba(234, 179, 8, 0.7),
-              0 4px 12px rgba(234, 179, 8, 0.5);
+            box-shadow: 0 0 0 4px rgba(234, 179, 8, 0.7);
             color: rgb(234, 179, 8);
           }
         }
       `}</style>
-      <div className="p-2 md:p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
-        <div className="flex items-center gap-2 md:gap-3 relative w-full md:w-auto">
+      <div className="p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
+        <div className="flex items-center gap-3 relative w-full md:w-auto">
           {isLoggedIn && (
             <Button
               onClick={() => setShowAddModal(true)}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border-2 border-emerald-500 bg-gray-800 hover:bg-emerald-900 flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-emerald-500/30"
+              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700 flex items-center justify-center"
             >
               <div className="flex items-center justify-center">
-                <span className="text-emerald-400 font-bold text-xl md:text-2xl">
-                  +
-                </span>
+                <span className="text-white font-bold text-lg">+</span>
               </div>
             </Button>
           )}
 
-          <div className="flex items-center gap-1 md:gap-2 relative">
+          <div className="flex items-center gap-2 relative">
             {isLoggedIn && (
               <>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsDeleteMode(!isDeleteMode)}
-                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border-2 border-purple-500 bg-gray-800 hover:bg-purple-900 transition-all duration-200 shadow-md hover:shadow-purple-500/30"
+                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
                 >
-                  <Pencil className="h-4 w-4 md:h-5 md:w-5 text-purple-400" />
+                  <Pencil className="h-4 w-4 text-white" />
                 </Button>
               </>
             )}
@@ -431,9 +418,9 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
               variant="ghost"
               size="icon"
               onClick={() => setShowColumnSettings(true)}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border-2 border-amber-500 bg-gray-800 hover:bg-amber-900 ml-2 transition-all duration-200 shadow-md hover:shadow-amber-500/30"
+              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700 ml-2"
             >
-              <Settings className="h-4 w-4 md:h-5 md:w-5 text-amber-400" />
+              <Settings className="h-4 w-4 text-white" />
             </Button>
 
             <div className="flex items-center">
@@ -441,85 +428,69 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchVisible(!isSearchVisible)}
-                className="rounded-full w-8 h-8 md:w-10 md:h-10 border-2 border-blue-500 bg-gray-800 hover:bg-blue-900 transition-all duration-200 shadow-md hover:shadow-blue-500/30"
+                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
               >
-                <Search className="h-4 w-4 md:h-5 md:w-5 text-blue-400" />
+                <Search className="h-4 w-4 text-white" />
               </Button>
               {isSearchVisible && (
                 <Input
                   placeholder="Search projects..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-36 md:w-48 h-8 md:h-10 ml-2 md:ml-3 text-xs md:text-sm bg-[#0A101F] border-2 border-blue-500/50 focus:border-blue-500 rounded-full pl-3 md:pl-4 transition-all duration-200 focus:ring-2 focus:ring-blue-500/30"
+                  className="w-40 h-8 ml-2 text-sm bg-[#0A101F] border-gray-600 focus:border-gray-500 rounded-full"
                   autoFocus
+                  onBlur={() => setIsSearchVisible(false)}
                 />
               )}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-2">
           <a
             href="https://t.me/dropdirs"
             target="_blank"
             rel="noopener noreferrer"
-            className="mr-1 md:mr-2 group transition-all duration-300 hover:scale-110 relative"
-            title="Join our Telegram channel"
+            className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors mr-2"
           >
             <svg
-              width="24"
-              height="24"
+              width="20"
+              height="20"
               viewBox="0 0 512 512"
               fill="currentColor"
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 md:h-5 md:w-5 text-blue-400 transition-transform group-hover:rotate-12 duration-300"
             >
               <path d="M470.435 45.423L16.827 221.249c-18.254 8.188-24.428 24.585-4.412 33.484l116.37 37.173 281.368-174.79c15.363-10.973 31.091-8.047 17.557 4.024L186.053 341.075l-7.591 93.041c7.031 14.371 19.905 14.438 28.117 7.22l66.858-63.87 111.836 85.45c33.214 19.554 49.291 8.439 55.955-30.168l88.662-359.853c6.767-39.536-6.328-53.428-59.455-27.472z" />
             </svg>
-            <span className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-red-500 text-white text-[10px] md:text-xs font-bold rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center animate-pulse">
-              !
-            </span>
           </a>
           <AuthController />
         </div>
       </div>
-      <div className="flex-1 overflow-auto max-h-[calc(100vh-100px)] scrollbar-thin bg-[#1A1A1A]">
+      <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A1A]">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">
-              <TableHead className="w-[240px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10 text-base">
+              <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10">
                 Project
               </TableHead>
               {visibleColumns.Status && (
                 <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                  <div className="flex items-center justify-center gap-1">
-                    <Settings className="h-5 w-5 text-white opacity-70" />
-                    Check-in
-                  </div>
+                  Check-in
                 </TableHead>
               )}
               {visibleColumns.Link && (
                 <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                  <div className="flex items-center justify-center gap-1">
-                    <Globe className="h-5 w-5 text-white opacity-70" />
-                    Link
-                  </div>
+                  Link
                 </TableHead>
               )}
               {visibleColumns.Twitter && (
                 <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                  <div className="flex items-center justify-center gap-1">
-                    <MessageCircle className="h-5 w-5 text-white opacity-70" />
-                    Twitter
-                  </div>
+                  Twitter
                 </TableHead>
               )}
               {visibleColumns.Notes && (
                 <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                  <div className="flex items-center justify-center gap-1">
-                    <Pencil className="h-5 w-5 text-white opacity-70" />
-                    Notes
-                  </div>
+                  Notes
                 </TableHead>
               )}
               {isFullMode && (
@@ -574,12 +545,12 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                       className="hover:bg-gray-800 cursor-pointer border-b border-gray-700"
                       onClick={() => toggleChainExpansion(chain)}
                     >
-                      <TableCell colSpan={12} className="py-0 pl-4 text-left">
-                        <div className="flex items-start gap-2 justify-start w-full pl-14">
+                      <TableHead colSpan={12} className="py-2 pl-4">
+                        <div className="flex items-center gap-2">
                           <span className="text-blue-400 font-medium">
                             {expandedChains.includes(chain) ? "▼" : "►"}
                           </span>
-                          <span className="font-bold text-blue-400 text-left">
+                          <span className="font-bold text-blue-400">
                             {chain} (
                             {
                               filteredProjects.filter(
@@ -589,7 +560,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                             )
                           </span>
                         </div>
-                      </TableCell>
+                      </TableHead>
                     </TableRow>
 
                     {/* Projects in this chain */}

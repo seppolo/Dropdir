@@ -1,10 +1,10 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, useRoutes, Navigate } from "react-router-dom";
 import routes from "tempo-routes";
-import TelegramJoinModal from "./components/TelegramJoinModal";
 
 // Lazy load all components for better performance
 const AuthGuard = lazy(() => import("./components/auth/AuthGuard"));
+const TelegramJoinModal = lazy(() => import("./components/TelegramJoinModal"));
 const Home = lazy(() => import("./components/home"));
 const PublicUserPage = lazy(() => import("./components/PublicUserPage"));
 const PublicPage = lazy(() => import("./components/PublicPage"));

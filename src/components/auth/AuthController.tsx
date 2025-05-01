@@ -66,6 +66,10 @@ const AuthController: React.FC<AuthControllerProps> = ({
     }
 
     onAuthStateChange(true);
+
+    // Dispatch event that auth state changed
+    window.dispatchEvent(new Event("authStateChanged"));
+
     // Force immediate reload
     window.location.reload();
   };

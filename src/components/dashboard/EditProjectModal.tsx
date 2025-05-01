@@ -242,7 +242,6 @@ const EditProjectModal = ({
           type: formData.type,
           cost: Number(formData.cost) || 0,
           image: logoUrl,
-          image: logoUrl,
           last_activity: new Date().toISOString(),
           join_date: joinDate,
           tags: tagsArray.join(", "),

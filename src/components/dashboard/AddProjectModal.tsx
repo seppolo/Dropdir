@@ -174,6 +174,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
             tags: tagsArray,
             join_date: new Date().toISOString().split("T")[0],
             image: logoUrl,
+            wallet: formData.wallet,
             last_activity: new Date().toISOString(),
           },
         ])
@@ -554,6 +555,23 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                   defaultValue={new Date().toISOString().split("T")[0]}
                   className="sketch-input h-10"
                   id="join-date-input"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
+                  Wallet Address{" "}
+                  <span className="text-xs text-blue-400">
+                    (Only visible to you)
+                  </span>
+                </label>
+                <Input
+                  value={formData.wallet}
+                  onChange={(e) =>
+                    setFormData({ ...formData, wallet: e.target.value })
+                  }
+                  className="sketch-input h-10"
+                  placeholder="0x..."
                 />
               </div>
             </div>

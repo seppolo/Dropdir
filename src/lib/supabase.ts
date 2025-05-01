@@ -9,16 +9,49 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
+// Create a lightweight Supabase client with optimized settings
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
   },
   global: {
-    fetch: (...args) => {
-      // Log fetch requests for debugging
-      console.log("Supabase fetch request:", args[0]);
-      return fetch(...args);
+    headers: {
+      "Cache-Control": "max-age=1800", // 30 minutes cache
+    },
+  },
+  db: {
+    schema: "public",
+  },
+  realtime: {
+    // Disable realtime subscriptions to reduce overhead
+    params: {
+      eventsPerSecond: 1,
     },
   },
 });
+
+// Cache control helper functions
+export const clearSupabaseCache = () => {
+  // Clear all cached data related to Supabase
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.includes("user_projects") || key.includes("cached_"))) {
+      keysToRemove.push(key);
+    }
+  }
+
+  keysToRemove.forEach((key) => localStorage.removeItem(key));
+};
+
+export const getSupabaseCacheSize = () => {
+  let totalSize = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.includes("user_projects") || key.includes("cached_"))) {
+      totalSize += localStorage.getItem(key)?.length || 0;
+    }
+  }
+  return (totalSize / 1024).toFixed(2) + " KB";
+};

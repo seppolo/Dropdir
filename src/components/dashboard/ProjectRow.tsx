@@ -29,6 +29,8 @@ interface ProjectRowProps {
   isOwnProfile?: boolean;
   onCopyProject?: () => void;
   isCopied?: boolean;
+  projectId?: string;
+  username?: string;
 }
 
 // Chain color mapping
@@ -98,6 +100,8 @@ const ProjectRow = memo(function ProjectRow({
   isOwnProfile = true,
   onCopyProject = () => {},
   isCopied = false,
+  projectId,
+  username,
   visibleColumns = {
     Project: true,
     Status: true,
@@ -324,19 +328,9 @@ const ProjectRow = memo(function ProjectRow({
                     if (isNaN(date.getTime())) {
                       return <div>Invalid date</div>;
                     }
-
-                    const today = new Date();
-                    const diffTime = Math.abs(today.getTime() - date.getTime());
-                    const diffDays = Math.ceil(
-                      diffTime / (1000 * 60 * 60 * 24),
-                    );
-
                     return (
                       <div className="flex flex-col items-center">
                         <div>{`${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(date.getFullYear()).slice(2)}`}</div>
-                        <div className="text-xs text-cyan-400 mt-1">
-                          {diffDays} {diffDays === 1 ? "day" : "days"}
-                        </div>
                       </div>
                     );
                   } catch (error) {
@@ -422,6 +416,13 @@ const ProjectRow = memo(function ProjectRow({
             <td className="p-2 text-center">
               <span className="text-[0.8rem] text-green-400 font-medium">
                 ${cost}
+              </span>
+            </td>
+          )}
+          {visibleColumns.Wallet && !isPublicMode && (
+            <td className="p-2 text-center">
+              <span className="text-[0.8rem] text-purple-400 font-medium">
+                {wallet ? wallet : "Not set"}
               </span>
             </td>
           )}

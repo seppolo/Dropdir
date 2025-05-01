@@ -86,7 +86,7 @@
     "pg": "^8.13.3",
     "postcss": "^8.4.38",
     "tailwindcss": "3.4.1",
-    "tempo-devtools": "^2.0.94",
+    "tempo-devtools": "^2.0.102",
     "tsx": "^4.19.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"

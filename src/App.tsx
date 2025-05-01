@@ -8,8 +8,10 @@ const TelegramJoinModal = lazy(() => import("./components/TelegramJoinModal"));
 const Home = lazy(() => import("./components/home"));
 const PublicUserPage = lazy(() => import("./components/PublicUserPage"));
 const PublicPage = lazy(() => import("./components/PublicPage"));
-const PoolPage = lazy(() => import("./components/PoolPage"));
 const AdminDashboard = lazy(() => import("./components/admin/AdminDashboard"));
+const ProjectCopyRedirect = lazy(
+  () => import("./components/ProjectCopyRedirect"),
+);
 
 // Redirect component for the homepage that checks auth status
 const HomeRedirect = () => {
@@ -53,14 +55,8 @@ function App() {
   const [showTelegramModal, setShowTelegramModal] = useState(false);
 
   useEffect(() => {
-    // Check if the modal has been shown before
-    const telegramModalShown = localStorage.getItem("telegramModalShown");
-
-    if (!telegramModalShown) {
-      // If not shown before, show it and set the flag in localStorage
-      setShowTelegramModal(true);
-      localStorage.setItem("telegramModalShown", "true");
-    }
+    // Disable telegram modal to reduce app weight
+    setShowTelegramModal(false);
   }, []);
 
   return (
@@ -84,16 +80,10 @@ function App() {
             </AuthGuard>
           }
         />
-        <Route
-          path="/pool"
-          element={
-            <AuthGuard>
-              <PoolPage />
-            </AuthGuard>
-          }
-        />
+
         <Route path="/public" element={<PublicPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/:username/:projectId" element={<ProjectCopyRedirect />} />
         <Route path="/:username" element={<PublicUserPage />} />
         {/* Add explicit Tempo route to prevent catch-all conflicts */}
         {import.meta.env.VITE_TEMPO === "true" && <Route path="/tempobook/*" />}

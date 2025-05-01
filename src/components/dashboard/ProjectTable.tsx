@@ -42,6 +42,7 @@ interface Project {
   tags: string[];
   type: "Retroactive" | "Testnet" | "Mini App" | "Node";
   cost: number;
+  wallet: string;
 }
 
 interface ProjectTableProps {
@@ -349,45 +350,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
 
   return (
     <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 mb-6 relative">
-      <style jsx>{`
-        .telegram-icon-container {
-          border-radius: 50%;
-          padding: 4px;
-          animation: blinkingBorder 4.5s infinite;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: black;
-        }
-
-        @keyframes blinkingBorder {
-          0%,
-          100% {
-            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-            color: rgb(239, 68, 68);
-          }
-          16% {
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.7);
-            color: rgb(239, 68, 68);
-          }
-          33% {
-            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
-            color: rgb(34, 197, 94);
-          }
-          50% {
-            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.7);
-            color: rgb(34, 197, 94);
-          }
-          66% {
-            box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7);
-            color: rgb(234, 179, 8);
-          }
-          83% {
-            box-shadow: 0 0 0 4px rgba(234, 179, 8, 0.7);
-            color: rgb(234, 179, 8);
-          }
-        }
-      `}</style>
       <div className="p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
         <div className="flex items-center gap-3 relative w-full md:w-auto">
           {isLoggedIn && (
@@ -447,22 +409,6 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <a
-            href="https://t.me/dropdirs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors mr-2"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 512 512"
-              fill="currentColor"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M470.435 45.423L16.827 221.249c-18.254 8.188-24.428 24.585-4.412 33.484l116.37 37.173 281.368-174.79c15.363-10.973 31.091-8.047 17.557 4.024L186.053 341.075l-7.591 93.041c7.031 14.371 19.905 14.438 28.117 7.22l66.858-63.87 111.836 85.45c33.214 19.554 49.291 8.439 55.955-30.168l88.662-359.853c6.767-39.536-6.328-53.428-59.455-27.472z" />
-            </svg>
-          </a>
           <AuthController />
         </div>
       </div>
@@ -633,6 +579,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                             }
                             isPublicMode={false}
                             visibleColumns={visibleColumns}
+                            wallet={project.wallet}
                           />
                         ))}
                   </React.Fragment>
@@ -697,6 +644,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                       }
                       isPublicMode={false}
                       visibleColumns={visibleColumns}
+                      wallet={project.wallet}
                     />
                   ))}
           </TableBody>

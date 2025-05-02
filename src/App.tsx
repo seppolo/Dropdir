@@ -55,8 +55,13 @@ function App() {
   const [showTelegramModal, setShowTelegramModal] = useState(false);
 
   useEffect(() => {
-    // Disable telegram modal to reduce app weight
-    setShowTelegramModal(false);
+    // Check if the user has seen the Telegram modal before
+    const hasSeenTelegramModal = localStorage.getItem("hasSeenTelegramModal");
+    if (!hasSeenTelegramModal) {
+      setShowTelegramModal(true);
+      // Mark that the user has seen the modal
+      localStorage.setItem("hasSeenTelegramModal", "true");
+    }
   }, []);
 
   return (

@@ -1,11 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AllPublicAirdrops from "./AllPublicAirdrops";
 import DoodlesBackground from "./DoodlesBackground";
-import { List, LogIn, MessageCircle } from "lucide-react";
+import { List, LogIn, MessageCircle, UserPlus } from "lucide-react";
 
 const PublicPage = () => {
+  const [isFirstTimeVisitor, setIsFirstTimeVisitor] = useState(false);
+
   useEffect(() => {
     document.documentElement.classList.add("dark");
+
+    // Check if user is a first-time visitor
+    const hasVisitedBefore = localStorage.getItem("has_visited_before");
+    if (!hasVisitedBefore) {
+      setIsFirstTimeVisitor(true);
+      localStorage.setItem("has_visited_before", "true");
+    }
   }, []);
 
   return (
@@ -37,21 +46,35 @@ const PublicPage = () => {
             href="https://t.me/dropdirs"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors"
+            className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors flex items-center gap-1"
           >
             <MessageCircle className="h-4 w-4" />
+            <span className="text-sm">Telegram</span>
           </a>
           <a
             href="/"
-            className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors text-sm"
+            className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors text-sm flex items-center gap-1"
             onClick={(e) => {
               e.preventDefault();
               window.location.href =
                 "https://musing-torvalds7-3sh6x.dev-2.tempolabs.ai";
-              localStorage.setItem("showLoginModal", "true");
+              localStorage.setItem(
+                isFirstTimeVisitor ? "showRegisterModal" : "showLoginModal",
+                "true",
+              );
             }}
           >
-            Login
+            {isFirstTimeVisitor ? (
+              <>
+                <UserPlus className="h-4 w-4" />
+                Register
+              </>
+            ) : (
+              <>
+                <LogIn className="h-4 w-4" />
+                Login
+              </>
+            )}
           </a>
         </div>
       </header>

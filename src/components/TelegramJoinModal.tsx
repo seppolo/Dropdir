@@ -23,7 +23,7 @@ export default function TelegramJoinModal({
         <div className="flex flex-col items-center justify-center space-y-4 p-4">
           <p className="text-center text-muted-foreground">
             Silahkan bergabung ke grup telegram Dropdir untuk mendapatkan
-            informasi terbaru terkait aplikasi
+            informasi terbaru, tutorial dan diskusi terkait aplikasi
           </p>
           <a
             href="https://t.me/dropdirs"

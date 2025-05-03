@@ -76,6 +76,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   const [showMakeAllPublicModal, setShowMakeAllPublicModal] = useState(false);
   const [isPublicMode, setIsPublicMode] = useState(false);
   const [isNestedByEcosystem, setIsNestedByEcosystem] = useState(false);
+  const [activeStage, setActiveStage] = useState<string | null>(null);
   const [showColumnSettings, setShowColumnSettings] = useState(false);
   const [autoStatusTime, setAutoStatusTime] = useState("09:00 AM");
   const [visibleColumns, setVisibleColumns] = useState({
@@ -84,13 +85,13 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     Link: true,
     Twitter: true,
     Notes: true,
+    Wallet: true,
     "Join Date": true,
     Chain: true,
     Stage: true,
     Tags: true,
     Type: true,
     Cost: true,
-    Wallet: true,
     "Last Activity": true,
   });
 
@@ -195,6 +196,20 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   const uniqueChains = [
     ...new Set(filteredProjects.map((project) => project.chain || "Unknown")),
   ];
+
+  // Get unique stages from filtered projects
+  const uniqueStages = [
+    ...new Set(filteredProjects.map((project) => project.stage || "Unknown")),
+  ];
+
+  // Filter projects by active stage if one is selected
+  const stageFilteredProjects = activeStage
+    ? filteredProjects.filter(
+        (project) =>
+          (project.stage || "Unknown").toLowerCase() ===
+          activeStage.toLowerCase(),
+      )
+    : filteredProjects;
 
   // State to track expanded chains
   const [expandedChains, setExpandedChains] = useState<string[]>(uniqueChains);
@@ -351,66 +366,87 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
 
   return (
     <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 mb-6 relative">
-      <div className="p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A]">
-        <div className="flex items-center gap-3 relative w-full md:w-auto">
-          {isLoggedIn && (
-            <Button
-              onClick={() => setShowAddModal(true)}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700 flex items-center justify-center"
-            >
-              <div className="flex items-center justify-center">
-                <span className="text-white font-bold text-lg">+</span>
-              </div>
-            </Button>
-          )}
-
-          <div className="flex items-center gap-2 relative">
+      <div className="p-4 border-b border-gray-600 bg-[#1A1A1A] relative">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 relative w-full md:w-auto">
             {isLoggedIn && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsDeleteMode(!isDeleteMode)}
-                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
-                >
-                  <Pencil className="h-4 w-4 text-white" />
-                </Button>
-              </>
+              <Button
+                onClick={() => setShowAddModal(true)}
+                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700 flex items-center justify-center"
+              >
+                <div className="flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">+</span>
+                </div>
+              </Button>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowColumnSettings(true)}
-              className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700 ml-2"
-            >
-              <Settings className="h-4 w-4 text-white" />
-            </Button>
 
-            <div className="flex items-center">
+            <div className="flex items-center gap-2 relative">
+              {isLoggedIn && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsDeleteMode(!isDeleteMode)}
+                    className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
+                  >
+                    <Pencil className="h-4 w-4 text-white" />
+                  </Button>
+                </>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsSearchVisible(!isSearchVisible)}
-                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
+                onClick={() => setShowColumnSettings(true)}
+                className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700 ml-2"
               >
-                <Search className="h-4 w-4 text-white" />
+                <Settings className="h-4 w-4 text-white" />
               </Button>
-              {isSearchVisible && (
-                <Input
-                  placeholder="Search projects..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-40 h-8 ml-2 text-sm bg-[#0A101F] border-gray-600 focus:border-gray-500 rounded-full"
-                  autoFocus
-                  onBlur={() => setIsSearchVisible(false)}
-                />
-              )}
+
+              <div className="flex items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearchVisible(!isSearchVisible)}
+                  className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
+                >
+                  <Search className="h-4 w-4 text-white" />
+                </Button>
+                {isSearchVisible && (
+                  <Input
+                    placeholder="Search projects..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-40 h-8 ml-2 text-sm bg-[#0A101F] border-gray-600 focus:border-gray-500 rounded-full"
+                    autoFocus
+                    onBlur={() => setIsSearchVisible(false)}
+                  />
+                )}
+              </div>
             </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <AuthController />
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <AuthController />
+        {/* Stage Tabs - Centered */}
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1 overflow-x-auto max-w-md">
+          <button
+            onClick={() => setActiveStage(null)}
+            className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${!activeStage ? "bg-blue-600 text-white" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
+          >
+            All
+          </button>
+          {uniqueStages.map((stage) => (
+            <button
+              key={stage}
+              onClick={() => setActiveStage(stage)}
+              className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${activeStage === stage ? "bg-blue-600 text-white" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
+            >
+              {stage}
+            </button>
+          ))}
         </div>
       </div>
       <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A1A]">
@@ -440,6 +476,11 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   Notes
                 </TableHead>
               )}
+              {visibleColumns.Wallet && (
+                <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Wallet
+                </TableHead>
+              )}
               {isFullMode && (
                 <>
                   {visibleColumns["Join Date"] && (
@@ -447,212 +488,214 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                       Join Date
                     </TableHead>
                   )}
-
-                  {visibleColumns.Chain && (
-                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                      Chain
-                    </TableHead>
-                  )}
-                  {visibleColumns.Stage && (
-                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                      Stage
-                    </TableHead>
-                  )}
-                  {visibleColumns.Tags && (
-                    <TableHead className="w-[200px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                      Tags
-                    </TableHead>
-                  )}
-                  {visibleColumns.Type && (
-                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                      Type
-                    </TableHead>
-                  )}
-                  {visibleColumns.Cost && (
-                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                      Cost
-                    </TableHead>
-                  )}
-                  {visibleColumns.Wallet && (
-                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
-                      Wallet
-                    </TableHead>
-                  )}
                 </>
               )}
-              {visibleColumns["Last Activity"] && (
+              {visibleColumns.Chain && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Chain
+                </TableHead>
+              )}
+              {visibleColumns.Stage && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Stage
+                </TableHead>
+              )}
+              {visibleColumns.Tags && (
                 <TableHead className="w-[120px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Tags
+                </TableHead>
+              )}
+              {visibleColumns.Type && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Type
+                </TableHead>
+              )}
+              {visibleColumns.Cost && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                  Cost
+                </TableHead>
+              )}
+              {visibleColumns["Last Activity"] && (
+                <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                   Last Activity
                 </TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isNestedByEcosystem
-              ? // Nested by ecosystem view
-                uniqueChains.sort().map((chain) => (
-                  <React.Fragment key={chain}>
-                    {/* Chain header row */}
-                    <TableRow
-                      className="hover:bg-gray-800 cursor-pointer border-b border-gray-700"
-                      onClick={() => toggleChainExpansion(chain)}
-                    >
-                      <TableHead colSpan={12} className="py-2 pl-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-blue-400 font-medium">
-                            {expandedChains.includes(chain) ? "▼" : "►"}
-                          </span>
-                          <span className="font-bold text-blue-400">
-                            {chain} (
-                            {
-                              filteredProjects.filter(
-                                (p) => (p.chain || "Unknown") === chain,
-                              ).length
-                            }
-                            )
-                          </span>
-                        </div>
-                      </TableHead>
-                    </TableRow>
+            {stageFilteredProjects.length === 0 ? (
+              <TableRow>
+                <TableHead
+                  colSpan={12}
+                  className="py-4 text-center text-gray-400"
+                >
+                  No projects found for{" "}
+                  {activeStage
+                    ? `stage "${activeStage}"`
+                    : "the selected filters"}
+                </TableHead>
+              </TableRow>
+            ) : isNestedByEcosystem ? (
+              // Nested by ecosystem view
+              uniqueChains.sort().map((chain) => (
+                <React.Fragment key={chain}>
+                  {/* Chain header row */}
+                  <TableRow
+                    className="hover:bg-gray-800 cursor-pointer border-b border-gray-700"
+                    onClick={() => toggleChainExpansion(chain)}
+                  >
+                    <TableHead colSpan={12} className="py-2 pl-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-blue-400 font-medium">
+                          {expandedChains.includes(chain) ? "▼" : "►"}
+                        </span>
+                        <span className="font-bold text-blue-400">
+                          {chain} (
+                          {
+                            filteredProjects.filter(
+                              (p) => (p.chain || "Unknown") === chain,
+                            ).length
+                          }
+                          )
+                        </span>
+                      </div>
+                    </TableHead>
+                  </TableRow>
 
-                    {/* Projects in this chain */}
-                    {expandedChains.includes(chain) &&
-                      filteredProjects
-                        .filter(
-                          (project) => (project.chain || "Unknown") === chain,
-                        )
-                        .sort((a, b) => {
-                          // Sort by active status first (active projects at the top)
-                          const aActive =
-                            a.status === "active" || a.is_active || a.isActive;
-                          const bActive =
-                            b.status === "active" || b.is_active || b.isActive;
-                          if (aActive && !bActive) return -1;
-                          if (!aActive && bActive) return 1;
-                          // Then sort by last activity date
-                          return (
-                            new Date(
-                              b.last_activity || b.lastActivity,
-                            ).getTime() -
-                            new Date(
-                              a.last_activity || a.lastActivity,
-                            ).getTime()
-                          );
-                        })
-                        .map((project) => (
-                          <ProjectRow
-                            key={project.id}
-                            projectName={project.project || project.name}
-                            projectLogo={
-                              project.image ||
-                              project.logo ||
-                              `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.project || project.name}`
-                            }
-                            projectLink={project.link}
-                            twitterLink={project.twitter || project.twitterLink}
-                            isActive={
-                              project.status === "active" ||
-                              project.is_active ||
-                              project.isActive
-                            }
-                            lastActivity={
-                              project.last_activity || project.lastActivity
-                            }
-                            notes={project.notes}
-                            onStatusChange={(status) =>
-                              handleStatusChange(project.id, status)
-                            }
-                            onNotesClick={() =>
-                              isDeleteMode
-                                ? handleEditClick(project)
-                                : handleNotesClick(project)
-                            }
-                            onDelete={() => onDeleteProject(project.id)}
-                            showDeleteButton={isDeleteMode}
-                            showEditButton={isDeleteMode}
-                            isFullMode={isFullMode}
-                            type={project.type}
-                            cost={project.cost}
-                            joinDate={project.join_date || project.joinDate}
-                            chain={project.chain}
-                            stage={project.stage}
-                            tags={
-                              typeof project.tags === "string"
-                                ? project.tags
-                                    .split(",")
-                                    .map((tag) => tag.trim())
-                                : project.tags
-                            }
-                            isPublicMode={false}
-                            visibleColumns={visibleColumns}
-                            wallet={project.wallet}
-                          />
-                        ))}
-                  </React.Fragment>
+                  {/* Projects in this chain */}
+                  {expandedChains.includes(chain) &&
+                    stageFilteredProjects
+                      .filter(
+                        (project) => (project.chain || "Unknown") === chain,
+                      )
+                      .sort((a, b) => {
+                        // Sort by active status first (active projects at the top)
+                        const aActive =
+                          a.status === "active" || a.is_active || a.isActive;
+                        const bActive =
+                          b.status === "active" || b.is_active || b.isActive;
+                        if (aActive && !bActive) return -1;
+                        if (!aActive && bActive) return 1;
+                        // Then sort by last activity date
+                        return (
+                          new Date(
+                            b.last_activity || b.lastActivity,
+                          ).getTime() -
+                          new Date(a.last_activity || a.lastActivity).getTime()
+                        );
+                      })
+                      .map((project) => (
+                        <ProjectRow
+                          key={project.id}
+                          projectName={project.project || project.name}
+                          projectLogo={
+                            project.image ||
+                            project.logo ||
+                            `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.project || project.name}`
+                          }
+                          projectLink={project.link}
+                          twitterLink={project.twitter || project.twitterLink}
+                          isActive={
+                            project.status === "active" ||
+                            project.is_active ||
+                            project.isActive
+                          }
+                          lastActivity={
+                            project.last_activity || project.lastActivity
+                          }
+                          notes={project.notes}
+                          onStatusChange={(status) =>
+                            handleStatusChange(project.id, status)
+                          }
+                          onNotesClick={() =>
+                            isDeleteMode
+                              ? handleEditClick(project)
+                              : handleNotesClick(project)
+                          }
+                          onDelete={() => onDeleteProject(project.id)}
+                          showDeleteButton={isDeleteMode}
+                          showEditButton={isDeleteMode}
+                          isFullMode={isFullMode}
+                          type={project.type}
+                          cost={project.cost}
+                          joinDate={project.join_date || project.joinDate}
+                          chain={project.chain}
+                          stage={project.stage}
+                          tags={
+                            typeof project.tags === "string"
+                              ? project.tags.split(",").map((tag) => tag.trim())
+                              : project.tags
+                          }
+                          isPublicMode={false}
+                          visibleColumns={visibleColumns}
+                          wallet={project.wallet}
+                        />
+                      ))}
+                </React.Fragment>
+              ))
+            ) : (
+              // Regular flat view
+              stageFilteredProjects
+                .sort((a, b) => {
+                  // Sort by active status first (active projects at the top)
+                  const aActive =
+                    a.status === "active" || a.is_active || a.isActive;
+                  const bActive =
+                    b.status === "active" || b.is_active || b.isActive;
+                  if (aActive && !bActive) return -1;
+                  if (!aActive && bActive) return 1;
+                  // Then sort by last activity date
+                  return (
+                    new Date(b.last_activity || b.lastActivity).getTime() -
+                    new Date(a.last_activity || a.lastActivity).getTime()
+                  );
+                })
+                .map((project) => (
+                  <ProjectRow
+                    key={project.id}
+                    projectName={project.project || project.name}
+                    projectLogo={
+                      project.image ||
+                      project.logo ||
+                      `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.project || project.name}`
+                    }
+                    projectLink={project.link}
+                    twitterLink={project.twitter || project.twitterLink}
+                    isActive={
+                      project.status === "active" ||
+                      project.is_active ||
+                      project.isActive
+                    }
+                    lastActivity={project.last_activity || project.lastActivity}
+                    notes={project.notes}
+                    onStatusChange={(status) =>
+                      handleStatusChange(project.id, status)
+                    }
+                    onNotesClick={() =>
+                      isDeleteMode
+                        ? handleEditClick(project)
+                        : handleNotesClick(project)
+                    }
+                    onDelete={() => onDeleteProject(project.id)}
+                    showDeleteButton={isDeleteMode}
+                    showEditButton={isDeleteMode}
+                    isFullMode={isFullMode}
+                    type={project.type}
+                    cost={project.cost}
+                    joinDate={project.join_date || project.joinDate}
+                    chain={project.chain}
+                    stage={project.stage}
+                    tags={
+                      typeof project.tags === "string"
+                        ? project.tags.split(",").map((tag) => tag.trim())
+                        : project.tags
+                    }
+                    isPublicMode={false}
+                    visibleColumns={visibleColumns}
+                    wallet={project.wallet}
+                  />
                 ))
-              : // Regular flat view
-                filteredProjects
-                  .sort((a, b) => {
-                    // Sort by active status first (active projects at the top)
-                    const aActive =
-                      a.status === "active" || a.is_active || a.isActive;
-                    const bActive =
-                      b.status === "active" || b.is_active || b.isActive;
-                    if (aActive && !bActive) return -1;
-                    if (!aActive && bActive) return 1;
-                    // Then sort by last activity date
-                    return (
-                      new Date(b.last_activity || b.lastActivity).getTime() -
-                      new Date(a.last_activity || a.lastActivity).getTime()
-                    );
-                  })
-                  .map((project) => (
-                    <ProjectRow
-                      key={project.id}
-                      projectName={project.project || project.name}
-                      projectLogo={
-                        project.image ||
-                        project.logo ||
-                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${project.project || project.name}`
-                      }
-                      projectLink={project.link}
-                      twitterLink={project.twitter || project.twitterLink}
-                      isActive={
-                        project.status === "active" ||
-                        project.is_active ||
-                        project.isActive
-                      }
-                      lastActivity={
-                        project.last_activity || project.lastActivity
-                      }
-                      notes={project.notes}
-                      onStatusChange={(status) =>
-                        handleStatusChange(project.id, status)
-                      }
-                      onNotesClick={() =>
-                        isDeleteMode
-                          ? handleEditClick(project)
-                          : handleNotesClick(project)
-                      }
-                      onDelete={() => onDeleteProject(project.id)}
-                      showDeleteButton={isDeleteMode}
-                      showEditButton={isDeleteMode}
-                      isFullMode={isFullMode}
-                      type={project.type}
-                      cost={project.cost}
-                      joinDate={project.join_date || project.joinDate}
-                      chain={project.chain}
-                      stage={project.stage}
-                      tags={
-                        typeof project.tags === "string"
-                          ? project.tags.split(",").map((tag) => tag.trim())
-                          : project.tags
-                      }
-                      isPublicMode={false}
-                      visibleColumns={visibleColumns}
-                      wallet={project.wallet}
-                    />
-                  ))}
+            )}
           </TableBody>
         </Table>
       </div>

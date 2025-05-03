@@ -112,6 +112,7 @@ const ProjectRow = memo(function ProjectRow({
     Link: true,
     Twitter: true,
     Notes: true,
+    Wallet: true,
     "Join Date": true,
     Chain: true,
     Stage: true,
@@ -192,7 +193,7 @@ const ProjectRow = memo(function ProjectRow({
             variant="ghost"
             size="icon"
             onClick={() => onStatusChange(!isActive)}
-            className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${isActive ? "bg-green-500/20 text-green-500" : "bg-red-500/20 text-red-500"} border border-gray-600`}
+            className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${isActive ? "bg-red-500/20 text-red-500" : "bg-green-500/20 text-green-500"} border border-gray-600`}
           >
             {isActive ? (
               <svg
@@ -207,7 +208,8 @@ const ProjectRow = memo(function ProjectRow({
                 strokeLinejoin="round"
                 className="h-4 w-4 md:h-5 md:w-5"
               >
-                <path d="M20 6L9 17l-5-5"></path>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             ) : (
               <svg
@@ -222,8 +224,7 @@ const ProjectRow = memo(function ProjectRow({
                 strokeLinejoin="round"
                 className="h-4 w-4 md:h-5 md:w-5"
               >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
+                <path d="M20 6L9 17l-5-5"></path>
               </svg>
             )}
           </Button>
@@ -321,6 +322,33 @@ const ProjectRow = memo(function ProjectRow({
           )}
         </td>
       )}
+      {visibleColumns.Wallet && (
+        <td className="p-2 text-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+            title={wallet || (project?.wallet ? project.wallet : "Not set")}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4 md:h-5 md:w-5 text-purple-400"
+            >
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <path d="M16 14h.01" />
+              <path d="M2 10h20" />
+            </svg>
+          </Button>
+        </td>
+      )}
       {(isFullMode || isPublicMode) && (
         <>
           {visibleColumns["Join Date"] && (
@@ -358,7 +386,7 @@ const ProjectRow = memo(function ProjectRow({
                   className={getChainColor(safeChain)}
                   fallback={
                     <span
-                      className={`text-lg ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "text-blue-500"} font-bold`}
+                      className={`text-sm ${safeChain.toLowerCase() in chainIcons ? getChainColor(safeChain) : "bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500"} font-bold`}
                     >
                       {chainIcons[safeChain.toLowerCase()] || safeChain}
                     </span>
@@ -382,8 +410,9 @@ const ProjectRow = memo(function ProjectRow({
                 {Array.isArray(tags) && tags.length > 0 ? (
                   <div className="flex flex-wrap gap-1 justify-center">
                     {tags.map((tag, index) => {
-                      // Use a single color instead of gradients for better performance
-                      const colorClass = "bg-blue-500";
+                      // Use gradient colors for tags
+                      const colorClass =
+                        "bg-gradient-to-r from-blue-500 to-purple-500";
 
                       return (
                         <span
@@ -420,13 +449,6 @@ const ProjectRow = memo(function ProjectRow({
             <td className="p-2 text-center">
               <span className="text-[0.8rem] text-green-400 font-medium">
                 ${cost}
-              </span>
-            </td>
-          )}
-          {visibleColumns.Wallet && !isPublicMode && (
-            <td className="p-2 text-center">
-              <span className="text-[0.8rem] text-purple-400 font-medium">
-                {wallet || (project?.wallet ? project.wallet : "Not set")}
               </span>
             </td>
           )}

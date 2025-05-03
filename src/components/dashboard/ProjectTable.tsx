@@ -90,6 +90,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     Tags: true,
     Type: true,
     Cost: true,
+    Wallet: true,
     "Last Activity": true,
   });
 
@@ -470,6 +471,11 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   {visibleColumns.Cost && (
                     <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                       Cost
+                    </TableHead>
+                  )}
+                  {visibleColumns.Wallet && (
+                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                      Wallet
                     </TableHead>
                   )}
                 </>

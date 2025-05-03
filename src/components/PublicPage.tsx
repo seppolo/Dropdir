@@ -43,7 +43,7 @@ const PublicPage = () => {
             List
           </a>
           <a
-            href="https://t.me/dropdirs"
+            href="https://t.me/Airdrop_Directory"
             target="_blank"
             rel="noopener noreferrer"
             className="text-[#3B82F6] hover:text-[#60A5FA] transition-colors flex items-center gap-1"

@@ -22,7 +22,7 @@ export default function TelegramJoinModal({
         </DialogHeader>
         <div className="flex flex-col items-center justify-center space-y-4 p-4">
           <p className="text-center text-muted-foreground">
-            Silahkan bergabung ke grup telegram Dropdir untuk mendapatkan
+            Silahkan bergabung ke channel telegram Dropdir untuk mendapatkan
             informasi terbaru, tutorial dan diskusi terkait aplikasi
           </p>
           <a

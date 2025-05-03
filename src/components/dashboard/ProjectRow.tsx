@@ -31,6 +31,8 @@ interface ProjectRowProps {
   isCopied?: boolean;
   projectId?: string;
   username?: string;
+  wallet?: string;
+  project?: any;
 }
 
 // Chain color mapping
@@ -102,6 +104,8 @@ const ProjectRow = memo(function ProjectRow({
   isCopied = false,
   projectId,
   username,
+  wallet,
+  project,
   visibleColumns = {
     Project: true,
     Status: true,
@@ -422,7 +426,7 @@ const ProjectRow = memo(function ProjectRow({
           {visibleColumns.Wallet && !isPublicMode && (
             <td className="p-2 text-center">
               <span className="text-[0.8rem] text-purple-400 font-medium">
-                {wallet ? wallet : "Not set"}
+                {wallet || (project?.wallet ? project.wallet : "Not set")}
               </span>
             </td>
           )}

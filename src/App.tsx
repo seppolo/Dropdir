@@ -55,14 +55,36 @@ function App() {
   const [showTelegramModal, setShowTelegramModal] = useState(false);
 
   useEffect(() => {
-    // Check if the user has seen the Telegram modal before
-    const hasSeenTelegramModal = localStorage.getItem("hasSeenTelegramModal");
-    if (!hasSeenTelegramModal) {
+    // Check if user is logged in
+    const authState = localStorage.getItem("auth_state");
+    let username = "guest";
+
+    if (authState) {
+      try {
+        const parsedState = JSON.parse(authState);
+        if (parsedState.username && parsedState.isLoggedIn) {
+          username = parsedState.username;
+        }
+      } catch (error) {
+        console.error("Error parsing auth state:", error);
+      }
+    }
+
+    // Check when the modal was last shown for this specific user
+    const lastShownKey = `telegram_modal_last_shown_${username}`;
+    const lastShown = localStorage.getItem(lastShownKey);
+    const currentTime = new Date().getTime();
+
+    // Show modal if it hasn't been shown before or if 24 hours have passed
+    if (!lastShown || currentTime - parseInt(lastShown) > 24 * 60 * 60 * 1000) {
       setShowTelegramModal(true);
-      // Mark that the user has seen the modal
-      localStorage.setItem("hasSeenTelegramModal", "true");
+      localStorage.setItem(lastShownKey, currentTime.toString());
     }
   }, []);
+
+  const handleTelegramModalClose = () => {
+    setShowTelegramModal(false);
+  };
 
   return (
     <Suspense
@@ -94,10 +116,10 @@ function App() {
         {import.meta.env.VITE_TEMPO === "true" && <Route path="/tempobook/*" />}
       </Routes>
 
-      {/* Telegram Join Modal - shows only once */}
+      {/* Telegram Join Modal */}
       <TelegramJoinModal
         open={showTelegramModal}
-        onOpenChange={setShowTelegramModal}
+        onOpenChange={handleTelegramModalClose}
       />
     </Suspense>
   );

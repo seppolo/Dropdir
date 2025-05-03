@@ -13,6 +13,7 @@ export type Project = {
   tags: string[];
   type: "Retroactive" | "Testnet" | "Mini App" | "Node";
   cost: number;
+  wallet?: string;
   created_at?: string;
   updated_at?: string;
 };

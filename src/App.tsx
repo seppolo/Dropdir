@@ -1,10 +1,32 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { Routes, Route, useRoutes, Navigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useRoutes,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import routes from "tempo-routes";
 
 // Lazy load all components for better performance
 const AuthGuard = lazy(() => import("./components/auth/AuthGuard"));
 const TelegramJoinModal = lazy(() => import("./components/TelegramJoinModal"));
+
+// Telegram redirect component
+const TelegramRedirect = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    window.location.href = "https://t.me/dropdir";
+  }, []);
+
+  return (
+    <div className="flex items-center justify-center h-screen w-screen bg-background">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+      <p className="ml-3 text-white">Redirecting to Telegram...</p>
+    </div>
+  );
+};
 const Home = lazy(() => import("./components/home"));
 const PublicUserPage = lazy(() => import("./components/PublicUserPage"));
 const PublicPage = lazy(() => import("./components/PublicPage"));
@@ -110,6 +132,7 @@ function App() {
 
         <Route path="/public" element={<PublicPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/listener" element={<TelegramRedirect />} />
         <Route path="/:username/:projectId" element={<ProjectCopyRedirect />} />
         <Route path="/:username" element={<PublicUserPage />} />
         {/* Add explicit Tempo route to prevent catch-all conflicts */}

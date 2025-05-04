@@ -431,10 +431,10 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         </div>
 
         {/* Stage Tabs - Centered */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1 overflow-x-auto max-w-md">
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1 overflow-x-auto max-w-md z-0">
           <button
             onClick={() => setActiveStage(null)}
-            className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${!activeStage ? "bg-blue-600 text-white" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
+            className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${!activeStage ? "bg-white text-black" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
           >
             All
           </button>
@@ -442,14 +442,14 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
             <button
               key={stage}
               onClick={() => setActiveStage(stage)}
-              className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${activeStage === stage ? "bg-blue-600 text-white" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
+              className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${activeStage === stage ? "bg-white text-black" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
             >
               {stage}
             </button>
           ))}
         </div>
       </div>
-      <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A1A]">
+      <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A1A] relative z-10">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">

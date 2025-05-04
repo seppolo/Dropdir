@@ -50,12 +50,14 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
     tags: "",
     logo: "",
     useTwitterProfileImage: false,
+    wallet: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [walletOptions, setWalletOptions] = useState<string[]>([]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -65,6 +67,46 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  // Fetch wallet addresses from database
+  React.useEffect(() => {
+    const fetchWalletAddresses = async () => {
+      try {
+        // Get current user from localStorage
+        const authState = localStorage.getItem("auth_state");
+        if (!authState) return;
+
+        const { username } = JSON.parse(authState);
+        if (!username) return;
+
+        // Fetch wallet addresses for this user
+        const { data, error } = await supabase
+          .from("user_airdrops")
+          .select("wallet")
+          .eq("username", username)
+          .not("wallet", "is", null);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          // Extract unique wallet addresses
+          const uniqueWallets = [
+            ...new Set(
+              data
+                .map((item) => item.wallet)
+                .filter((wallet) => wallet && wallet.trim() !== ""),
+            ),
+          ];
+
+          setWalletOptions(uniqueWallets);
+        }
+      } catch (error) {
+        console.error("Error fetching wallet addresses:", error);
+      }
+    };
+
+    fetchWalletAddresses();
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -225,7 +267,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sketch-card fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[800px] max-w-4xl rounded-lg transform transition-all duration-300 ease-in-out bg-background border-2 border-white/10 shadow-2xl overflow-hidden">
+      <DialogContent className="sketch-card fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[800px] max-w-4xl rounded-lg transform transition-all duration-300 ease-in-out bg-background border-2 border-white/10 shadow-2xl overflow-hidden overflow-y-auto max-h-[90vh]">
         <DialogHeader className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 mb-4">
           <DialogTitle className="text-2xl font-bold sketch-font text-white">
             Add New Project
@@ -562,14 +604,24 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                     (Only visible to you)
                   </span>
                 </label>
-                <Input
-                  value={formData.wallet}
-                  onChange={(e) =>
-                    setFormData({ ...formData, wallet: e.target.value })
-                  }
-                  className="sketch-input h-10"
-                  placeholder="0x..."
-                />
+                <div className="relative">
+                  <Input
+                    value={formData.wallet}
+                    onChange={(e) =>
+                      setFormData({ ...formData, wallet: e.target.value })
+                    }
+                    className="sketch-input h-10"
+                    placeholder="0x..."
+                    list="wallet-options"
+                  />
+                  <datalist id="wallet-options">
+                    {walletOptions.map((wallet) => (
+                      <option key={wallet} value={wallet}>
+                        {wallet}
+                      </option>
+                    ))}
+                  </datalist>
+                </div>
               </div>
             </div>
           </div>

@@ -66,6 +66,8 @@ const EditProjectModal = ({
     wallet: project.wallet || "",
   });
 
+  const [walletOptions, setWalletOptions] = React.useState<string[]>([]);
+
   React.useEffect(() => {
     if (project) {
       const twitterLink = project.twitter || project.twitterLink || "";
@@ -95,8 +97,57 @@ const EditProjectModal = ({
       ) {
         fetchTwitterProfileImage(twitterLink);
       }
+
+      // Fetch wallet addresses
+      fetchWalletAddresses();
     }
   }, [project]);
+
+  // Fetch wallet addresses from database
+  const fetchWalletAddresses = async () => {
+    try {
+      // Get current user from localStorage
+      const authState = localStorage.getItem("auth_state");
+      if (!authState) return;
+
+      let username = "";
+      try {
+        const parsedState = JSON.parse(authState);
+        username = parsedState.username || parsedState.user?.username || "";
+        if (!username) return;
+      } catch (parseError) {
+        console.error("Error parsing auth state:", parseError);
+        return;
+      }
+
+      // Import supabase dynamically
+      const { supabase } = await import("@/lib/supabase");
+
+      // Fetch wallet addresses for this user
+      const { data, error } = await supabase
+        .from("user_airdrops")
+        .select("wallet")
+        .eq("username", username)
+        .not("wallet", "is", null);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        // Extract unique wallet addresses
+        const uniqueWallets = [
+          ...new Set(
+            data
+              .map((item) => item.wallet)
+              .filter((wallet) => wallet && wallet.trim() !== ""),
+          ),
+        ];
+
+        setWalletOptions(uniqueWallets);
+      }
+    } catch (error) {
+      console.error("Error fetching wallet addresses:", error);
+    }
+  };
 
   const fetchTwitterProfileImage = async (twitterUrl: string) => {
     try {
@@ -370,7 +421,7 @@ const EditProjectModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sketch-card fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[800px] max-w-4xl rounded-lg transform transition-all duration-300 ease-in-out bg-background border-2 border-white/10 shadow-2xl overflow-hidden">
+      <DialogContent className="sketch-card fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[800px] max-w-4xl rounded-lg transform transition-all duration-300 ease-in-out bg-background border-2 border-white/10 shadow-2xl overflow-hidden overflow-y-auto max-h-[90vh]">
         <DialogHeader className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 mb-4">
           <DialogTitle className="text-2xl font-bold sketch-font text-white">
             Edit Project
@@ -678,14 +729,24 @@ const EditProjectModal = ({
                     (Only visible to you)
                   </span>
                 </label>
-                <Input
-                  value={formData.wallet}
-                  onChange={(e) =>
-                    setFormData({ ...formData, wallet: e.target.value })
-                  }
-                  className="sketch-input h-10"
-                  placeholder="0x..."
-                />
+                <div className="relative">
+                  <Input
+                    value={formData.wallet}
+                    onChange={(e) =>
+                      setFormData({ ...formData, wallet: e.target.value })
+                    }
+                    className="sketch-input h-10"
+                    placeholder="0x..."
+                    list="wallet-options"
+                  />
+                  <datalist id="wallet-options">
+                    {walletOptions.map((wallet) => (
+                      <option key={wallet} value={wallet}>
+                        {wallet}
+                      </option>
+                    ))}
+                  </datalist>
+                </div>
               </div>
             </div>
           </div>

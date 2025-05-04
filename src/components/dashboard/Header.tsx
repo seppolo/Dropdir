@@ -11,6 +11,7 @@ import {
   Globe,
   Layers,
   ShieldAlert,
+  Heart,
 } from "lucide-react";
 import DownloadInstructions from "./DownloadInstructions";
 import AuthController from "../auth/AuthController";
@@ -57,6 +58,16 @@ const Header = ({
       </div>
 
       <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-none dark:text-red-400 h-9 w-9 animate-bounce hover:animate-none hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          title="Donate to Dropdir"
+          onClick={() => window.open("https://saweria.co/dropdir", "_blank")}
+        >
+          <Heart className="h-5 w-5 text-red-500" />
+        </Button>
+
         <Button
           variant="outline"
           size="icon"

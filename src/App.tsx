@@ -17,7 +17,7 @@ const TelegramRedirect = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    window.location.href = "https://t.me/dropdir";
+    window.location.href = "https://t.me/dropdirs";
   }, []);
 
   return (

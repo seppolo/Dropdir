@@ -58,6 +58,9 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
   const [previewUrl, setPreviewUrl] = useState("");
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const [walletOptions, setWalletOptions] = useState<string[]>([]);
+  const [twitterUserInfoStatus, setTwitterUserInfoStatus] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -78,6 +81,15 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
         const { username } = JSON.parse(authState);
         if (!username) return;
+
+        // Import isSupabaseConfigured to check configuration
+        const { isSupabaseConfigured } = await import("@/lib/supabase");
+
+        // Skip if Supabase is not configured
+        if (!isSupabaseConfigured()) {
+          console.warn("Supabase not configured, skipping wallet fetch");
+          return;
+        }
 
         // Fetch wallet addresses for this user
         const { data, error } = await supabase
@@ -134,6 +146,76 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
       }
     } catch (error) {
       console.error("Error fetching Twitter profile image:", error);
+    }
+  };
+
+  const fetchTwitterUserInfo = async () => {
+    if (!formData.twitter) {
+      setError("Please enter a Twitter URL");
+      return;
+    }
+
+    setTwitterUserInfoStatus("loading");
+
+    try {
+      // Import the function dynamically to avoid circular dependencies
+      const { getTwitterUserInfo } = await import("@/lib/twitter");
+      const userInfo = await getTwitterUserInfo(formData.twitter);
+
+      if (userInfo.found) {
+        setTwitterUserInfoStatus("success");
+
+        // Update form data with Twitter user info
+        if (userInfo.profileImage) {
+          setPreviewUrl(userInfo.profileImage);
+          setFormData((prev) => ({
+            ...prev,
+            logo: userInfo.profileImage,
+            useTwitterProfileImage: true,
+          }));
+        }
+
+        // Update project name if empty
+        if (!formData.project && userInfo.username) {
+          setFormData((prev) => ({
+            ...prev,
+            project: userInfo.displayName || userInfo.username,
+          }));
+        }
+
+        // Auto-populate other fields if they're empty
+        const updatedFormData = { ...formData };
+
+        // If we have a bio, use it for notes
+        if (userInfo.bio && !formData.notes) {
+          updatedFormData.notes = userInfo.bio;
+        }
+
+        // Set default values for dropdowns if they're at their default values
+        // This simulates selecting values from dropdowns based on Twitter data
+        if (formData.chain === "Ethereum") {
+          // Try to detect chain from bio or keep default
+          const bioLower = userInfo.bio?.toLowerCase() || "";
+          if (bioLower.includes("solana")) updatedFormData.chain = "Solana";
+          else if (bioLower.includes("polygon"))
+            updatedFormData.chain = "Polygon";
+          else if (bioLower.includes("arbitrum"))
+            updatedFormData.chain = "Arbitrum";
+          else if (bioLower.includes("optimism"))
+            updatedFormData.chain = "Optimism";
+          else if (bioLower.includes("bsc")) updatedFormData.chain = "BSC";
+        }
+
+        // Update the form data with all our changes
+        setFormData(updatedFormData);
+      } else {
+        setTwitterUserInfoStatus("error");
+        setError("Twitter user not found");
+      }
+    } catch (error) {
+      console.error("Error fetching Twitter user info:", error);
+      setTwitterUserInfoStatus("error");
+      setError("Failed to fetch Twitter user info");
     }
   };
 
@@ -197,6 +279,16 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
             .map((tag) => tag.trim())
             .filter((tag) => tag.length > 0)
         : [];
+
+      // Import isSupabaseConfigured to check configuration
+      const { isSupabaseConfigured } = await import("@/lib/supabase");
+
+      // Check if Supabase is configured
+      if (!isSupabaseConfigured()) {
+        throw new Error(
+          "Database connection not available. Please configure Supabase to save changes.",
+        );
+      }
 
       // Insert into user_airdrops table
       const { data, error: insertError } = await supabase
@@ -367,13 +459,22 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({
                         variant="outline"
                         size="icon"
                         className="h-10 w-10 sketch-button"
-                        onClick={() => {
-                          if (formData.twitter) {
-                            window.open(formData.twitter, "_blank");
-                          }
-                        }}
+                        onClick={fetchTwitterUserInfo}
                       >
-                        <Twitter className="h-4 w-4" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className={`h-4 w-4 ${twitterUserInfoStatus === "error" ? "text-red-500" : twitterUserInfoStatus === "loading" ? "text-yellow-500" : "text-blue-500"}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                          />
+                        </svg>
                       </Button>
                     </div>
                     <div className="flex items-center space-x-2 mt-2">

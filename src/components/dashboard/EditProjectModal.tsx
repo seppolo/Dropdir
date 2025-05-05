@@ -106,6 +106,15 @@ const EditProjectModal = ({
   // Fetch wallet addresses from database
   const fetchWalletAddresses = async () => {
     try {
+      // Import supabase dynamically
+      const { supabase, isSupabaseConfigured } = await import("@/lib/supabase");
+
+      // Skip if Supabase is not configured
+      if (!isSupabaseConfigured()) {
+        console.warn("Supabase not configured, skipping wallet fetch");
+        return;
+      }
+
       // Get current user from localStorage
       const authState = localStorage.getItem("auth_state");
       if (!authState) return;
@@ -119,9 +128,6 @@ const EditProjectModal = ({
         console.error("Error parsing auth state:", parseError);
         return;
       }
-
-      // Import supabase dynamically
-      const { supabase } = await import("@/lib/supabase");
 
       // Fetch wallet addresses for this user
       const { data, error } = await supabase
@@ -262,7 +268,18 @@ const EditProjectModal = ({
       try {
         // Add a small delay to ensure any previous operations are complete
         await new Promise((resolve) => setTimeout(resolve, 100));
-        const { supabase } = await import("@/lib/supabase");
+        const { supabase, isSupabaseConfigured } = await import(
+          "@/lib/supabase"
+        );
+
+        // Check if Supabase is configured
+        if (!isSupabaseConfigured()) {
+          console.warn("Supabase not configured, skipping database update");
+          throw new Error(
+            "Database connection not available. Please configure Supabase to save changes.",
+          );
+        }
+
         console.log("Updating project in database with ID:", project.id);
 
         // Get current username from localStorage

@@ -50,3 +50,65 @@ export function extractTwitterUsername(twitterUrl: string): string | null {
     return null;
   }
 }
+
+export interface TwitterUserInfo {
+  username: string;
+  profileImage: string | null;
+  displayName?: string;
+  bio?: string;
+  found: boolean;
+}
+
+export async function getTwitterUserInfo(
+  twitterUrl: string,
+): Promise<TwitterUserInfo> {
+  if (!twitterUrl) return { username: "", profileImage: null, found: false };
+
+  try {
+    const username = extractTwitterUsername(twitterUrl);
+    if (!username) return { username: "", profileImage: null, found: false };
+
+    // Get profile image
+    const profileImage = await getTwitterProfileImageFromUrl(twitterUrl);
+
+    // Try to fetch additional user information
+    let displayName = username;
+    let bio = "";
+
+    try {
+      // Fetch the SocialBlade page to extract more information
+      const response = await fetch(
+        `https://socialblade.com/twitter/user/${username}`,
+      );
+      const html = await response.text();
+
+      // Extract display name using regex
+      const displayNameRegex = /<h1[^>]*>([^<]+)<\/h1>/;
+      const displayNameMatch = html.match(displayNameRegex);
+      if (displayNameMatch && displayNameMatch[1]) {
+        displayName = displayNameMatch[1].trim();
+      }
+
+      // Extract bio using regex
+      const bioRegex = /<div[^>]*class="bio"[^>]*>([^<]+)<\/div>/;
+      const bioMatch = html.match(bioRegex);
+      if (bioMatch && bioMatch[1]) {
+        bio = bioMatch[1].trim();
+      }
+    } catch (fetchError) {
+      console.error("Error fetching additional Twitter user info:", fetchError);
+      // Continue with what we have
+    }
+
+    return {
+      username,
+      profileImage,
+      displayName,
+      bio,
+      found: true,
+    };
+  } catch (error) {
+    console.error("Error fetching Twitter user info:", error);
+    return { username: "", profileImage: null, found: false };
+  }
+}

@@ -1,13 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "Supabase URL and Anon Key are required. Please check your .env file.",
-  );
-}
+// Get environment variables with fallbacks for development
+const supabaseUrl =
+  import.meta.env.VITE_SUPABASE_URL || "https://example.supabase.co";
+const supabaseAnonKey =
+  import.meta.env.VITE_SUPABASE_ANON_KEY || "your-anon-key";
 
 // Create a lightweight Supabase client with optimized settings
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -30,6 +27,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     },
   },
 });
+
+// Function to check if Supabase is properly configured
+export const isSupabaseConfigured = () => {
+  return (
+    supabaseUrl !== "https://example.supabase.co" &&
+    supabaseAnonKey !== "your-anon-key" &&
+    Boolean(supabaseUrl) &&
+    Boolean(supabaseAnonKey)
+  );
+};
 
 // Cache control helper functions
 export const clearSupabaseCache = () => {

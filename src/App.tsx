@@ -33,7 +33,7 @@ const TelegramJoinModal = ({ open, onOpenChange }) => {
             informasi terbaru, tutorial dan diskusi terkait aplikasi
           </p>
           <a
-            href="https://t.me/Airdrop_Directory"
+            href="https://t.me/dropdirs"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors duration-200 w-full max-w-xs"

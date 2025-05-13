@@ -464,19 +464,36 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1 overflow-x-auto max-w-md z-0">
           <button
             onClick={() => setActiveStage(null)}
-            className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${!activeStage ? "bg-white text-black" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
+            className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${!activeStage ? "bg-white text-black" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
           >
             All
-          </button>
-          {uniqueStages.map((stage) => (
-            <button
-              key={stage}
-              onClick={() => setActiveStage(stage)}
-              className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors ${activeStage === stage ? "bg-white text-black" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
+            <span
+              className={`inline-flex items-center justify-center rounded-full px-1.5 text-xs ${!activeStage ? "bg-black text-white" : "bg-gray-700 text-gray-300"}`}
             >
-              {stage}
-            </button>
-          ))}
+              {filteredProjects.length}
+            </span>
+          </button>
+          {uniqueStages.map((stage) => {
+            const stageCount = filteredProjects.filter(
+              (project) =>
+                (project.stage || "Unknown").toLowerCase() ===
+                stage.toLowerCase(),
+            ).length;
+            return (
+              <button
+                key={stage}
+                onClick={() => setActiveStage(stage)}
+                className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${activeStage === stage ? "bg-white text-black" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
+              >
+                {stage}
+                <span
+                  className={`inline-flex items-center justify-center rounded-full px-1.5 text-xs ${activeStage === stage ? "bg-black text-white" : "bg-gray-700 text-gray-300"}`}
+                >
+                  {stageCount}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
       <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A1A] relative z-10">
@@ -487,27 +504,27 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                 Project
               </TableHead>
               {visibleColumns.Status && (
-                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                   Check-in
                 </TableHead>
               )}
               {visibleColumns.Link && (
-                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                   Link
                 </TableHead>
               )}
               {visibleColumns.Twitter && (
-                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                   Twitter
                 </TableHead>
               )}
               {visibleColumns.Notes && (
-                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                   Notes
                 </TableHead>
               )}
               {visibleColumns.Wallet && (
-                <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                <TableHead className="w-[35px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
                   Wallet
                 </TableHead>
               )}

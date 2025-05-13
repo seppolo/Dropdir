@@ -188,12 +188,12 @@ const ProjectRow = memo(function ProjectRow({
         </div>
       </TableCell>
       {!isPublicMode && visibleColumns.Status && (
-        <TableCell className="text-center">
+        <TableCell className="text-center p-0">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onStatusChange(!isActive)}
-            className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${isActive ? "bg-red-500/20 text-red-500" : "bg-green-500/20 text-green-500"} border border-gray-600`}
+            className={`w-6 h-6 md:w-7 md:h-7 rounded-full ${isActive ? "bg-red-500/20 text-red-500" : "bg-green-500/20 text-green-500"} border border-gray-600`}
           >
             {isActive ? (
               <svg
@@ -231,35 +231,35 @@ const ProjectRow = memo(function ProjectRow({
         </TableCell>
       )}
       {visibleColumns.Link && (
-        <td className="p-4 text-center">
+        <td className="p-0 text-center">
           {showDeleteButton ? (
             <Button
               variant="ghost"
               size="icon"
               onClick={onDelete}
-              className={`w-8 h-8 md:w-10 md:h-10 rounded-full ${showDeleteButton ? "text-red-500" : ""}`}
+              className={`w-6 h-6 md:w-7 md:h-7 rounded-full ${showDeleteButton ? "text-red-500" : ""}`}
             >
-              <Trash2 className="h-4 w-4 md:h-5 md:w-5" />
+              <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
             </Button>
           ) : (
             <Button
               variant="ghost"
               size="icon"
               onClick={() => window.open(projectLink, "_blank")}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+              className="w-6 h-6 md:w-7 md:h-7 rounded-full border border-gray-600 bg-transparent"
             >
-              <ExternalLink className="h-4 w-4 md:h-5 md:w-5 text-blue-500" />
+              <ExternalLink className="h-3 w-3 md:h-4 md:w-4 text-blue-500" />
             </Button>
           )}
         </td>
       )}
       {visibleColumns.Twitter && (
-        <td className="p-4 text-center">
+        <td className="p-0 text-center">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => window.open(twitterLink, "_blank")}
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+            className="w-6 h-6 md:w-7 md:h-7 rounded-full border border-gray-600 bg-transparent"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -271,7 +271,7 @@ const ProjectRow = memo(function ProjectRow({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-4 w-4 md:h-5 md:w-5 text-cyan-400"
+              className="h-3 w-3 md:h-4 md:w-4 text-cyan-400"
             >
               <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
             </svg>
@@ -279,18 +279,18 @@ const ProjectRow = memo(function ProjectRow({
         </td>
       )}
       {visibleColumns.Notes && (
-        <td className="p-4 text-center">
+        <td className="p-0 text-center">
           {onNotesClick !== (() => {}) && !isPublicMode ? (
             <Button
               variant="ghost"
               size="icon"
               onClick={onNotesClick}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+              className="w-6 h-6 md:w-7 md:h-7 rounded-full border border-gray-600 bg-transparent"
             >
               {showEditButton ? (
-                <Pencil className="h-4 w-4 md:h-5 md:w-5 text-yellow-400" />
+                <Pencil className="h-3 w-3 md:h-4 md:w-4 text-yellow-400" />
               ) : (
-                <FileText className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
+                <FileText className="h-3 w-3 md:h-4 md:w-4 text-green-400" />
               )}
             </Button>
           ) : isPublicMode && !isOwnProfile ? (
@@ -298,7 +298,7 @@ const ProjectRow = memo(function ProjectRow({
               variant="ghost"
               size="icon"
               onClick={onCopyProject}
-              className={`w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent ${isCopied ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-500/10"}`}
+              className={`w-6 h-6 md:w-7 md:h-7 rounded-full border border-gray-600 bg-transparent ${isCopied ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-500/10"}`}
               title={
                 isCopied
                   ? "Already copied to your projects"
@@ -307,7 +307,7 @@ const ProjectRow = memo(function ProjectRow({
               disabled={isCopied}
             >
               <Copy
-                className={`h-4 w-4 md:h-5 md:w-5 ${isCopied ? "text-gray-400" : "text-blue-400"}`}
+                className={`h-3 w-3 md:h-4 md:w-4 ${isCopied ? "text-gray-400" : "text-blue-400"}`}
               />
             </Button>
           ) : (
@@ -315,19 +315,19 @@ const ProjectRow = memo(function ProjectRow({
               variant="ghost"
               size="icon"
               onClick={() => {}}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+              className="w-6 h-6 md:w-7 md:h-7 rounded-full border border-gray-600 bg-transparent"
             >
-              <FileText className="h-4 w-4 md:h-5 md:w-5 text-green-400" />
+              <FileText className="h-3 w-3 md:h-4 md:w-4 text-green-400" />
             </Button>
           )}
         </td>
       )}
       {visibleColumns.Wallet && (
-        <td className="p-2 text-center">
+        <td className="p-0 text-center">
           <Button
             variant="ghost"
             size="icon"
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full border border-gray-600 bg-transparent"
+            className="w-6 h-6 md:w-7 md:h-7 rounded-full border border-gray-600 bg-transparent"
             title={wallet || (project?.wallet ? project.wallet : "Not set")}
           >
             <svg
@@ -340,7 +340,7 @@ const ProjectRow = memo(function ProjectRow({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-4 w-4 md:h-5 md:w-5 text-purple-400"
+              className="h-3 w-3 md:h-4 md:w-4 text-purple-400"
             >
               <rect x="2" y="5" width="20" height="14" rx="2" />
               <path d="M16 14h.01" />

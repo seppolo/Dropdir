@@ -6,6 +6,7 @@ import ProjectRow from "./dashboard/ProjectRow";
 import { Search, LogIn, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import DoodlesBackground from "./DoodlesBackground";
 import LoginModal from "./auth/LoginModal";
 import { getCurrentUser } from "@/lib/projectService";
@@ -20,6 +21,7 @@ const PublicUserPage = () => {
   const [projects, setProjects] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [copiedProjects, setCopiedProjects] = useState({});
+  const [activeTab, setActiveTab] = useState("all");
   const [visibleColumns, setVisibleColumns] = useState({
     Project: true,
     Link: true,
@@ -36,6 +38,16 @@ const PublicUserPage = () => {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const { toast } = useToast();
+
+  // Project counts by stage
+  const [projectCounts, setProjectCounts] = useState({
+    all: 0,
+    testnet: 0,
+    earlyAccess: 0,
+    waitlist: 0,
+    mainnet: 0,
+    other: 0,
+  });
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -97,7 +109,9 @@ const PublicUserPage = () => {
           now - parseInt(cachedTimestamp) < 10 * 60 * 1000
         ) {
           console.log("Using cached projects data for:", username);
-          setProjects(JSON.parse(cachedData));
+          const parsedData = JSON.parse(cachedData);
+          setProjects(parsedData);
+          updateProjectCounts(parsedData);
           setIsLoading(false);
           return;
         }
@@ -125,6 +139,7 @@ const PublicUserPage = () => {
             `cached_projects_timestamp_${username}`,
             now.toString(),
           );
+          updateProjectCounts(data);
         }
 
         console.log("Public projects for user:", data);
@@ -145,15 +160,84 @@ const PublicUserPage = () => {
     }
   }, [username]);
 
-  const filteredProjects = projects.filter(
-    (project) =>
+  // Function to update project counts by stage
+  const updateProjectCounts = (projectsData) => {
+    const counts = {
+      all: projectsData.length,
+      testnet: 0,
+      earlyAccess: 0,
+      waitlist: 0,
+      mainnet: 0,
+      other: 0,
+    };
+
+    projectsData.forEach((project) => {
+      const stage = project.stage?.toLowerCase() || "";
+      if (stage.includes("testnet")) {
+        counts.testnet++;
+      } else if (stage.includes("early") || stage.includes("access")) {
+        counts.earlyAccess++;
+      } else if (stage.includes("waitlist") || stage.includes("wait list")) {
+        counts.waitlist++;
+      } else if (stage.includes("mainnet") || stage.includes("main net")) {
+        counts.mainnet++;
+      } else if (stage) {
+        counts.other++;
+      }
+    });
+
+    setProjectCounts(counts);
+  };
+
+  const filteredProjects = projects.filter((project) => {
+    // First filter by search query
+    const matchesSearch =
       project.project?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.chain?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (project.tags &&
         typeof project.tags === "string" &&
-        project.tags.toLowerCase().includes(searchQuery.toLowerCase())),
-  );
+        project.tags.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    // Then filter by active tab
+    if (activeTab === "all") {
+      return matchesSearch;
+    } else if (activeTab === "testnet") {
+      return matchesSearch && project.stage?.toLowerCase().includes("testnet");
+    } else if (activeTab === "earlyAccess") {
+      return (
+        matchesSearch &&
+        (project.stage?.toLowerCase().includes("early") ||
+          project.stage?.toLowerCase().includes("access"))
+      );
+    } else if (activeTab === "waitlist") {
+      return (
+        matchesSearch &&
+        (project.stage?.toLowerCase().includes("waitlist") ||
+          project.stage?.toLowerCase().includes("wait list"))
+      );
+    } else if (activeTab === "mainnet") {
+      return (
+        matchesSearch &&
+        (project.stage?.toLowerCase().includes("mainnet") ||
+          project.stage?.toLowerCase().includes("main net"))
+      );
+    } else if (activeTab === "other") {
+      const stage = project.stage?.toLowerCase() || "";
+      return (
+        matchesSearch &&
+        stage &&
+        !stage.includes("testnet") &&
+        !stage.includes("early") &&
+        !stage.includes("access") &&
+        !stage.includes("waitlist") &&
+        !stage.includes("wait list") &&
+        !stage.includes("mainnet") &&
+        !stage.includes("main net")
+      );
+    }
+    return matchesSearch;
+  });
 
   const toggleColumn = (columnName) => {
     setVisibleColumns((prev) => ({
@@ -315,10 +399,78 @@ const PublicUserPage = () => {
             </div>
           ) : (
             <div className="flex-1 overflow-visible">
+              {/* Tabs for filtering projects */}
+              <div className="px-4 py-2">
+                <Tabs
+                  defaultValue="all"
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                  className="w-full"
+                >
+                  <TabsList className="grid grid-cols-3 md:grid-cols-6 gap-1 bg-[#0F172A] p-1 rounded-lg border border-gray-700">
+                    <TabsTrigger
+                      value="all"
+                      className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
+                    >
+                      All
+                      <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
+                        {projectCounts.all}
+                      </span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="testnet"
+                      className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
+                    >
+                      Testnet
+                      <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
+                        {projectCounts.testnet}
+                      </span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="earlyAccess"
+                      className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
+                    >
+                      Early Access
+                      <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
+                        {projectCounts.earlyAccess}
+                      </span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="waitlist"
+                      className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
+                    >
+                      Waitlist
+                      <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
+                        {projectCounts.waitlist}
+                      </span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="mainnet"
+                      className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
+                    >
+                      Mainnet
+                      <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
+                        {projectCounts.mainnet}
+                      </span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="other"
+                      className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
+                    >
+                      Other
+                      <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
+                        {projectCounts.other}
+                      </span>
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+
               {filteredProjects.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full py-20">
                   <div className="text-white/80 text-lg font-medium">
-                    No public projects found for {username}
+                    No public projects found for {username}{" "}
+                    {activeTab !== "all" ? `in ${activeTab} stage` : ""}
                   </div>
                   {searchQuery && (
                     <div className="text-white/60 text-sm mt-2">
@@ -327,7 +479,7 @@ const PublicUserPage = () => {
                   )}
                 </div>
               ) : (
-                <div className="overflow-x-auto max-h-[calc(100vh-150px)] scrollbar-thin">
+                <div className="overflow-x-auto max-h-[calc(100vh-200px)] scrollbar-thin">
                   <Table className="relative">
                     <TableHeader>
                       <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">

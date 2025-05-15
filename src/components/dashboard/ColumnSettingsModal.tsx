@@ -121,7 +121,13 @@ const ColumnSettingsModal = ({
           <h3 className="text-sm font-medium sketch-font pt-2">
             Column Visibility
           </h3>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-2">
+          <div className="mt-4 mb-2">
+            <p className="text-xs text-gray-400">
+              Note: In mobile mode, only Project, Check-in, Link, and Twitter
+              columns will be shown regardless of these settings.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             {columns.map((column) => (
               <div
                 key={column.name}

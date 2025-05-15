@@ -71,6 +71,8 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   isLoggedIn = false,
 }) => {
   const [isFullMode, setIsFullMode] = useState(window.innerWidth >= 768);
+  const [isMobileMode, setIsMobileMode] = useState(window.innerWidth < 768);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [editProject, setEditProject] = useState<Project | null>(null);
@@ -102,9 +104,28 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     "Last Activity": true,
   });
 
+  // Mobile mode always visible columns
+  const mobileVisibleColumns = {
+    Project: true,
+    Status: true,
+    Link: true,
+    Twitter: true,
+    Notes: false,
+    Wallet: false,
+    "Join Date": false,
+    Chain: false,
+    Stage: false,
+    Tags: false,
+    Type: false,
+    Cost: false,
+    "Last Activity": false,
+  };
+
   React.useEffect(() => {
     const handleResize = () => {
-      setIsFullMode(window.innerWidth >= 768);
+      const width = window.innerWidth;
+      setIsFullMode(width >= 768);
+      setIsMobileMode(width < 768);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -372,13 +393,13 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   }, []);
 
   return (
-    <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700 mb-6 relative">
+    <div className="w-full h-full rounded-xl overflow-hidden flex flex-col bg-[#1A1A2A] backdrop-blur-sm border border-gray-700 mb-6 relative">
       {!supabaseConfigured && (
         <div className="p-4">
           <SupabaseConfigWarning />
         </div>
       )}
-      <div className="p-4 border-b border-gray-600 bg-[#1A1A1A] relative">
+      <div className="p-4 border-b border-gray-600 bg-[#1A1A2A] relative">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 relative w-full md:w-auto">
             {isLoggedIn && (
@@ -418,7 +439,12 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsSearchVisible(!isSearchVisible)}
+                  onClick={() => {
+                    setIsSearchVisible(!isSearchVisible);
+                    if (!isSearchVisible) {
+                      setSearchQuery("");
+                    }
+                  }}
                   className="rounded-full w-8 h-8 md:w-10 md:h-10 border border-gray-600 bg-gray-800 hover:bg-gray-700"
                 >
                   <Search className="h-4 w-4 text-white" />
@@ -430,7 +456,11 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-40 h-8 ml-2 text-sm bg-[#0A101F] border-gray-600 focus:border-gray-500 rounded-full"
                     autoFocus
-                    onBlur={() => setIsSearchVisible(false)}
+                    onBlur={() => {
+                      if (!searchQuery) {
+                        setIsSearchVisible(false);
+                      }
+                    }}
                   />
                 )}
               </div>
@@ -453,7 +483,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                 fill="currentColor"
                 className="animate-[color-cycle_3s_ease-in-out_infinite] animate-float"
               >
-                <path d="M306.34,343.86c0,19.95-13.05,33.74-36.17,38v8c0,5.22-1.68,6.9-6.9,6.9H249.11c-5,0-6.9-1.68-6.9-6.9v-7.64c-18.27-2.8-30.2-11.93-36-27.22q-2.52-7.27,5-10.06l12.68-4.48c5.41-2,8-.93,10.44,4.48,3,7.64,9.88,11.37,20.51,11.37,14.17,0,21.25-3.92,21.25-11.94,0-7.45-7.27-9.88-22-11.37-10.44-1.31-15.85-1.87-25.36-5.59a32.36,32.36,0,0,1-11.55-6.53c-5.78-5-10.63-14.54-10.63-26.65,0-19.58,12.49-33,35.61-36.72v-7.65c0-5,1.86-6.71,6.9-6.71h14.17c5.22,0,6.9,1.68,6.9,6.71v7.65c15.1,2.61,25.73,10.62,32.06,24.23,2.8,5.22,1.49,8-4.29,10.44L285.09,298c-5,2.24-7.46,1.49-10.26-3.73-3.73-7.27-8.57-10.81-18.82-10.81-13.23,0-18.83,2.8-18.83,10.81,0,6.9,7.83,9.51,22.18,11a130,130,0,0,1,21.25,3.54,36.42,36.42,0,0,1,10.07,4.29C299.07,318.14,307.09,327.83,306.34,343.86ZM256,512c-324.62,0-150.83-289-99.09-365.56a38.35,38.35,0,0,1,.39-62.75L145,58.64A40.77,40.77,0,0,1,147,19,39.72,39.72,0,0,1,180.64,0a50.09,50.09,0,0,1,37.72,17.09,50,50,0,0,1,75.28,0A50,50,0,0,1,331.28,0,39.75,39.75,0,0,1,365,19a40.77,40.77,0,0,1,2,39.64l-12.28,25a38.35,38.35,0,0,1,.39,62.75C406.83,223,580.62,512,256,512ZM166.4,115.2A12.81,12.81,0,0,0,179.2,128H332.8a12.8,12.8,0,0,0,0-25.6H179.2A12.81,12.81,0,0,0,166.4,115.2ZM168,47.38,182.42,76.8H329.58L344,47.38a15.32,15.32,0,0,0-.73-14.9,14.09,14.09,0,0,0-12.06-6.88,24.79,24.79,0,0,0-22.8,15.59,15.92,15.92,0,0,1-29.54,0,24.58,24.58,0,0,0-45.75,0,15.92,15.92,0,0,1-29.53,0A24.82,24.82,0,0,0,180.72,25.6a14.06,14.06,0,0,0-12,6.88A15.32,15.32,0,0,0,168,47.38ZM329.1,153.6H182.92C141.08,213,61.87,351.95,99.39,426.92,119.15,466.39,171.84,486.4,256,486.4s136.88-20,156.62-59.51C450.19,351.75,371,212.91,329.1,153.6Z" />
+                <path d="M306.34,343.86c0,19.95-13.05,33.74-36.17,38v8c0,5.22-1.68,6.9-6.9,6.9H249.11c-5,0-6.9-1.68-6.9-6.9v-7.64c-18.27-2.8-30.2-11.93-36-27.22q-2.52-7.27,5-10.06l12.68-4.48c5.41-2,8-.93,10.44,4.48,3,7.64,9.88,11.37,20.51,11.37,14.17,0,21.25-3.92,21.25-11.94,0-7.45-7.27-9.88-22-11.37-10.44-1.31-15.85-1.87-25.36-5.59a32.36,32.36,0,0,1-11.55-6.53c-5.78-5-10.63-14.54-10.63-26.65,0-19.58,12.49-33,35.61-36.72v-7.65c0-5,1.86-6.71,6.9-6.71h14.17c5.22,0,6.9,1.68,6.9,6.71v7.65c15.1,2.61,25.73,10.62,32.06,24.23,2.8,5.22,1.49,8-4.29,10.44L285.09,298c-5,2.24-7.46,1.49-10.26-3.73-3.73-7.27-8.57-10.81-18.82-10.81-13.23,0-18.83,2.8-18.83,10.81,0,6.9,7.83,9.51,22.18,11a130,130,0,0,1,21.25,3.54,36.42,36.42,0,0,1,10.07,4.29C299.07,318.14,307.09,327.83,306.34,343.86ZM256,512c-324.62,0-150.83-289-99.09-365.56a38.35,38.35,0,0,1,.39-62.75L145,58.64A40.77,40.77,0,0,1,147,19,39.72,39.72,0,0,1,180.64,0a50.09,50.09,0,0,1,37.72,17.09,50,50,0,0,1,75.28,0A50,50,0,0,1,331.28,0,39.75,39.75,0,0,1,365,19a40.77,40.77,0,0,1,2,39.64l-12.28,25a38.35,38.35,0,0,1,.39,62.75C406.83,223,580.62,512,256,512ZM166.4,115.2A12.81,12.81,0,0,0,179.2,128H332.8a12.8,12.8,0,0,0,0-25.6H179.2A12.81,12.81,0,0,0,166.4,115.2ZM168,47.38L182.42,76.8H329.58L344,47.38a15.32,15.32,0,0,0-.73-14.9,14.09,14.09,0,0,0-12.06-6.88,24.79,24.79,0,0,0-22.8,15.59,15.92,15.92,0,0,1-29.54,0,24.58,24.58,0,0,0-45.75,0,15.92,15.92,0,0,1-29.53,0A24.82,24.82,0,0,0,180.72,25.6a14.06,14.06,0,0,0-12,6.88A15.32,15.32,0,0,0,168,47.38ZM329.1,153.6H182.92C141.08,213,61.87,351.95,99.39,426.92,119.15,466.39,171.84,486.4,256,486.4s136.88-20,156.62-59.51C450.19,351.75,371,212.91,329.1,153.6Z" />
               </svg>
             </button>
             <AuthController />
@@ -461,109 +491,130 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         </div>
 
         {/* Stage Tabs - Centered */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1 overflow-x-auto max-w-md z-0">
-          <button
-            onClick={() => setActiveStage(null)}
-            className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${!activeStage ? "bg-white text-black" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
-          >
-            All
-            <span
-              className={`inline-flex items-center justify-center rounded-full px-1.5 text-xs ${!activeStage ? "bg-black text-white" : "bg-gray-700 text-gray-300"}`}
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1 overflow-x-auto max-w-md z-0 sticky top-0">
+          {!isMobileMode && (
+            <button
+              onClick={() => setActiveStage(null)}
+              className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${!activeStage ? "bg-primary-600 text-white" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
             >
-              {filteredProjects.length}
-            </span>
-          </button>
-          {uniqueStages.map((stage) => {
-            const stageCount = filteredProjects.filter(
-              (project) =>
-                (project.stage || "Unknown").toLowerCase() ===
-                stage.toLowerCase(),
-            ).length;
-            return (
-              <button
-                key={stage}
-                onClick={() => setActiveStage(stage)}
-                className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${activeStage === stage ? "bg-white text-black" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
+              All
+              <span
+                className={`inline-flex items-center justify-center rounded-full px-1.5 text-xs ${!activeStage ? "bg-primary-800 text-white" : "bg-gray-700 text-gray-300"}`}
               >
-                {stage}
-                <span
-                  className={`inline-flex items-center justify-center rounded-full px-1.5 text-xs ${activeStage === stage ? "bg-black text-white" : "bg-gray-700 text-gray-300"}`}
+                {filteredProjects.length}
+              </span>
+            </button>
+          )}
+          {uniqueStages
+            .filter((stage) => {
+              // In mobile mode, only show testnet, waitlist, and early access tabs
+              if (isMobileMode) {
+                const lowerStage = stage.toLowerCase();
+                return (
+                  lowerStage === "testnet" ||
+                  lowerStage === "waitlist" ||
+                  lowerStage === "early access"
+                );
+              }
+              return true;
+            })
+            .map((stage) => {
+              const stageCount = filteredProjects.filter(
+                (project) =>
+                  (project.stage || "Unknown").toLowerCase() ===
+                  stage.toLowerCase(),
+              ).length;
+              return (
+                <button
+                  key={stage}
+                  onClick={() => setActiveStage(stage)}
+                  className={`px-2 py-0.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1 ${activeStage === stage ? "bg-primary-600 text-white" : "bg-transparent text-gray-300 hover:bg-gray-700/30 border border-gray-700"}`}
                 >
-                  {stageCount}
-                </span>
-              </button>
-            );
-          })}
+                  {stage}
+                  <span
+                    className={`inline-flex items-center justify-center rounded-full px-1.5 text-xs ${activeStage === stage ? "bg-primary-800 text-white" : "bg-gray-700 text-gray-300"}`}
+                  >
+                    {stageCount}
+                  </span>
+                </button>
+              );
+            })}
         </div>
       </div>
-      <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A1A] relative z-10">
+      <div className="flex-1 overflow-auto max-h-[calc(100vh-150px)] scrollbar-thin bg-[#1A1A2A] relative z-10">
         <Table>
           <TableHeader>
-            <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A1A]">
-              <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#1A1A1A] z-10">
+            <TableRow className="hover:bg-transparent border-b border-gray-600 bg-[#1A1A2A]">
+              <TableHead className="w-[300px] text-white text-left pl-4 sticky top-0 bg-[#1A1A2A] z-10">
                 Project
               </TableHead>
-              {visibleColumns.Status && (
-                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {(isMobileMode
+                ? mobileVisibleColumns.Status
+                : visibleColumns.Status) && (
+                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Check-in
                 </TableHead>
               )}
-              {visibleColumns.Link && (
-                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {(isMobileMode
+                ? mobileVisibleColumns.Link
+                : visibleColumns.Link) && (
+                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Link
                 </TableHead>
               )}
-              {visibleColumns.Twitter && (
-                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {(isMobileMode
+                ? mobileVisibleColumns.Twitter
+                : visibleColumns.Twitter) && (
+                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Twitter
                 </TableHead>
               )}
-              {visibleColumns.Notes && (
-                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {!isMobileMode && visibleColumns.Notes && (
+                <TableHead className="w-[30px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Notes
                 </TableHead>
               )}
-              {visibleColumns.Wallet && (
-                <TableHead className="w-[35px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {!isMobileMode && visibleColumns.Wallet && (
+                <TableHead className="w-[35px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Wallet
                 </TableHead>
               )}
-              {isFullMode && (
+              {isFullMode && !isMobileMode && (
                 <>
                   {visibleColumns["Join Date"] && (
-                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+                    <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                       Join Date
                     </TableHead>
                   )}
                 </>
               )}
-              {visibleColumns.Chain && (
-                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {!isMobileMode && visibleColumns.Chain && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Chain
                 </TableHead>
               )}
-              {visibleColumns.Stage && (
-                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {!isMobileMode && visibleColumns.Stage && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Stage
                 </TableHead>
               )}
-              {visibleColumns.Tags && (
-                <TableHead className="w-[120px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {!isMobileMode && visibleColumns.Tags && (
+                <TableHead className="w-[120px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Tags
                 </TableHead>
               )}
-              {visibleColumns.Type && (
-                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {!isMobileMode && visibleColumns.Type && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Type
                 </TableHead>
               )}
-              {visibleColumns.Cost && (
-                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {!isMobileMode && visibleColumns.Cost && (
+                <TableHead className="w-[80px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Cost
                 </TableHead>
               )}
-              {visibleColumns["Last Activity"] && (
-                <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A1A] z-10">
+              {!isMobileMode && visibleColumns["Last Activity"] && (
+                <TableHead className="w-[100px] text-center text-white sticky top-0 bg-[#1A1A2A] z-10">
                   Last Activity
                 </TableHead>
               )}
@@ -593,10 +644,10 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   >
                     <TableHead colSpan={12} className="py-2 pl-4">
                       <div className="flex items-center gap-2">
-                        <span className="text-blue-400 font-medium">
+                        <span className="text-primary-400 font-medium">
                           {expandedChains.includes(chain) ? "▼" : "►"}
                         </span>
-                        <span className="font-bold text-blue-400">
+                        <span className="font-bold text-primary-400">
                           {chain} (
                           {
                             filteredProjects.filter(
@@ -674,7 +725,9 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                               : project.tags
                           }
                           isPublicMode={false}
-                          visibleColumns={visibleColumns}
+                          visibleColumns={
+                            isMobileMode ? mobileVisibleColumns : visibleColumns
+                          }
                           wallet={project.wallet}
                         />
                       ))}
@@ -738,7 +791,9 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                         : project.tags
                     }
                     isPublicMode={false}
-                    visibleColumns={visibleColumns}
+                    visibleColumns={
+                      isMobileMode ? mobileVisibleColumns : visibleColumns
+                    }
                     wallet={project.wallet}
                   />
                 ))

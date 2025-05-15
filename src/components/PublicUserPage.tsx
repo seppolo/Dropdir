@@ -7,6 +7,7 @@ import { Search, LogIn, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import DoodlesBackground from "./DoodlesBackground";
 import LoginModal from "./auth/LoginModal";
 import { getCurrentUser } from "@/lib/projectService";
@@ -84,6 +85,19 @@ const PublicUserPage = () => {
         Type: !isMobile,
         Cost: !isMobile,
       }));
+
+      // Force re-render to update tabs visibility
+      setActiveTab((prev) => {
+        // If on mobile and current tab is not one of the three allowed tabs,
+        // switch to testnet tab by default
+        if (
+          isMobile &&
+          !["testnet", "earlyAccess", "waitlist"].includes(prev)
+        ) {
+          return "testnet";
+        }
+        return prev;
+      });
     };
 
     handleResize();
@@ -320,7 +334,7 @@ const PublicUserPage = () => {
 
       <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative z-10">
         <div className="w-full rounded-xl overflow-visible flex flex-col bg-[#1A1A1A] backdrop-blur-sm border border-gray-700">
-          <div className="p-2 sm:p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A] sticky top-0 z-20">
+          <div className="p-2 sm:p-4 flex items-center justify-between border-b border-gray-600 bg-[#1A1A1A] sticky top-0 z-30">
             <div className="flex items-center gap-2 relative w-full">
               {/* Mobile menu button */}
               <Button
@@ -358,14 +372,17 @@ const PublicUserPage = () => {
                 </div>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLoginModalOpen(true)}
-              className="rounded-md border border-gray-600 bg-transparent text-[#3B82F6] text-xs sm:text-sm px-2 sm:px-4"
-            >
-              Login
-            </Button>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLoginModalOpen(true)}
+                className="rounded-md border border-gray-600 bg-transparent text-[#3B82F6] text-xs sm:text-sm px-2 sm:px-4"
+              >
+                Login
+              </Button>
+            </div>
           </div>
 
           {/* Mobile column selector menu */}
@@ -444,24 +461,28 @@ const PublicUserPage = () => {
                         {projectCounts.waitlist}
                       </span>
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="mainnet"
-                      className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
-                    >
-                      Mainnet
-                      <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
-                        {projectCounts.mainnet}
-                      </span>
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="other"
-                      className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
-                    >
-                      Other
-                      <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
-                        {projectCounts.other}
-                      </span>
-                    </TabsTrigger>
+                    {isFullMode && (
+                      <>
+                        <TabsTrigger
+                          value="mainnet"
+                          className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
+                        >
+                          Mainnet
+                          <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
+                            {projectCounts.mainnet}
+                          </span>
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="other"
+                          className="text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-blue-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-200"
+                        >
+                          Other
+                          <span className="ml-1.5 bg-[#1E293B] text-xs px-1.5 py-0.5 rounded-full border border-gray-700">
+                            {projectCounts.other}
+                          </span>
+                        </TabsTrigger>
+                      </>
+                    )}
                   </TabsList>
                 </Tabs>
               </div>

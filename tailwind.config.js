@@ -1,6 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
+  theme: {
+    extend: {
+      backgroundImage: {
+        "gradient-light":
+          "linear-gradient(135deg, hsl(160 95% 95%) 0%, hsl(160 95% 85%) 100%)",
+      },
+    },
+  },
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -91,11 +99,11 @@ module.exports = {
           to: { height: "0" },
         },
         "color-cycle": {
-          "0%": { color: "hsl(160, 95%, 39%)" },
-          "25%": { color: "hsl(160, 95%, 50%)" },
-          "50%": { color: "hsl(160, 95%, 60%)" },
-          "75%": { color: "hsl(160, 95%, 70%)" },
-          "100%": { color: "hsl(160, 95%, 39%)" },
+          "0%": { color: "hsl(220, 95%, 39%)" },
+          "25%": { color: "hsl(220, 95%, 50%)" },
+          "50%": { color: "hsl(220, 95%, 60%)" },
+          "75%": { color: "hsl(220, 95%, 70%)" },
+          "100%": { color: "hsl(220, 95%, 39%)" },
         },
         float: {
           "0%": { transform: "translateY(0px)" },

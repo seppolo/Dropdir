@@ -273,8 +273,8 @@
 .dark body {
   background: linear-gradient(
     135deg,
-    hsl(222.2 84% 4.9%) 0%,
-    hsl(222.2 84% 4.9%) 100%
+    hsl(225 84% 6%) 0%,
+    hsl(225 84% 10%) 100%
   );
   background-size: 400% 400%;
   animation: themeTransition 3s ease infinite;
@@ -282,6 +282,16 @@
 
 body {
   background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(0 0% 100%) 100%);
+  background-size: 400% 400%;
+  animation: themeTransition 3s ease infinite;
+}
+
+.light-gradient body {
+  background: linear-gradient(
+    135deg,
+    hsl(160 95% 95%) 0%,
+    hsl(160 95% 85%) 100%
+  );
   background-size: 400% 400%;
   animation: themeTransition 3s ease infinite;
 }
@@ -318,6 +328,37 @@ body {
     --ring: 160 95% 39%;
 
     --radius: 0.5rem;
+  }
+
+  .light-gradient {
+    /* Light Gradient Theme - Mint */
+    --background: 160 95% 95%;
+    --foreground: 160 60% 5%;
+
+    --card: 160 25% 96%;
+    --card-foreground: 160 60% 5%;
+
+    --popover: 160 25% 96%;
+    --popover-foreground: 160 60% 5%;
+
+    --primary: 160 95% 39%;
+    --primary-foreground: 160 100% 97%;
+
+    --secondary: 160 60% 88%;
+    --secondary-foreground: 160 70% 10%;
+
+    --muted: 160 30% 92%;
+    --muted-foreground: 160 40% 30%;
+
+    --accent: 160 60% 88%;
+    --accent-foreground: 160 70% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 160 30% 85%;
+    --input: 160 30% 85%;
+    --ring: 160 95% 39%;
   }
 
   .dark {

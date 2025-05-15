@@ -741,7 +741,7 @@ const EditProjectModal = ({
 
               <div>
                 <label className="text-sm font-medium text-white/90 sketch-font block mb-2">
-                  Wallet Address{" "}
+                  Wallet Address / Email{" "}
                   <span className="text-xs text-blue-400">
                     (Only visible to you)
                   </span>
@@ -753,7 +753,7 @@ const EditProjectModal = ({
                       setFormData({ ...formData, wallet: e.target.value })
                     }
                     className="sketch-input h-10"
-                    placeholder="0x..."
+                    placeholder="0x... or email@example.com"
                     list="wallet-options"
                   />
                   <datalist id="wallet-options">
